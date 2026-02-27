@@ -1,0 +1,424 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ========================
+// 🔐 Auth & Users
+// ========================
+
+enum UserRole {
+  ADMIN
+  TEACHER
+  STUDENT
+  PARENT
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole
+  avatar    String?
+  phone     String?
+  status    String   @default("active") // active | inactive
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile          Profile?
+  student          Student?
+  teacher          Teacher?
+  parent           Parent?
+  sentMessages     ChatMessage[]  @relation("Sender")
+  receivedMessages ChatMessage[]  @relation("Receiver")
+  notifications    Notification[]
+  activityLogs     ActivityLog[]
+  notices          Notice[]
+
+  @@map("users")
+}
+
+model Profile {
+  id          String    @id @default(uuid())
+  userId      String    @unique
+  address     String?
+  dateOfBirth DateTime?
+  gender      Gender?
+  bio         String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+// ========================
+// 👨‍🎓 Students
+// ========================
+
+model Student {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  classId       String
+  section       String
+  rollNumber    String
+  admissionDate DateTime @default(now())
+  grade         String?
+
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class       Class           @relation(fields: [classId], references: [id])
+  parents     ParentStudent[]
+  attendances Attendance[]
+  examResults ExamResult[]
+  feePayments FeePayment[]
+
+  @@map("students")
+}
+
+// ========================
+// 👨‍🏫 Teachers
+// ========================
+
+model Teacher {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  department   String
+  joinDate     DateTime @default(now())
+  classesTaken Int      @default(0)
+
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjects          TeacherSubject[]
+  classes           TeacherClass[]
+  classTeacherOf    Class[]          @relation("ClassTeacher")
+  attendancesMarked Attendance[]
+  questionPapers    QuestionPaper[]
+
+  @@map("teachers")
+}
+
+// ========================
+// 👪 Parents
+// ========================
+
+model Parent {
+  id         String  @id @default(uuid())
+  userId     String  @unique
+  occupation String?
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  students ParentStudent[]
+
+  @@map("parents")
+}
+
+model ParentStudent {
+  id        String @id @default(uuid())
+  parentId  String
+  studentId String
+
+  parent  Parent  @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([parentId, studentId])
+  @@map("parent_students")
+}
+
+// ========================
+// 🏫 Class & Subject
+// ========================
+
+model Class {
+  id             String  @id @default(uuid())
+  name           String
+  section        String
+  classTeacherId String?
+  capacity       Int     @default(40)
+
+  classTeacher  Teacher?       @relation("ClassTeacher", fields: [classTeacherId], references: [id])
+  students      Student[]
+  subjects      ClassSubject[]
+  teachers      TeacherClass[]
+  exams         Exam[]
+  attendances   Attendance[]
+  feeStructures FeeStructure[]
+
+  @@unique([name, section])
+  @@map("classes")
+}
+
+model Subject {
+  id   String @id @default(uuid())
+  name String
+  code String @unique
+
+  classes  ClassSubject[]
+  teachers TeacherSubject[]
+  exams    Exam[]
+
+  @@map("subjects")
+}
+
+model ClassSubject {
+  id        String @id @default(uuid())
+  classId   String
+  subjectId String
+
+  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, subjectId])
+  @@map("class_subjects")
+}
+
+model TeacherSubject {
+  id        String @id @default(uuid())
+  teacherId String
+  subjectId String
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([teacherId, subjectId])
+  @@map("teacher_subjects")
+}
+
+model TeacherClass {
+  id        String @id @default(uuid())
+  teacherId String
+  classId   String
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([teacherId, classId])
+  @@map("teacher_classes")
+}
+
+// ========================
+// 📋 Attendance
+// ========================
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+model Attendance {
+  id        String           @id @default(uuid())
+  studentId String
+  classId   String
+  date      DateTime
+  status    AttendanceStatus
+  markedBy  String
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class   Class   @relation(fields: [classId], references: [id])
+  teacher Teacher @relation(fields: [markedBy], references: [id])
+
+  @@unique([studentId, date])
+  @@map("attendances")
+}
+
+// ========================
+// 📝 Exams & Results
+// ========================
+
+enum ExamStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+}
+
+enum ExamType {
+  MONTHLY
+  QUARTERLY
+  HALF_YEARLY
+  YEARLY
+}
+
+model Exam {
+  id         String     @id @default(uuid())
+  name       String
+  classId    String
+  subjectId  String
+  date       DateTime
+  duration   String
+  totalMarks Int
+  type       ExamType
+  status     ExamStatus @default(UPCOMING)
+
+  class          Class           @relation(fields: [classId], references: [id])
+  subject        Subject         @relation(fields: [subjectId], references: [id])
+  results        ExamResult[]
+  questionPapers QuestionPaper[]
+
+  @@map("exams")
+}
+
+model ExamResult {
+  id            String  @id @default(uuid())
+  examId        String
+  studentId     String
+  marksObtained Float
+  grade         String?
+  remarks       String?
+
+  exam    Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([examId, studentId])
+  @@map("exam_results")
+}
+
+enum PaperStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model QuestionPaper {
+  id        String      @id @default(uuid())
+  examId    String
+  teacherId String
+  fileUrl   String
+  status    PaperStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+
+  exam    Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+
+  @@map("question_papers")
+}
+
+// ========================
+// 💰 Fees & Billing
+// ========================
+
+enum FeeType {
+  MONTHLY
+  QUARTERLY
+  HALF_YEARLY
+  YEARLY
+}
+
+enum PaymentStatus {
+  PAID
+  UNPAID
+  PARTIAL
+}
+
+model FeeStructure {
+  id      String  @id @default(uuid())
+  classId String
+  feeType FeeType
+  amount  Float
+
+  class    Class        @relation(fields: [classId], references: [id])
+  payments FeePayment[]
+
+  @@unique([classId, feeType])
+  @@map("fee_structures")
+}
+
+model FeePayment {
+  id             String        @id @default(uuid())
+  studentId      String
+  feeStructureId String
+  amountPaid     Float
+  paymentDate    DateTime?
+  status         PaymentStatus @default(UNPAID)
+  receiptUrl     String?
+
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  feeStructure FeeStructure @relation(fields: [feeStructureId], references: [id])
+
+  @@map("fee_payments")
+}
+
+// ========================
+// 💬 Chat & Communication
+// ========================
+
+model ChatMessage {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String
+  message    String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("Sender", fields: [senderId], references: [id])
+  receiver User @relation("Receiver", fields: [receiverId], references: [id])
+
+  @@map("chat_messages")
+}
+
+model Notice {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  category  String // general | exam | event | holiday
+  priority  String   @default("normal") // normal | high | urgent
+  pinned    Boolean  @default(false)
+  createdBy String
+  createdAt DateTime @default(now())
+
+  author User @relation(fields: [createdBy], references: [id])
+
+  @@map("notices")
+}
+
+// ========================
+// ⚙️ System
+// ========================
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      String // info | success | warning | error
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  userId      String
+  action      String
+  description String?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("activity_logs")
+}
+
+model Setting {
+  id    String @id @default(uuid())
+  key   String @unique
+  value String
+
+  @@map("settings")
+}
