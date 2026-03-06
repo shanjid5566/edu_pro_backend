@@ -52,10 +52,10 @@
       ]
     },
     {
-      "name": "Auth (Coming Soon)",
+      "name": "Auth",
       "item": [
         {
-          "name": "Login",
+          "name": "Login as Admin",
           "request": {
             "method": "POST",
             "header": [
@@ -66,19 +66,19 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+              "raw": "{\n  \"email\": \"admin@edupro.com\",\n  \"password\": \"Admin@123\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
               "host": ["{{baseUrl}}"],
               "path": ["auth", "login"]
             },
-            "description": "User login endpoint (To be implemented)"
+            "description": "User login endpoint for Admin"
           },
           "response": []
         },
         {
-          "name": "Register",
+          "name": "Login as Teacher",
           "request": {
             "method": "POST",
             "header": [
@@ -89,14 +89,60 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"STUDENT\"\n}"
+              "raw": "{\n  \"email\": \"john.smith@edupro.com\",\n  \"password\": \"Teacher@123\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/auth/register",
+              "raw": "{{baseUrl}}/auth/login",
               "host": ["{{baseUrl}}"],
-              "path": ["auth", "register"]
+              "path": ["auth", "login"]
             },
-            "description": "User registration endpoint (To be implemented)"
+            "description": "User login endpoint for Teacher"
+          },
+          "response": []
+        },
+        {
+          "name": "Login as Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alex.kumar@student.edupro.com\",\n  \"password\": \"Student@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "User login endpoint for Student"
+          },
+          "response": []
+        },
+        {
+          "name": "Login as Parent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"rajesh.kumar@parent.edupro.com\",\n  \"password\": \"Parent@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "User login endpoint for Parent"
           },
           "response": []
         }

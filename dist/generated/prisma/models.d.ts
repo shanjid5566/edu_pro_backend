@@ -1,0 +1,24 @@
+export type * from './models/User';
+export type * from './models/Profile';
+export type * from './models/Student';
+export type * from './models/Teacher';
+export type * from './models/Parent';
+export type * from './models/ParentStudent';
+export type * from './models/Class';
+export type * from './models/Subject';
+export type * from './models/ClassSubject';
+export type * from './models/TeacherSubject';
+export type * from './models/TeacherClass';
+export type * from './models/Attendance';
+export type * from './models/Exam';
+export type * from './models/ExamResult';
+export type * from './models/QuestionPaper';
+export type * from './models/FeeStructure';
+export type * from './models/FeePayment';
+export type * from './models/ChatMessage';
+export type * from './models/Notice';
+export type * from './models/Notification';
+export type * from './models/ActivityLog';
+export type * from './models/Setting';
+export type * from './commonInputTypes';
+//# sourceMappingURL=models.d.ts.map
