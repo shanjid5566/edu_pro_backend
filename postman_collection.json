@@ -147,6 +147,248 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Settings",
+      "item": [
+        {
+          "name": "General Settings - Get",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/settings/general",
+              "host": ["{{baseUrl}}"],
+              "path": ["settings", "general"]
+            },
+            "description": "Retrieve general school settings (public endpoint)"
+          },
+          "response": []
+        },
+        {
+          "name": "General Settings - Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"schoolName\": \"EduPro Academy\",\n  \"schoolEmail\": \"admin@edupro.com\",\n  \"schoolPhone\": \"+1234567890\",\n  \"schoolAddress\": \"123 Education Blvd, Learning City\",\n  \"academicYear\": \"2025-2026\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/general",
+              "host": ["{{baseUrl}}"],
+              "path": ["settings", "general"]
+            },
+            "description": "Update general school settings (admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "User Preferences - Get",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/settings/user/preferences",
+              "host": ["{{baseUrl}}"],
+              "path": ["settings", "user", "preferences"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User Preferences - Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"theme\": \"DARK\",\n  \"sidebarStyle\": \"COMPACT\",\n  \"emailNotifications\": true,\n  \"pushNotifications\": false,\n  \"smsAlerts\": true,\n  \"attendanceAlerts\": true,\n  \"examReminders\": true,\n  \"enrollmentAlerts\": false,\n  \"language\": \"en\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/user/preferences",
+              "host": ["{{baseUrl}}"],
+              "path": ["settings", "user", "preferences"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User Profile - Get",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/settings/user/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["settings", "user", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User Profile - Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Anderson\",\n  \"email\": \"john.anderson@edupro.com\",\n  \"phone\": \"+1987654321\",\n  \"avatar\": \"https://example.com/avatar.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/user/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["settings", "user", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"OldPassword@123\",\n  \"newPassword\": \"NewPassword@456\",\n  \"confirmPassword\": \"NewPassword@456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/user/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["settings", "user", "change-password"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Notification Preferences - Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emailNotifications\": true,\n  \"pushNotifications\": true,\n  \"smsAlerts\": false,\n  \"attendanceAlerts\": true,\n  \"examReminders\": true,\n  \"enrollmentAlerts\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/user/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["settings", "user", "notifications"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Appearance Settings - Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"theme\": \"DARK\",\n  \"sidebarStyle\": \"COMPACT\",\n  \"language\": \"es\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/user/appearance",
+              "host": ["{{baseUrl}}"],
+              "path": ["settings", "user", "appearance"]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }
