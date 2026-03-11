@@ -40,7 +40,7 @@ export class AuthService {
     }
 
     // 5. Generate a JSON Web Token (JWT) containing the user ID and role
-    const token = generateToken(user.id, user.role);
+    const token = generateToken(user.id, user.email, user.role);
 
     // 6. Exclude the password field from the returned user object for security
     const { password: _p, ...userWithoutPassword } = user;

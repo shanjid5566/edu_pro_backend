@@ -163,6 +163,34 @@ export class SettingService {
   }
 
   /**
+   * Get user profile
+   */
+  async getUserProfile(userId: string) {
+    try {
+      const user = await db.user.findUnique({
+        where: { id: userId },
+        include: { profile: true },
+      });
+
+      if (!user) {
+        throw new BadRequestError("User not found");
+      }
+
+      return {
+        id: user.id,
+        fullName: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        avatar: user.avatar,
+        updatedAt: user.updatedAt,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
    * Update user profile
    */
   async updateUserProfile(userId: string, input: UpdateProfileInput) {

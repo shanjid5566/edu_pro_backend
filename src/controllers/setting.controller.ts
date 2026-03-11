@@ -119,25 +119,7 @@ export class SettingController {
         throw new Error("User not authenticated");
       }
 
-      const user = await (global as any).db.user.findUnique({
-        where: { id: userId },
-        include: { profile: true },
-      });
-
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      const profile = {
-        id: user.id,
-        fullName: user.name,
-        email: user.email,
-        phone: user.phone,
-        role: user.role,
-        avatar: user.avatar,
-        updatedAt: user.updatedAt,
-      };
-
+      const profile = await settingService.getUserProfile(userId);
       return ApiResponse.success(res, profile, "User profile retrieved successfully");
     } catch (error) {
       next(error);

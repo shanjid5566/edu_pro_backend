@@ -28,8 +28,12 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/health",
-              "host": ["{{baseUrl}}"],
-              "path": ["health"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
             },
             "description": "Check server health status with detailed information"
           },
@@ -42,8 +46,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/health/ping",
-              "host": ["{{baseUrl}}"],
-              "path": ["health", "ping"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health",
+                "ping"
+              ]
             },
             "description": "Simple ping endpoint"
           },
@@ -70,8 +79,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             },
             "description": "User login endpoint for Admin"
           },
@@ -93,8 +107,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             },
             "description": "User login endpoint for Teacher"
           },
@@ -116,8 +135,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             },
             "description": "User login endpoint for Student"
           },
@@ -139,8 +163,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             },
             "description": "User login endpoint for Parent"
           },
@@ -164,8 +193,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/settings/general",
-              "host": ["{{baseUrl}}"],
-              "path": ["settings", "general"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "general"
+              ]
             },
             "description": "Retrieve general school settings (public endpoint)"
           },
@@ -193,8 +227,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/settings/general",
-              "host": ["{{baseUrl}}"],
-              "path": ["settings", "general"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "general"
+              ]
             },
             "description": "Update general school settings (admin only)"
           },
@@ -218,8 +257,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/settings/user/preferences",
-              "host": ["{{baseUrl}}"],
-              "path": ["settings", "user", "preferences"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "user",
+                "preferences"
+              ]
             }
           },
           "response": []
@@ -246,8 +291,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/settings/user/preferences",
-              "host": ["{{baseUrl}}"],
-              "path": ["settings", "user", "preferences"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "user",
+                "preferences"
+              ]
             }
           },
           "response": []
@@ -270,8 +321,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/settings/user/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["settings", "user", "profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "user",
+                "profile"
+              ]
             }
           },
           "response": []
@@ -298,8 +355,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/settings/user/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["settings", "user", "profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "user",
+                "profile"
+              ]
             }
           },
           "response": []
@@ -326,8 +389,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/settings/user/change-password",
-              "host": ["{{baseUrl}}"],
-              "path": ["settings", "user", "change-password"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "user",
+                "change-password"
+              ]
             }
           },
           "response": []
@@ -354,8 +423,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/settings/user/notifications",
-              "host": ["{{baseUrl}}"],
-              "path": ["settings", "user", "notifications"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "user",
+                "notifications"
+              ]
             }
           },
           "response": []
@@ -382,9 +457,252 @@
             },
             "url": {
               "raw": "{{baseUrl}}/settings/user/appearance",
-              "host": ["{{baseUrl}}"],
-              "path": ["settings", "user", "appearance"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "user",
+                "appearance"
+              ]
             }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Parents",
+      "item": [
+        {
+          "name": "Get All Parents",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/parents?page=1&pageSize=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parents"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get all parents with pagination"
+          },
+          "response": []
+        },
+        {
+          "name": "Search Parent by Name",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/parents/search/John?page=1&pageSize=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parents",
+                "search",
+                "John"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Search parents by name"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Parent Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/parents/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parents",
+                "stats"
+              ]
+            },
+            "description": "Get parent statistics (total, with/without children)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Parent",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/parents/550e8400-e29b-41d4-a716-446655440000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parents",
+                "550e8400-e29b-41d4-a716-446655440000"
+              ]
+            },
+            "description": "Get a single parent by ID with associated students"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Parent (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Smith\",\n  \"email\": \"john.smith@email.com\",\n  \"phone\": \"+1-555-0123\",\n  \"occupation\": \"Software Engineer\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/parents",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parents"
+              ]
+            },
+            "description": "Create a new parent account (admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Parent (Admin Only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Smith Jr\",\n  \"phone\": \"+1-555-0124\",\n  \"occupation\": \"Senior Software Engineer\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/parents/550e8400-e29b-41d4-a716-446655440000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parents",
+                "550e8400-e29b-41d4-a716-446655440000"
+              ]
+            },
+            "description": "Update parent information (admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Parent (Admin Only)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/parents/550e8400-e29b-41d4-a716-446655440000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parents",
+                "550e8400-e29b-41d4-a716-446655440000"
+              ]
+            },
+            "description": "Delete a parent and their account (admin only)"
           },
           "response": []
         }
