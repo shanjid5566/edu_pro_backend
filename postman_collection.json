@@ -707,6 +707,911 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Teachers",
+      "item": [
+        {
+          "name": "Get All Teachers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/teachers?page=1&pageSize=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teachers"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "department",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get all teachers with pagination and filtering (search, department)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Teacher",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/teachers/550e8400-e29b-41d4-a716-446655440000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teachers",
+                "550e8400-e29b-41d4-a716-446655440000"
+              ]
+            },
+            "description": "Get a single teacher by ID with statistics"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Teacher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Emily Carter\",\n  \"email\": \"emily.carter@school.com\",\n  \"password\": \"SecurePass123!\",\n  \"phone\": \"+1-555-0123\",\n  \"department\": \"Science\",\n  \"avatar\": \"https://example.com/avatar.jpg\",\n  \"joinDate\": \"2024-01-15T08:00:00Z\",\n  \"subjects\": [\"subject-uuid-1\", \"subject-uuid-2\"],\n  \"classes\": [\"class-uuid-1\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/teachers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teachers"
+              ]
+            },
+            "description": "Create a new teacher (admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Teacher",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Emily Carter Updated\",\n  \"phone\": \"+1-555-0124\",\n  \"department\": \"Mathematics\",\n  \"status\": \"active\",\n  \"subjects\": [\"subject-uuid-1\", \"subject-uuid-3\"],\n  \"classes\": [\"class-uuid-2\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/teachers/550e8400-e29b-41d4-a716-446655440000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teachers",
+                "550e8400-e29b-41d4-a716-446655440000"
+              ]
+            },
+            "description": "Update teacher information (admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Teacher",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/teachers/550e8400-e29b-41d4-a716-446655440000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teachers",
+                "550e8400-e29b-41d4-a716-446655440000"
+              ]
+            },
+            "description": "Delete a teacher account (admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Teacher Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/teachers/550e8400-e29b-41d4-a716-446655440000/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teachers",
+                "550e8400-e29b-41d4-a716-446655440000",
+                "stats"
+              ]
+            },
+            "description": "Get teacher statistics (total classes, subjects, attendance, classes conducted)"
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Subjects to Teacher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subjectIds\": [\"subject-uuid-1\", \"subject-uuid-2\", \"subject-uuid-3\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/teachers/550e8400-e29b-41d4-a716-446655440000/assign-subjects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teachers",
+                "550e8400-e29b-41d4-a716-446655440000",
+                "assign-subjects"
+              ]
+            },
+            "description": "Assign subjects to a teacher (replaces existing assignments)"
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Classes to Teacher",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classIds\": [\"class-uuid-1\", \"class-uuid-2\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/teachers/550e8400-e29b-41d4-a716-446655440000/assign-classes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teachers",
+                "550e8400-e29b-41d4-a716-446655440000",
+                "assign-classes"
+              ]
+            },
+            "description": "Assign classes to a teacher (replaces existing assignments)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Students",
+      "item": [
+        {
+          "name": "Get All Students",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students?page=1&pageSize=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "classId",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "section",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get all students with pagination and filtering (search, classId, section)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Students by Class",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/class/class-uuid-1?page=1&pageSize=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "class",
+                "class-uuid-1"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get students by specific class ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Student",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/student-uuid-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "student-uuid-1"
+              ]
+            },
+            "description": "Get a single student by ID with statistics"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sarah Johnson\",\n  \"email\": \"sarah.johnson@school.com\",\n  \"password\": \"StudentPass123!\",\n  \"phone\": \"+1-555-0123\",\n  \"classId\": \"class-uuid-1\",\n  \"section\": \"A\",\n  \"rollNumber\": \"101\",\n  \"dateOfBirth\": \"2010-05-15T00:00:00Z\",\n  \"gender\": \"FEMALE\",\n  \"address\": \"123 Student St\",\n  \"parentName\": \"Michael Johnson\",\n  \"parentEmail\": \"michael@school.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/students",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students"
+              ]
+            },
+            "description": "Create a new student (admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Student",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sarah Johnson Updated\",\n  \"phone\": \"+1-555-0124\",\n  \"classId\": \"class-uuid-2\",\n  \"section\": \"B\",\n  \"rollNumber\": \"201\",\n  \"gender\": \"FEMALE\",\n  \"address\": \"456 New St\",\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/students/student-uuid-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "student-uuid-1"
+              ]
+            },
+            "description": "Update student information (admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Student",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/student-uuid-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "student-uuid-1"
+              ]
+            },
+            "description": "Delete a student account (admin only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Student Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/student-uuid-1/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "student-uuid-1",
+                "stats"
+              ]
+            },
+            "description": "Get student statistics (attendance, average marks, exams, attendance days)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Complete Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard"
+              ]
+            },
+            "description": "Get complete admin dashboard data (overview, charts, activities)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Dashboard Overview",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/overview",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "overview"
+              ]
+            },
+            "description": "Get dashboard overview statistics (total students, teachers, classes, parents)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attendance Trend",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/attendance-trend",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "attendance-trend"
+              ]
+            },
+            "description": "Get attendance trend data for line chart (last 6 months)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Performance by Subject",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/performance",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "performance"
+              ]
+            },
+            "description": "Get performance by subject for bar chart"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Today's Attendance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/todays-attendance",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "todays-attendance"
+              ]
+            },
+            "description": "Get today's attendance overview (pie chart data: present, absent, late)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Recent Activity",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/recent-activity?limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "recent-activity"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get recent activities (student enrollment, exam published, meetings, etc.)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Class Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/class-statistics?page=1&pageSize=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "class-statistics"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get statistics for all classes (total students, attendance by status)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Teacher Performance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/teacher-performance?page=1&pageSize=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "teacher-performance"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get teacher performance metrics (classes, subjects, attendance, classes conducted)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Student Performance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/student-performance?page=1&pageSize=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "student-performance"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "classId",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get student performance metrics (attendance, average grade, performance level)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Fee Collection Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/fee-collection",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "fee-collection"
+              ]
+            },
+            "description": "Get fee collection summary (expected, collected, pending amounts)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Exam Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/exam-summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "exam-summary"
+              ]
+            },
+            "description": "Get exam summary (total exams, upcoming, completed, average score)"
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }

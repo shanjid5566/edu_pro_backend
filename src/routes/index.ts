@@ -7,6 +7,9 @@ import attendanceRoutes from "./attendance.routes.js";
 import examRoutes from "./exam.routes.js";
 import classRoutes from "./class.routes.js";
 import parentRoutes from "./parent.routes.js";
+import teacherRoutes from "./teacher.routes.js";
+import studentRoutes from "./student.routes.js";
+import dashboardRoutes from "./dashboard.routes.js";
 // import userRoutes from "./user.routes.js";
 
 const router = Router();
@@ -16,6 +19,9 @@ router.use("/health", healthRoutes);
 
 // Auth routes
 router.use("/auth", authRoutes);
+
+// Dashboard routes (must be before other routes for proper routing)
+router.use("/dashboard", dashboardRoutes);
 
 // Settings routes
 router.use("/settings", settingRoutes);
@@ -35,13 +41,14 @@ router.use("/classes", classRoutes);
 // Parents routes
 router.use("/parents", parentRoutes);
 
+// Teachers routes
+router.use("/teachers", teacherRoutes);
+
+// Students routes
+router.use("/students", studentRoutes);
+
 // router.use("/users", userRoutes);
-// router.use("/students", studentRoutes);
-// router.use("/teachers", teacherRoutes);
-// router.use("/classes", classRoutes);
 // router.use("/subjects", subjectRoutes);
-// router.use("/attendance", attendanceRoutes);
-// router.use("/exams", examRoutes);
 // router.use("/fees", feeRoutes);
 // etc...
 
