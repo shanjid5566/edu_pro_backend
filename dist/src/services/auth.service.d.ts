@@ -16,9 +16,9 @@ export declare class AuthService {
             profile: {
                 id: string;
                 userId: string;
-                address: string | null;
                 dateOfBirth: Date | null;
                 gender: import("../../generated/prisma/enums.js").Gender | null;
+                address: string | null;
                 bio: string | null;
             } | null;
             id: string;

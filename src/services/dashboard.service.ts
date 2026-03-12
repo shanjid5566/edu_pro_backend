@@ -161,9 +161,9 @@ export class DashboardService {
       },
     });
 
-    const present = attendanceRecords.filter((a) => a.status === "present").length;
-    const absent = attendanceRecords.filter((a) => a.status === "absent").length;
-    const late = attendanceRecords.filter((a) => a.status === "late").length;
+    const present = attendanceRecords.filter((a) => a.status === "PRESENT").length;
+    const absent = attendanceRecords.filter((a) => a.status === "ABSENT").length;
+    const late = attendanceRecords.filter((a) => a.status === "LATE").length;
     const total = attendanceRecords.length || 1; // Avoid division by zero
 
     return {
@@ -231,7 +231,7 @@ export class DashboardService {
     const recentExams = await db.exam.findMany({
       take: limit,
       orderBy: {
-        createdAt: "desc",
+        date: "desc",
       },
       include: {
         class: {
@@ -249,7 +249,7 @@ export class DashboardService {
         type: "exam_published",
         title: `Exam results published for ${exam.name}`,
         description: `Class ${exam.class.name}`,
-        timestamp: exam.createdAt,
+        timestamp: exam.date,
         metadata: {
           classId: exam.classId,
           className: exam.class.name,
@@ -264,7 +264,7 @@ export class DashboardService {
         createdAt: "desc",
       },
       include: {
-        user: {
+        author: {
           select: {
             id: true,
             name: true,
@@ -279,12 +279,12 @@ export class DashboardService {
         id: `notice_${notice.id}`,
         type: "notice_posted",
         title: notice.title,
-        description: notice.description || "Notice posted",
+        description: notice.message || "Notice posted",
         timestamp: notice.createdAt,
         relatedUser: {
-          id: notice.user.id,
-          name: notice.user.name,
-          avatar: notice.user.avatar || undefined,
+          id: notice.author.id,
+          name: notice.author.name,
+          avatar: notice.author.avatar || undefined,
         },
       });
     });
@@ -329,9 +329,9 @@ export class DashboardService {
 
     const data = classes.map((classData) => {
       const todayAttendance = classData.attendances;
-      const present = todayAttendance.filter((a) => a.status === "present").length;
-      const absent = todayAttendance.filter((a) => a.status === "absent").length;
-      const late = todayAttendance.filter((a) => a.status === "late").length;
+      const present = todayAttendance.filter((a) => a.status === "PRESENT").length;
+      const absent = todayAttendance.filter((a) => a.status === "ABSENT").length;
+      const late = todayAttendance.filter((a) => a.status === "LATE").length;
       const totalNotified = todayAttendance.length || 1;
 
       return {
@@ -438,8 +438,8 @@ export class DashboardService {
           },
           examResults: {
             select: {
-              marks: true,
-              totalMarks: true,
+              marksObtained: true,
+              grade: true,
             },
           },
           attendances: {
@@ -462,7 +462,7 @@ export class DashboardService {
       let averageGrade = "N/A";
       let totalMarks = 0;
       if (student.examResults.length > 0) {
-        const avgScore = student.examResults.reduce((sum, r) => sum + r.marks, 0) / student.examResults.length;
+        const avgScore = student.examResults.reduce((sum, r) => sum + r.marksObtained, 0) / student.examResults.length;
         if (avgScore >= 90) averageGrade = "A";
         else if (avgScore >= 80) averageGrade = "B";
         else if (avgScore >= 70) averageGrade = "C";
@@ -472,7 +472,7 @@ export class DashboardService {
       }
 
       // Calculate attendance
-      const presentDays = student.attendances.filter((a) => a.status === "present").length;
+      const presentDays = student.attendances.filter((a) => a.status === "PRESENT").length;
       const attendance = Math.round((presentDays / Math.max(student.attendances.length, 1)) * 100);
 
       // Determine performance level
@@ -509,7 +509,7 @@ export class DashboardService {
   async getFeeCollectionSummary(): Promise<FeeCollectionSummary> {
     const feePayments = await db.feePayment.findMany({
       select: {
-        amount: true,
+        amountPaid: true,
         status: true,
       },
     });
@@ -523,8 +523,8 @@ export class DashboardService {
     const totalStudents = await db.student.count();
     const totalExpected = totalStudents * (feeStructures[0]?.amount || 0);
     const totalCollected = feePayments
-      .filter((p) => p.status === "completed")
-      .reduce((sum, p) => sum + p.amount, 0);
+      .filter((p) => p.status === "PAID")
+      .reduce((sum, p) => sum + p.amountPaid, 0);
     const totalPending = totalExpected - totalCollected;
 
     return {
@@ -546,14 +546,14 @@ export class DashboardService {
       db.exam.count(),
       db.exam.count({
         where: {
-          examDate: {
+          date: {
             gt: now,
           },
         },
       }),
       db.exam.count({
         where: {
-          examDate: {
+          date: {
             lte: now,
           },
         },

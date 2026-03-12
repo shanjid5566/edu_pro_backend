@@ -252,7 +252,7 @@ export class SettingController {
     try {
       const { key } = req.params;
 
-      const setting = await settingService.getSettingByKey(key);
+      const setting = await settingService.getSettingByKey(Array.isArray(key) ? key[0] : key);
       return ApiResponse.success(res, setting, "Setting retrieved successfully");
     } catch (error) {
       next(error);
