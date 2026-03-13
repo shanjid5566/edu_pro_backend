@@ -65,6 +65,16 @@ export declare class TeacherController {
      * Get teacher statistics
      */
     getTeacherStats(req: Request, res: Response): Promise<void>;
+    /**
+     * GET /api/v1/teachers/me/classes
+     * Get classes assigned to authenticated teacher
+     */
+    getMyClasses(req: Request, res: Response): Promise<void>;
+    /**
+     * GET /api/v1/teachers/me/schedule
+     * Get schedule for authenticated teacher
+     */
+    getMySchedule(req: Request, res: Response): Promise<void>;
 }
 export declare const teacherController: TeacherController;
 //# sourceMappingURL=teacher.controller.d.ts.map

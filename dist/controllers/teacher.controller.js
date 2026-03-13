@@ -318,6 +318,61 @@ export class TeacherController {
             });
         }
     }
+    /**
+     * GET /api/v1/teachers/me/classes
+     * Get classes assigned to authenticated teacher
+     */
+    async getMyClasses(req, res) {
+        try {
+            if (!req.user?.id) {
+                throw new ValidationError("User authentication required");
+            }
+            const data = await teacherService.getTeacherClasses(req.user.id);
+            res.json({
+                success: true,
+                message: "Teacher classes retrieved successfully",
+                data,
+            });
+        }
+        catch (error) {
+            const status = error.statusCode || 500;
+            res.status(status).json({
+                success: false,
+                message: error.message || "Failed to retrieve teacher classes",
+                error: error.message,
+            });
+        }
+    }
+    /**
+     * GET /api/v1/teachers/me/schedule
+     * Get schedule for authenticated teacher
+     */
+    async getMySchedule(req, res) {
+        try {
+            if (!req.user?.id) {
+                throw new ValidationError("User authentication required");
+            }
+            const dateParam = String(Array.isArray(req.query.date) ? req.query.date[0] : req.query.date || "");
+            const parsedDate = dateParam ? new Date(dateParam) : undefined;
+            if (parsedDate && Number.isNaN(parsedDate.getTime())) {
+                throw new ValidationError("Invalid date format. Use YYYY-MM-DD");
+            }
+            const data = await teacherService.getTeacherSchedule(req.user.id, parsedDate);
+            res.json({
+                success: true,
+                message: "Teacher schedule retrieved successfully",
+                data,
+            });
+        }
+        catch (error) {
+            const status = error.statusCode || 500;
+            res.status(status).json({
+                success: false,
+                message: error.message || "Failed to retrieve teacher schedule",
+                error: error.message,
+            });
+        }
+    }
 }
 export const teacherController = new TeacherController();
 //# sourceMappingURL=teacher.controller.js.map

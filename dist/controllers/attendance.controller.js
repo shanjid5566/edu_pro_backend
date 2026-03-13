@@ -1,5 +1,5 @@
 import { attendanceService } from "../services/attendance.service.js";
-import { ValidationError } from "../utils/errors.js";
+import { ValidationError, BadRequestError } from "../utils/errors.js";
 import { buildCsv } from "../utils/csv.js";
 export class AttendanceController {
     /**
@@ -438,6 +438,116 @@ export class AttendanceController {
         catch (error) {
             const status = error.statusCode || 500;
             const message = error.message || "Failed to retrieve student percentage";
+            res.status(status).json({
+                success: false,
+                message,
+                error: error.message,
+            });
+        }
+    }
+    /**
+     * GET /api/v1/attendance/teacher/sheet
+     * Get teacher attendance sheet for a class/date
+     */
+    async getTeacherAttendanceSheet(req, res) {
+        try {
+            const userId = req.user?.id;
+            if (!userId) {
+                throw new ValidationError("User not authenticated");
+            }
+            const classId = String(Array.isArray(req.query.classId) ? req.query.classId[0] : req.query.classId || "");
+            const dateParam = String(Array.isArray(req.query.date) ? req.query.date[0] : req.query.date || "");
+            if (!classId) {
+                throw new BadRequestError("classId is required");
+            }
+            let date;
+            if (dateParam) {
+                date = new Date(dateParam);
+                if (isNaN(date.getTime())) {
+                    throw new ValidationError("Invalid date format");
+                }
+            }
+            const sheet = await attendanceService.getTeacherAttendanceSheet(userId, classId, date);
+            res.json({
+                success: true,
+                message: "Teacher attendance sheet retrieved successfully",
+                data: sheet,
+            });
+        }
+        catch (error) {
+            const status = error.statusCode || 500;
+            const message = error.message || "Failed to retrieve teacher attendance sheet";
+            res.status(status).json({
+                success: false,
+                message,
+                error: error.message,
+            });
+        }
+    }
+    /**
+     * POST /api/v1/attendance/teacher/sheet
+     * Save teacher attendance sheet for a class/date
+     */
+    async saveTeacherAttendanceSheet(req, res) {
+        try {
+            const userId = req.user?.id;
+            if (!userId) {
+                throw new ValidationError("User not authenticated");
+            }
+            const { classId, date, attendances } = req.body;
+            if (!classId) {
+                throw new BadRequestError("classId is required");
+            }
+            if (!date) {
+                throw new BadRequestError("date is required");
+            }
+            if (!Array.isArray(attendances)) {
+                throw new BadRequestError("attendances array is required");
+            }
+            const parsedDate = new Date(date);
+            if (isNaN(parsedDate.getTime())) {
+                throw new ValidationError("Invalid date format");
+            }
+            const result = await attendanceService.saveTeacherAttendanceSheet(userId, classId, parsedDate, attendances);
+            res.json({
+                success: true,
+                message: "Teacher attendance sheet saved successfully",
+                data: result,
+            });
+        }
+        catch (error) {
+            const status = error.statusCode || 500;
+            const message = error.message || "Failed to save teacher attendance sheet";
+            res.status(status).json({
+                success: false,
+                message,
+                error: error.message,
+            });
+        }
+    }
+    /**
+     * GET /api/v1/attendance/teacher/recent
+     * Get teacher recent attendance summary
+     */
+    async getTeacherRecentAttendance(req, res) {
+        try {
+            const userId = req.user?.id;
+            if (!userId) {
+                throw new ValidationError("User not authenticated");
+            }
+            const limitParam = String(Array.isArray(req.query.limit) ? req.query.limit[0] : req.query.limit || "5");
+            const limit = parseInt(limitParam, 10);
+            const safeLimit = Number.isNaN(limit) ? 5 : Math.max(1, Math.min(limit, 50));
+            const records = await attendanceService.getTeacherRecentAttendance(userId, safeLimit);
+            res.json({
+                success: true,
+                message: "Teacher recent attendance retrieved successfully",
+                data: records,
+            });
+        }
+        catch (error) {
+            const status = error.statusCode || 500;
+            const message = error.message || "Failed to retrieve teacher recent attendance";
             res.status(status).json({
                 success: false,
                 message,

@@ -1,5 +1,6 @@
 import { db } from "../config/database.config.js";
 import { BadRequestError, NotFoundError } from "../utils/errors.js";
+import { teacherService } from "./teacher.service.js";
 export class ExamService {
     /**
      * Create a new exam
@@ -366,6 +367,77 @@ export class ExamService {
             throw new BadRequestError("Search query cannot be empty");
         }
         return this.getExams(page, pageSize, undefined, undefined, undefined, undefined, query);
+    }
+    /**
+     * Get exams visible to a teacher (limited to assigned class-subject pairs)
+     */
+    async getTeacherExams(userId, page = 1, pageSize = 10, status, classId, subjectId) {
+        const teacher = await teacherService.getTeacherByUserId(userId);
+        const classIds = teacher.classes.map((tc) => tc.classId);
+        const subjectIds = teacher.subjects.map((ts) => ts.subjectId);
+        const allowedClassIds = classId ? [classId].filter((id) => classIds.includes(id)) : classIds;
+        const allowedSubjectIds = subjectId ? [subjectId].filter((id) => subjectIds.includes(id)) : subjectIds;
+        const result = await this.getExams(page, pageSize, status, allowedClassIds[0] && classId ? classId : undefined, allowedSubjectIds[0] && subjectId ? subjectId : undefined);
+        const exams = result.exams.filter((exam) => classIds.includes(exam.classId) && subjectIds.includes(exam.subjectId));
+        return {
+            exams,
+            pagination: result.pagination,
+        };
+    }
+    /**
+     * Create exam by teacher for assigned class and subject only
+     */
+    async createTeacherExam(userId, input) {
+        const teacher = await teacherService.getTeacherByUserId(userId);
+        const isClassAllowed = teacher.classes.some((tc) => tc.classId === input.classId);
+        const isSubjectAllowed = teacher.subjects.some((ts) => ts.subjectId === input.subjectId);
+        if (!isClassAllowed || !isSubjectAllowed) {
+            throw new BadRequestError("You can create exams only for your assigned classes and subjects");
+        }
+        return this.createExam(input);
+    }
+    /**
+     * Upload question paper for teacher-owned exam
+     */
+    async uploadTeacherQuestionPaper(userId, examId, fileUrl) {
+        if (!fileUrl || !fileUrl.trim()) {
+            throw new BadRequestError("fileUrl is required");
+        }
+        const teacher = await teacherService.getTeacherByUserId(userId);
+        const exam = await db.exam.findUnique({ where: { id: examId } });
+        if (!exam) {
+            throw new NotFoundError("Exam not found");
+        }
+        const isClassAllowed = teacher.classes.some((tc) => tc.classId === exam.classId);
+        const isSubjectAllowed = teacher.subjects.some((ts) => ts.subjectId === exam.subjectId);
+        if (!isClassAllowed || !isSubjectAllowed) {
+            throw new BadRequestError("You can upload question papers only for your assigned class-subject exams");
+        }
+        return db.questionPaper.create({
+            data: {
+                examId,
+                teacherId: teacher.id,
+                fileUrl: fileUrl.trim(),
+                status: "PENDING",
+            },
+            include: {
+                exam: {
+                    include: {
+                        class: {
+                            select: {
+                                name: true,
+                                section: true,
+                            },
+                        },
+                        subject: {
+                            select: {
+                                name: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
     }
 }
 export const examService = new ExamService();

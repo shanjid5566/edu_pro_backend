@@ -4,7 +4,7 @@
  */
 import { Router } from "express";
 import { teacherController } from "../controllers/teacher.controller.js";
-import { verifyToken } from "../middlewares/auth.middleware.js";
+import { verifyToken, requireRole } from "../middlewares/auth.middleware.js";
 const router = Router();
 // Apply authentication middleware to all routes
 router.use(verifyToken);
@@ -14,7 +14,7 @@ router.use(verifyToken);
  * @desc    Get all teachers with pagination and filtering
  * @query   page, pageSize, search, department
  */
-router.get("/", (req, res) => {
+router.get("/", requireRole("ADMIN", "admin"), (req, res) => {
     teacherController.getTeachers(req, res);
 });
 /**
@@ -23,7 +23,7 @@ router.get("/", (req, res) => {
  * @desc    Create new teacher
  * @body    { name, email, password, phone, department, subjects[], classes[], joinDate, avatar }
  */
-router.post("/", (req, res) => {
+router.post("/", requireRole("ADMIN", "admin"), (req, res) => {
     teacherController.createTeacher(req, res);
 });
 /**
@@ -32,8 +32,14 @@ router.post("/", (req, res) => {
  * @desc    Export teachers as CSV with filters
  * @query   search, department, status
  */
-router.get("/export", (req, res) => {
+router.get("/export", requireRole("ADMIN", "admin"), (req, res) => {
     teacherController.exportTeachers(req, res);
+});
+router.get("/me/classes", requireRole("TEACHER", "teacher"), (req, res) => {
+    teacherController.getMyClasses(req, res);
+});
+router.get("/me/schedule", requireRole("TEACHER", "teacher"), (req, res) => {
+    teacherController.getMySchedule(req, res);
 });
 /**
  * @route   GET /api/v1/teachers/:id
@@ -57,7 +63,7 @@ router.get("/:id/stats", (req, res) => {
  * @desc    Update teacher information
  * @body    { name, email, phone, department, subjects[], classes[], status, avatar }
  */
-router.put("/:id", (req, res) => {
+router.put("/:id", requireRole("ADMIN", "admin"), (req, res) => {
     teacherController.updateTeacher(req, res);
 });
 /**
@@ -65,7 +71,7 @@ router.put("/:id", (req, res) => {
  * @access  Private (Admin)
  * @desc    Delete teacher
  */
-router.delete("/:id", (req, res) => {
+router.delete("/:id", requireRole("ADMIN", "admin"), (req, res) => {
     teacherController.deleteTeacher(req, res);
 });
 /**
@@ -74,7 +80,7 @@ router.delete("/:id", (req, res) => {
  * @desc    Assign subjects to teacher
  * @body    { subjectIds: string[] }
  */
-router.post("/:id/assign-subjects", (req, res) => {
+router.post("/:id/assign-subjects", requireRole("ADMIN", "admin"), (req, res) => {
     teacherController.assignSubjects(req, res);
 });
 /**
@@ -83,7 +89,7 @@ router.post("/:id/assign-subjects", (req, res) => {
  * @desc    Assign classes to teacher
  * @body    { classIds: string[] }
  */
-router.post("/:id/assign-classes", (req, res) => {
+router.post("/:id/assign-classes", requireRole("ADMIN", "admin"), (req, res) => {
     teacherController.assignClasses(req, res);
 });
 export default router;

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { classController } from "../controllers/class.controller.js";
-import { verifyToken } from "../middlewares/auth.middleware.js";
+import { verifyToken, requireRole } from "../middlewares/auth.middleware.js";
 const router = Router();
 /**
  * @swagger
@@ -165,7 +165,7 @@ router.get("/:id/students/count", verifyToken, (req, res) => classController.get
  *       201:
  *         description: Class created successfully
  */
-router.post("/", verifyToken, (req, res) => classController.createClass(req, res));
+router.post("/", verifyToken, requireRole("ADMIN", "admin"), (req, res) => classController.createClass(req, res));
 /**
  * @swagger
  * /api/v1/classes/bulk:
@@ -206,7 +206,7 @@ router.post("/", verifyToken, (req, res) => classController.createClass(req, res
  *       201:
  *         description: Bulk classes created successfully
  */
-router.post("/bulk", verifyToken, (req, res) => classController.bulkCreateClasses(req, res));
+router.post("/bulk", verifyToken, requireRole("ADMIN", "admin"), (req, res) => classController.bulkCreateClasses(req, res));
 /**
  * @swagger
  * /api/v1/classes/{id}:
@@ -245,7 +245,7 @@ router.post("/bulk", verifyToken, (req, res) => classController.bulkCreateClasse
  *       404:
  *         description: Class not found
  */
-router.put("/:id", verifyToken, (req, res) => classController.updateClass(req, res));
+router.put("/:id", verifyToken, requireRole("ADMIN", "admin"), (req, res) => classController.updateClass(req, res));
 /**
  * @swagger
  * /api/v1/classes/{id}/subjects:
@@ -281,7 +281,7 @@ router.put("/:id", verifyToken, (req, res) => classController.updateClass(req, r
  *       200:
  *         description: Subjects assigned successfully
  */
-router.post("/:id/subjects", verifyToken, (req, res) => classController.assignSubjects(req, res));
+router.post("/:id/subjects", verifyToken, requireRole("ADMIN", "admin"), (req, res) => classController.assignSubjects(req, res));
 /**
  * @swagger
  * /api/v1/classes/{id}:
@@ -305,6 +305,6 @@ router.post("/:id/subjects", verifyToken, (req, res) => classController.assignSu
  *       404:
  *         description: Class not found
  */
-router.delete("/:id", verifyToken, (req, res) => classController.deleteClass(req, res));
+router.delete("/:id", verifyToken, requireRole("ADMIN", "admin"), (req, res) => classController.deleteClass(req, res));
 export default router;
 //# sourceMappingURL=class.routes.js.map

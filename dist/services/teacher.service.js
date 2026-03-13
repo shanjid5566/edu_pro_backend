@@ -160,6 +160,114 @@ export class TeacherService {
         };
     }
     /**
+     * Get teacher profile by authenticated user ID
+     */
+    async getTeacherByUserId(userId) {
+        const teacher = await db.teacher.findUnique({
+            where: { userId },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+                classes: {
+                    include: {
+                        class: {
+                            include: {
+                                students: {
+                                    select: {
+                                        id: true,
+                                    },
+                                },
+                                subjects: {
+                                    include: {
+                                        subject: {
+                                            select: {
+                                                id: true,
+                                                name: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                subjects: {
+                    include: {
+                        subject: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        if (!teacher) {
+            throw new NotFoundError("Teacher profile not found for this user");
+        }
+        return teacher;
+    }
+    /**
+     * Get classes assigned to authenticated teacher
+     */
+    async getTeacherClasses(userId) {
+        const teacher = await this.getTeacherByUserId(userId);
+        const classes = teacher.classes.map((tc) => ({
+            classId: tc.classId,
+            className: tc.class.name,
+            section: tc.class.section,
+            subjects: tc.class.subjects.map((cs) => cs.subject.name),
+            studentCount: tc.class.students.length,
+        }));
+        return {
+            classes,
+            total: classes.length,
+        };
+    }
+    /**
+     * Get daily schedule for authenticated teacher
+     */
+    async getTeacherSchedule(userId, date) {
+        const teacher = await this.getTeacherByUserId(userId);
+        const selectedDate = date ?? new Date();
+        const slots = ["8:00", "9:00", "10:00", "11:00", "1:00"];
+        const classSubjectPairs = [];
+        teacher.classes.forEach((tc, index) => {
+            const subjects = tc.class.subjects.length
+                ? tc.class.subjects.map((cs) => cs.subject.name)
+                : ["General"];
+            subjects.forEach((subjectName) => {
+                classSubjectPairs.push({
+                    classId: tc.classId,
+                    className: tc.class.name,
+                    section: tc.class.section,
+                    subjectName,
+                    studentCount: tc.class.students.length,
+                    room: `Room ${201 + index}`,
+                });
+            });
+        });
+        const schedule = classSubjectPairs.slice(0, slots.length).map((item, index) => ({
+            time: slots[index],
+            classId: item.classId,
+            className: item.className,
+            section: item.section,
+            subject: item.subjectName,
+            room: item.room,
+            studentCount: item.studentCount,
+        }));
+        return {
+            date: selectedDate,
+            schedule,
+        };
+    }
+    /**
      * Create new teacher
      */
     async createTeacher(input) {

@@ -4,7 +4,7 @@
  */
 import { Router } from "express";
 import { studentController } from "../controllers/student.controller.js";
-import { verifyToken } from "../middlewares/auth.middleware.js";
+import { verifyToken, requireRole } from "../middlewares/auth.middleware.js";
 const router = Router();
 // Apply authentication middleware to all routes
 router.use(verifyToken);
@@ -14,7 +14,7 @@ router.use(verifyToken);
  * @desc    Get all students with pagination and filtering
  * @query   page, pageSize, search, classId, section
  */
-router.get("/", (req, res) => {
+router.get("/", requireRole("ADMIN", "admin"), (req, res) => {
     studentController.getStudents(req, res);
 });
 /**
@@ -23,7 +23,7 @@ router.get("/", (req, res) => {
  * @desc    Create new student
  * @body    { name, email, password, phone, classId, section, rollNumber, dateOfBirth, gender, address, parentName, parentEmail }
  */
-router.post("/", (req, res) => {
+router.post("/", requireRole("ADMIN", "admin"), (req, res) => {
     studentController.createStudent(req, res);
 });
 /**
@@ -32,7 +32,7 @@ router.post("/", (req, res) => {
  * @desc    Export students as CSV with filters
  * @query   search, classId, className, class, section, status
  */
-router.get("/export", (req, res) => {
+router.get("/export", requireRole("ADMIN", "admin"), (req, res) => {
     studentController.exportStudents(req, res);
 });
 /**
@@ -65,7 +65,7 @@ router.get("/:id/stats", (req, res) => {
  * @desc    Update student information
  * @body    { name, phone, classId, section, rollNumber, dateOfBirth, gender, address, status }
  */
-router.put("/:id", (req, res) => {
+router.put("/:id", requireRole("ADMIN", "admin"), (req, res) => {
     studentController.updateStudent(req, res);
 });
 /**
@@ -73,7 +73,7 @@ router.put("/:id", (req, res) => {
  * @access  Private (Admin)
  * @desc    Delete student
  */
-router.delete("/:id", (req, res) => {
+router.delete("/:id", requireRole("ADMIN", "admin"), (req, res) => {
     studentController.deleteStudent(req, res);
 });
 export default router;

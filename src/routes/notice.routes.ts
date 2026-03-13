@@ -235,7 +235,7 @@ router.get(
  *   post:
  *     tags: [Notices]
  *     summary: Create new notice
- *     description: Create a new notice (admin only)
+ *     description: Create a new notice (admin and teacher)
  *     security:
  *       - BearerAuth: []
  *     requestBody:
@@ -279,7 +279,7 @@ router.get(
 router.post(
   "/",
   verifyToken,
-  requireRole("admin"),
+  requireRole("admin", "ADMIN", "teacher", "TEACHER"),
   [
     body("title").notEmpty().trim().withMessage("Title is required"),
     body("message").notEmpty().trim().withMessage("Message is required"),
@@ -342,7 +342,7 @@ router.post(
 router.put(
   "/:id",
   verifyToken,
-  requireRole("admin"),
+  requireRole("ADMIN", "admin"),
   [
     param("id").notEmpty().withMessage("Notice ID is required"),
     body("title").optional().trim().notEmpty().withMessage("Title cannot be empty"),
@@ -399,7 +399,7 @@ router.put(
 router.put(
   "/:id/pin",
   verifyToken,
-  requireRole("admin"),
+  requireRole("ADMIN", "admin"),
   [
     param("id").notEmpty().withMessage("Notice ID is required"),
     body("pinned").isBoolean().withMessage("Pinned must be a boolean value"),
@@ -438,7 +438,7 @@ router.put(
 router.delete(
   "/:id",
   verifyToken,
-  requireRole("admin"),
+  requireRole("ADMIN", "admin"),
   [
     param("id").notEmpty().withMessage("Notice ID is required"),
   ],

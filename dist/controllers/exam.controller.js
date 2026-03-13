@@ -336,6 +336,114 @@ export class ExamController {
             });
         }
     }
+    /**
+     * GET /api/v1/exams/teacher
+     * Get teacher exams with assignment-based filtering
+     */
+    async getTeacherExams(req, res) {
+        try {
+            if (!req.user?.id) {
+                throw new ValidationError("User authentication required");
+            }
+            const pageParam = String(Array.isArray(req.query.page) ? req.query.page[0] : req.query.page || "");
+            const pageSizeParam = String(Array.isArray(req.query.pageSize) ? req.query.pageSize[0] : req.query.pageSize || "");
+            const statusParam = String(Array.isArray(req.query.status) ? req.query.status[0] : req.query.status || "");
+            const classIdParam = String(Array.isArray(req.query.classId) ? req.query.classId[0] : req.query.classId || "");
+            const subjectIdParam = String(Array.isArray(req.query.subjectId) ? req.query.subjectId[0] : req.query.subjectId || "");
+            const page = parseInt(pageParam || "1") || 1;
+            const pageSize = parseInt(pageSizeParam || "10") || 10;
+            if (page < 1)
+                throw new ValidationError("Page must be greater than 0");
+            if (pageSize < 1 || pageSize > 100)
+                throw new ValidationError("PageSize must be between 1 and 100");
+            const data = await examService.getTeacherExams(req.user.id, page, pageSize, statusParam || undefined, classIdParam || undefined, subjectIdParam || undefined);
+            res.json({
+                success: true,
+                message: "Teacher exams retrieved successfully",
+                data,
+            });
+        }
+        catch (error) {
+            const status = error.statusCode || 500;
+            res.status(status).json({
+                success: false,
+                message: error.message || "Failed to retrieve teacher exams",
+                error: error.message,
+            });
+        }
+    }
+    /**
+     * POST /api/v1/exams/teacher
+     * Create exam as teacher for assigned class and subject
+     */
+    async createTeacherExam(req, res) {
+        try {
+            if (!req.user?.id) {
+                throw new ValidationError("User authentication required");
+            }
+            const { name, classId, subjectId, date, duration, totalMarks, type, status } = req.body;
+            if (!name || !classId || !subjectId || !date || !duration || !totalMarks || !type) {
+                throw new ValidationError("name, classId, subjectId, date, duration, totalMarks and type are required");
+            }
+            const parsedDate = new Date(date);
+            if (Number.isNaN(parsedDate.getTime())) {
+                throw new ValidationError("Invalid date format. Use YYYY-MM-DD");
+            }
+            const exam = await examService.createTeacherExam(req.user.id, {
+                name,
+                classId,
+                subjectId,
+                date: parsedDate,
+                duration,
+                totalMarks: Number(totalMarks),
+                type,
+                status,
+            });
+            res.status(201).json({
+                success: true,
+                message: "Teacher exam created successfully",
+                data: exam,
+            });
+        }
+        catch (error) {
+            const status = error.statusCode || 500;
+            res.status(status).json({
+                success: false,
+                message: error.message || "Failed to create teacher exam",
+                error: error.message,
+            });
+        }
+    }
+    /**
+     * POST /api/v1/exams/teacher/:examId/question-paper
+     * Upload question paper as teacher
+     */
+    async uploadTeacherQuestionPaper(req, res) {
+        try {
+            if (!req.user?.id) {
+                throw new ValidationError("User authentication required");
+            }
+            const examId = String(req.params.examId || "");
+            const { fileUrl } = req.body;
+            if (!examId || !fileUrl) {
+                throw new ValidationError("examId and fileUrl are required");
+            }
+            const result = await examService.uploadTeacherQuestionPaper(req.user.id, examId, String(fileUrl));
+            res.status(201).json({
+                success: true,
+                message: "Question paper uploaded successfully",
+                data: result,
+            });
+        }
+        catch (error) {
+            const status = error.statusCode || 500;
+            res.status(status).json({
+                success: false,
+                message: error.message || "Failed to upload question paper",
+                error: error.message,
+            });
+        }
+    }
 }
 export const examController = new ExamController();
 //# sourceMappingURL=exam.controller.js.map

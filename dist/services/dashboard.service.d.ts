@@ -4,6 +4,7 @@
  */
 import { AdminDashboardResponse, DashboardOverview, AttendanceTrendData, PerformanceBySubject, TodaysAttendance, RecentActivityItem, ClassStatisticsResponse, TeacherPerformanceResponse, StudentPerformanceResponse, FeeCollectionSummary, ExamSummary } from "../types/dashboard.dto.js";
 export declare class DashboardService {
+    private getMonthLabel;
     /**
      * Get complete admin dashboard data
      */
@@ -48,6 +49,7 @@ export declare class DashboardService {
      * Get exam summary
      */
     getExamSummary(): Promise<ExamSummary>;
+    getTeacherDashboard(userId: string): Promise<any>;
 }
 export declare const dashboardService: DashboardService;
 //# sourceMappingURL=dashboard.service.d.ts.map

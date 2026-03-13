@@ -51,6 +51,21 @@ export declare class AttendanceService {
         lateDays: number;
         attendancePercentage: number;
     }>;
+    /**
+     * Get attendance sheet for a teacher's assigned class and date
+     */
+    getTeacherAttendanceSheet(userId: string, classId: string, date?: Date): Promise<any>;
+    /**
+     * Save attendance sheet for a teacher's assigned class/date
+     */
+    saveTeacherAttendanceSheet(userId: string, classId: string, date: Date, attendances: Array<{
+        studentId: string;
+        status: "PRESENT" | "ABSENT" | "LATE";
+    }>): Promise<any>;
+    /**
+     * Get teacher recent attendance summaries
+     */
+    getTeacherRecentAttendance(userId: string, limit?: number): Promise<any>;
 }
 export declare const attendanceService: AttendanceService;
 //# sourceMappingURL=attendance.service.d.ts.map

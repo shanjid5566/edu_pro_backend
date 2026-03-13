@@ -71,6 +71,21 @@ export declare class AttendanceController {
      * Get student attendance percentage
      */
     getStudentPercentage(req: Request, res: Response): Promise<void>;
+    /**
+     * GET /api/v1/attendance/teacher/sheet
+     * Get teacher attendance sheet for a class/date
+     */
+    getTeacherAttendanceSheet(req: Request, res: Response): Promise<void>;
+    /**
+     * POST /api/v1/attendance/teacher/sheet
+     * Save teacher attendance sheet for a class/date
+     */
+    saveTeacherAttendanceSheet(req: Request, res: Response): Promise<void>;
+    /**
+     * GET /api/v1/attendance/teacher/recent
+     * Get teacher recent attendance summary
+     */
+    getTeacherRecentAttendance(req: Request, res: Response): Promise<void>;
 }
 export declare const attendanceController: AttendanceController;
 //# sourceMappingURL=attendance.controller.d.ts.map

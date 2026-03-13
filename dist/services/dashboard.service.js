@@ -3,7 +3,11 @@
  * Business logic for dashboard data aggregation and statistics
  */
 import { db } from "../config/database.config.js";
+import { teacherService } from "./teacher.service.js";
 export class DashboardService {
+    getMonthLabel(date) {
+        return date.toLocaleString("en-US", { month: "short" });
+    }
     /**
      * Get complete admin dashboard data
      */
@@ -503,6 +507,92 @@ export class DashboardService {
             upcomingExams,
             completedExams,
             averageScore,
+        };
+    }
+    async getTeacherDashboard(userId) {
+        const teacher = await teacherService.getTeacherByUserId(userId);
+        const classIds = teacher.classes.map((tc) => tc.classId);
+        const totalStudents = classIds.length
+            ? await db.student.count({ where: { classId: { in: classIds } } })
+            : 0;
+        const examResults = classIds.length
+            ? await db.examResult.findMany({
+                where: {
+                    exam: {
+                        classId: { in: classIds },
+                    },
+                },
+                select: {
+                    marksObtained: true,
+                },
+            })
+            : [];
+        const avgPerformance = examResults.length
+            ? Math.round(examResults.reduce((sum, r) => sum + r.marksObtained, 0) /
+                examResults.length)
+            : 0;
+        const classAttendance = [];
+        const now = new Date();
+        for (let i = 5; i >= 0; i--) {
+            const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 0, 23, 59, 59, 999);
+            const records = classIds.length
+                ? await db.attendance.findMany({
+                    where: {
+                        classId: { in: classIds },
+                        date: {
+                            gte: start,
+                            lte: end,
+                        },
+                    },
+                    select: {
+                        status: true,
+                    },
+                })
+                : [];
+            const present = records.filter((a) => a.status === "PRESENT").length;
+            const percentage = records.length > 0 ? Math.round((present / records.length) * 100) : 0;
+            classAttendance.push({
+                month: this.getMonthLabel(start),
+                percentage,
+            });
+        }
+        const subjectPerformance = await Promise.all(teacher.subjects.map(async (teacherSubject) => {
+            const scores = classIds.length
+                ? await db.examResult.findMany({
+                    where: {
+                        exam: {
+                            classId: { in: classIds },
+                            subjectId: teacherSubject.subject.id,
+                        },
+                    },
+                    select: {
+                        marksObtained: true,
+                    },
+                })
+                : [];
+            const avg = scores.length
+                ? Math.round(scores.reduce((sum, r) => sum + r.marksObtained, 0) /
+                    scores.length)
+                : 0;
+            return {
+                subject: teacherSubject.subject.name,
+                percentage: Math.max(0, Math.min(100, avg)),
+            };
+        }));
+        return {
+            title: "Teacher Dashboard",
+            subtitle: `Welcome back, ${teacher.user.name}! Here's your overview.`,
+            stats: {
+                myClasses: classIds.length,
+                totalStudents,
+                classesTaken: teacher.classesTaken,
+                avgPerformance,
+            },
+            charts: {
+                classAttendance,
+                studentPerformance: subjectPerformance,
+            },
         };
     }
 }

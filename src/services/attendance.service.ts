@@ -12,6 +12,7 @@ import {
   BulkMarkAttendanceInput,
   BulkMarkAttendanceResponse,
 } from "../types/attendance.dto.js";
+import { teacherService } from "./teacher.service.js";
 
 export class AttendanceService {
   /**
@@ -650,6 +651,184 @@ export class AttendanceService {
       lateDays,
       attendancePercentage: totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 0,
     };
+  }
+
+  /**
+   * Get attendance sheet for a teacher's assigned class and date
+   */
+  async getTeacherAttendanceSheet(userId: string, classId: string, date?: Date): Promise<any> {
+    const teacher = await teacherService.getTeacherByUserId(userId);
+
+    const isAssigned = teacher.classes.some((tc: { classId: string }) => tc.classId === classId);
+    if (!isAssigned) {
+      throw new BadRequestError("You are not assigned to this class");
+    }
+
+    const selectedDate = date ? new Date(date) : new Date();
+    selectedDate.setHours(0, 0, 0, 0);
+
+    const classData = await db.class.findUnique({
+      where: { id: classId },
+      include: {
+        students: {
+          include: {
+            user: {
+              select: {
+                name: true,
+              },
+            },
+          },
+          orderBy: {
+            rollNumber: "asc",
+          },
+        },
+      },
+    });
+
+    if (!classData) {
+      throw new NotFoundError("Class not found");
+    }
+
+    const attendance = await db.attendance.findMany({
+      where: {
+        classId,
+        date: selectedDate,
+      },
+      select: {
+        studentId: true,
+        status: true,
+      },
+    });
+
+    const statusMap = new Map(attendance.map((a: { studentId: string; status: string }) => [a.studentId, a.status]));
+
+    const students = classData.students.map(
+      (student: {
+        id: string;
+        rollNumber: string;
+        user: { name: string };
+      }) => ({
+        studentId: student.id,
+        name: student.user.name,
+        rollNumber: student.rollNumber,
+        status: statusMap.get(student.id) ?? null,
+      })
+    );
+
+    const present = students.filter((s: { status: string | null }) => s.status === "PRESENT").length;
+    const absent = students.filter((s: { status: string | null }) => s.status === "ABSENT").length;
+    const late = students.filter((s: { status: string | null }) => s.status === "LATE").length;
+
+    return {
+      classId: classData.id,
+      className: classData.name,
+      section: classData.section,
+      date: selectedDate,
+      summary: {
+        present,
+        absent,
+        late,
+        total: students.length,
+      },
+      students,
+    };
+  }
+
+  /**
+   * Save attendance sheet for a teacher's assigned class/date
+   */
+  async saveTeacherAttendanceSheet(
+    userId: string,
+    classId: string,
+    date: Date,
+    attendances: Array<{ studentId: string; status: "PRESENT" | "ABSENT" | "LATE" }>
+  ): Promise<any> {
+    const teacher = await teacherService.getTeacherByUserId(userId);
+
+    const isAssigned = teacher.classes.some((tc: { classId: string }) => tc.classId === classId);
+    if (!isAssigned) {
+      throw new BadRequestError("You are not assigned to this class");
+    }
+
+    await this.bulkMarkAttendance(
+      {
+        classId,
+        date,
+        attendances,
+      },
+      teacher.id
+    );
+
+    return this.getTeacherAttendanceSheet(userId, classId, date);
+  }
+
+  /**
+   * Get teacher recent attendance summaries
+   */
+  async getTeacherRecentAttendance(userId: string, limit: number = 5): Promise<any> {
+    const teacher = await teacherService.getTeacherByUserId(userId);
+
+    const records = await db.attendance.findMany({
+      where: {
+        markedBy: teacher.id,
+      },
+      include: {
+        class: {
+          select: {
+            id: true,
+            name: true,
+            section: true,
+          },
+        },
+      },
+      orderBy: {
+        date: "desc",
+      },
+      take: Math.max(limit * 20, 20),
+    });
+
+    const grouped = new Map<
+      string,
+      {
+        classId: string;
+        className: string;
+        section: string;
+        date: Date;
+        present: number;
+        absent: number;
+        late: number;
+        total: number;
+      }
+    >();
+
+    records.forEach((record: { class: { id: string; name: string; section: string }; date: Date; status: string }) => {
+      const day = new Date(record.date);
+      day.setHours(0, 0, 0, 0);
+      const key = `${record.class.id}_${day.toISOString()}`;
+
+      if (!grouped.has(key)) {
+        grouped.set(key, {
+          classId: record.class.id,
+          className: record.class.name,
+          section: record.class.section,
+          date: day,
+          present: 0,
+          absent: 0,
+          late: 0,
+          total: 0,
+        });
+      }
+
+      const bucket = grouped.get(key)!;
+      bucket.total += 1;
+      if (record.status === "PRESENT") bucket.present += 1;
+      if (record.status === "ABSENT") bucket.absent += 1;
+      if (record.status === "LATE") bucket.late += 1;
+    });
+
+    return Array.from(grouped.values())
+      .sort((a, b) => b.date.getTime() - a.date.getTime())
+      .slice(0, limit);
   }
 }
 

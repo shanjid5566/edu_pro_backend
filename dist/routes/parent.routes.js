@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { parentController } from "../controllers/parent.controller.js";
-import { verifyToken } from "../middlewares/auth.middleware.js";
+import { verifyToken, requireRole } from "../middlewares/auth.middleware.js";
 const router = Router();
 /**
  * @swagger
@@ -164,7 +164,7 @@ router.get("/:id", verifyToken, (req, res) => parentController.getParentById(req
  *       201:
  *         description: Parent created successfully
  */
-router.post("/", verifyToken, (req, res) => parentController.createParent(req, res));
+router.post("/", verifyToken, requireRole("ADMIN", "admin"), (req, res) => parentController.createParent(req, res));
 /**
  * @swagger
  * /api/v1/parents/bulk:
@@ -207,7 +207,7 @@ router.post("/", verifyToken, (req, res) => parentController.createParent(req, r
  *       201:
  *         description: Bulk parents created successfully
  */
-router.post("/bulk", verifyToken, (req, res) => parentController.bulkCreateParents(req, res));
+router.post("/bulk", verifyToken, requireRole("ADMIN", "admin"), (req, res) => parentController.bulkCreateParents(req, res));
 /**
  * @swagger
  * /api/v1/parents/{id}:
@@ -249,7 +249,7 @@ router.post("/bulk", verifyToken, (req, res) => parentController.bulkCreateParen
  *       404:
  *         description: Parent not found
  */
-router.put("/:id", verifyToken, (req, res) => parentController.updateParent(req, res));
+router.put("/:id", verifyToken, requireRole("ADMIN", "admin"), (req, res) => parentController.updateParent(req, res));
 /**
  * @swagger
  * /api/v1/parents/{id}/students:
@@ -285,7 +285,7 @@ router.put("/:id", verifyToken, (req, res) => parentController.updateParent(req,
  *       200:
  *         description: Students assigned successfully
  */
-router.post("/:id/students", verifyToken, (req, res) => parentController.assignStudents(req, res));
+router.post("/:id/students", verifyToken, requireRole("ADMIN", "admin"), (req, res) => parentController.assignStudents(req, res));
 /**
  * @swagger
  * /api/v1/parents/{id}:
@@ -309,6 +309,6 @@ router.post("/:id/students", verifyToken, (req, res) => parentController.assignS
  *       404:
  *         description: Parent not found
  */
-router.delete("/:id", verifyToken, (req, res) => parentController.deleteParent(req, res));
+router.delete("/:id", verifyToken, requireRole("ADMIN", "admin"), (req, res) => parentController.deleteParent(req, res));
 export default router;
 //# sourceMappingURL=parent.routes.js.map

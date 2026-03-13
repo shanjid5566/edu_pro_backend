@@ -2,7 +2,7 @@
   "info": {
     "name": "EduPro Backend API",
     "_postman_id": "edupro-backend-collection",
-    "description": "EduPro Education Management System API Collection",
+    "description": "EduPro Backend API - Frontend Friendly Collection\n\nQuick Start (Beginner to Pro):\n1) Run login request from Auth folder (Admin/Teacher/Student/Parent).\n2) Save JWT into variable: token.\n3) Use other endpoints by role-tag and folder guide.\n\nRole Legend:\n- [ADMIN]: Only admin token\n- [TEACHER]: Only teacher token\n- [STUDENT]: Only student token\n- [PARENT]: Only parent token\n- [AUTH]: Any logged-in user\n\nPagination Convention:\n- page (starts at 1)\n- pageSize (usually 10, max depends on endpoint)\n\nFilter Convention:\n- search for text query\n- classId/subjectId/status/date range where applicable\n- Keep empty to fetch all",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -27,7 +27,7 @@
       "name": "Health",
       "item": [
         {
-          "name": "Get Health Status",
+          "name": "[PUBLIC] Get Health Status",
           "request": {
             "method": "GET",
             "header": [],
@@ -42,10 +42,11 @@
             },
             "description": "Check server health status with detailed information"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: PUBLIC\nCall: GET {{baseUrl}}/health\nAuth: No token needed.\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Ping",
+          "name": "[PUBLIC] Ping",
           "request": {
             "method": "GET",
             "header": [],
@@ -61,15 +62,17 @@
             },
             "description": "Simple ping endpoint"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: PUBLIC\nCall: GET {{baseUrl}}/health/ping\nAuth: No token needed.\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         }
-      ]
+      ],
+      "description": "Role: Public. Use for API liveness checks before calling secure endpoints."
     },
     {
       "name": "Auth",
       "item": [
         {
-          "name": "Login as Admin",
+          "name": "[PUBLIC] Login as Admin",
           "request": {
             "method": "POST",
             "header": [
@@ -94,10 +97,11 @@
             },
             "description": "User login endpoint for Admin"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: PUBLIC\nCall: POST {{baseUrl}}/auth/login\nAuth: No token needed.\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Login as Teacher",
+          "name": "[PUBLIC] Login as Teacher",
           "request": {
             "method": "POST",
             "header": [
@@ -122,10 +126,11 @@
             },
             "description": "User login endpoint for Teacher"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: PUBLIC\nCall: POST {{baseUrl}}/auth/login\nAuth: No token needed.\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Login as Student",
+          "name": "[PUBLIC] Login as Student",
           "request": {
             "method": "POST",
             "header": [
@@ -150,10 +155,11 @@
             },
             "description": "User login endpoint for Student"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: PUBLIC\nCall: POST {{baseUrl}}/auth/login\nAuth: No token needed.\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Login as Parent",
+          "name": "[PUBLIC] Login as Parent",
           "request": {
             "method": "POST",
             "header": [
@@ -178,7 +184,8 @@
             },
             "description": "User login endpoint for Parent"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: PUBLIC\nCall: POST {{baseUrl}}/auth/login\nAuth: No token needed.\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         }
       ],
       "event": [
@@ -200,13 +207,14 @@
             ]
           }
         }
-      ]
+      ],
+      "description": "Role: Public. Login first and set token variable from response for subsequent calls."
     },
     {
       "name": "Settings",
       "item": [
         {
-          "name": "General Settings - Get",
+          "name": "[PUBLIC] General Settings - Get",
           "request": {
             "method": "GET",
             "header": [
@@ -228,10 +236,11 @@
             },
             "description": "Retrieve general school settings (public endpoint)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: PUBLIC\nCall: GET {{baseUrl}}/settings/general\nAuth: No token needed.\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "General Settings - Update",
+          "name": "[ADMIN] General Settings - Update",
           "request": {
             "method": "PUT",
             "header": [
@@ -262,10 +271,11 @@
             },
             "description": "Update general school settings (admin only)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: PUT {{baseUrl}}/settings/general\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "User Preferences - Get",
+          "name": "[AUTH] User Preferences - Get",
           "request": {
             "method": "GET",
             "header": [
@@ -292,10 +302,11 @@
               ]
             }
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: AUTH\nCall: GET {{baseUrl}}/settings/user/preferences\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "User Preferences - Update",
+          "name": "[AUTH] User Preferences - Update",
           "request": {
             "method": "PUT",
             "header": [
@@ -326,10 +337,11 @@
               ]
             }
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: AUTH\nCall: PUT {{baseUrl}}/settings/user/preferences\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "User Profile - Get",
+          "name": "[AUTH] User Profile - Get",
           "request": {
             "method": "GET",
             "header": [
@@ -356,10 +368,11 @@
               ]
             }
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: AUTH\nCall: GET {{baseUrl}}/settings/user/profile\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "User Profile - Update",
+          "name": "[AUTH] User Profile - Update",
           "request": {
             "method": "PUT",
             "header": [
@@ -390,10 +403,11 @@
               ]
             }
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: AUTH\nCall: PUT {{baseUrl}}/settings/user/profile\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Change Password",
+          "name": "[AUTH] Change Password",
           "request": {
             "method": "POST",
             "header": [
@@ -424,10 +438,11 @@
               ]
             }
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: AUTH\nCall: POST {{baseUrl}}/settings/user/change-password\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Notification Preferences - Update",
+          "name": "[AUTH] Notification Preferences - Update",
           "request": {
             "method": "PUT",
             "header": [
@@ -458,10 +473,11 @@
               ]
             }
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: AUTH\nCall: PUT {{baseUrl}}/settings/user/notifications\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Appearance Settings - Update",
+          "name": "[AUTH] Appearance Settings - Update",
           "request": {
             "method": "PUT",
             "header": [
@@ -492,15 +508,52 @@
               ]
             }
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: AUTH\nCall: PUT {{baseUrl}}/settings/user/appearance\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
+        },
+        {
+          "name": "[AUTH] User Two-Factor - Toggle",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/user/two-factor",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "settings",
+                "user",
+                "two-factor"
+              ]
+            }
+          },
+          "response": [],
+          "description": "Frontend Guide:\nRole: AUTH\nCall: PUT {{baseUrl}}/settings/user/two-factor\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         }
-      ]
+      ],
+      "description": "Role: Mixed. /general and /bulk are admin-focused, /user/* are authenticated-user self settings."
     },
     {
       "name": "Parents",
       "item": [
         {
-          "name": "Get All Parents",
+          "name": "[ADMIN] Get All Parents",
           "request": {
             "method": "GET",
             "header": [
@@ -536,10 +589,11 @@
             },
             "description": "Get all parents with pagination"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/parents?page=1&pageSize=10\nAuth: Bearer {{token}}\nPagination: use page and pageSize query params.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Search Parent by Name",
+          "name": "[ADMIN] Search Parent by Name",
           "request": {
             "method": "GET",
             "header": [
@@ -577,10 +631,11 @@
             },
             "description": "Search parents by name"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/parents/search/John?page=1&pageSize=10\nAuth: Bearer {{token}}\nPagination: use page and pageSize query params.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Get Parent Statistics",
+          "name": "[ADMIN] Get Parent Statistics",
           "request": {
             "method": "GET",
             "header": [
@@ -607,10 +662,11 @@
             },
             "description": "Get parent statistics (total, with/without children)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/parents/stats\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Get Single Parent",
+          "name": "[ADMIN] Get Single Parent",
           "request": {
             "method": "GET",
             "header": [
@@ -637,10 +693,11 @@
             },
             "description": "Get a single parent by ID with associated students"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/parents/550e8400-e29b-41d4-a716-446655440000\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Create Parent (Admin Only)",
+          "name": "[ADMIN] Create Parent (Admin Only)",
           "request": {
             "method": "POST",
             "header": [
@@ -670,10 +727,11 @@
             },
             "description": "Create a new parent account (admin only)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: POST {{baseUrl}}/parents\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Update Parent (Admin Only)",
+          "name": "[ADMIN] Update Parent (Admin Only)",
           "request": {
             "method": "PUT",
             "header": [
@@ -704,10 +762,11 @@
             },
             "description": "Update parent information (admin only)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: PUT {{baseUrl}}/parents/550e8400-e29b-41d4-a716-446655440000\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Delete Parent (Admin Only)",
+          "name": "[ADMIN] Delete Parent (Admin Only)",
           "request": {
             "method": "DELETE",
             "header": [
@@ -729,15 +788,61 @@
             },
             "description": "Delete a parent and their account (admin only)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: DELETE {{baseUrl}}/parents/550e8400-e29b-41d4-a716-446655440000\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
+        },
+        {
+          "name": "[ADMIN] Export Parents CSV",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/parents/export?search=&status=&occupation=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parents",
+                "export"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                },
+                {
+                  "key": "occupation",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/parents/export?search=&status=&occupation=\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: search, status, occupation. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
         }
-      ]
+      ],
+      "description": "Role: Mostly [ADMIN]. Use list endpoint with pagination/filter; use export for CSV."
     },
     {
       "name": "Teachers",
       "item": [
         {
-          "name": "Get All Teachers",
+          "name": "[ADMIN] Get All Teachers",
           "request": {
             "method": "GET",
             "header": [
@@ -783,10 +888,11 @@
             },
             "description": "Get all teachers with pagination and filtering (search, department)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/teachers?page=1&pageSize=10\nAuth: Bearer {{token}}\nPagination: use page and pageSize query params.\nFilters: search, department. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Get Single Teacher",
+          "name": "[ADMIN] Get Single Teacher",
           "request": {
             "method": "GET",
             "header": [
@@ -813,10 +919,11 @@
             },
             "description": "Get a single teacher by ID with statistics"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/teachers/550e8400-e29b-41d4-a716-446655440000\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Create Teacher",
+          "name": "[ADMIN] Create Teacher",
           "request": {
             "method": "POST",
             "header": [
@@ -846,10 +953,11 @@
             },
             "description": "Create a new teacher (admin only)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: POST {{baseUrl}}/teachers\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Update Teacher",
+          "name": "[ADMIN] Update Teacher",
           "request": {
             "method": "PUT",
             "header": [
@@ -880,10 +988,11 @@
             },
             "description": "Update teacher information (admin only)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: PUT {{baseUrl}}/teachers/550e8400-e29b-41d4-a716-446655440000\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Delete Teacher",
+          "name": "[ADMIN] Delete Teacher",
           "request": {
             "method": "DELETE",
             "header": [
@@ -905,10 +1014,11 @@
             },
             "description": "Delete a teacher account (admin only)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: DELETE {{baseUrl}}/teachers/550e8400-e29b-41d4-a716-446655440000\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Get Teacher Statistics",
+          "name": "[ADMIN] Get Teacher Statistics",
           "request": {
             "method": "GET",
             "header": [
@@ -936,10 +1046,11 @@
             },
             "description": "Get teacher statistics (total classes, subjects, attendance, classes conducted)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/teachers/550e8400-e29b-41d4-a716-446655440000/stats\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Assign Subjects to Teacher",
+          "name": "[ADMIN] Assign Subjects to Teacher",
           "request": {
             "method": "POST",
             "header": [
@@ -971,10 +1082,11 @@
             },
             "description": "Assign subjects to a teacher (replaces existing assignments)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: POST {{baseUrl}}/teachers/550e8400-e29b-41d4-a716-446655440000/assign-subjects\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Assign Classes to Teacher",
+          "name": "[ADMIN] Assign Classes to Teacher",
           "request": {
             "method": "POST",
             "header": [
@@ -1006,15 +1118,61 @@
             },
             "description": "Assign classes to a teacher (replaces existing assignments)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: POST {{baseUrl}}/teachers/550e8400-e29b-41d4-a716-446655440000/assign-classes\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
+        },
+        {
+          "name": "[ADMIN] Export Teachers CSV",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/teachers/export?search=&department=&status=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teachers",
+                "export"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "department",
+                  "value": ""
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/teachers/export?search=&department=&status=\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: search, department, status. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
         }
-      ]
+      ],
+      "description": "Role: Mostly [ADMIN]. Includes assignment actions and CSV export."
     },
     {
       "name": "Students",
       "item": [
         {
-          "name": "Get All Students",
+          "name": "[ADMIN] Get All Students",
           "request": {
             "method": "GET",
             "header": [
@@ -1065,10 +1223,11 @@
             },
             "description": "Get all students with pagination and filtering (search, classId, section)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/students?page=1&pageSize=10\nAuth: Bearer {{token}}\nPagination: use page and pageSize query params.\nFilters: search, classId, section. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Get Students by Class",
+          "name": "[ADMIN] Get Students by Class",
           "request": {
             "method": "GET",
             "header": [
@@ -1106,10 +1265,11 @@
             },
             "description": "Get students by specific class ID"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/students/class/class-uuid-1?page=1&pageSize=10\nAuth: Bearer {{token}}\nPagination: use page and pageSize query params.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Get Single Student",
+          "name": "[ADMIN] Get Single Student",
           "request": {
             "method": "GET",
             "header": [
@@ -1136,10 +1296,11 @@
             },
             "description": "Get a single student by ID with statistics"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/students/student-uuid-1\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Create Student",
+          "name": "[ADMIN] Create Student",
           "request": {
             "method": "POST",
             "header": [
@@ -1169,10 +1330,11 @@
             },
             "description": "Create a new student (admin only)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: POST {{baseUrl}}/students\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Update Student",
+          "name": "[ADMIN] Update Student",
           "request": {
             "method": "PUT",
             "header": [
@@ -1203,10 +1365,11 @@
             },
             "description": "Update student information (admin only)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: PUT {{baseUrl}}/students/student-uuid-1\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Delete Student",
+          "name": "[ADMIN] Delete Student",
           "request": {
             "method": "DELETE",
             "header": [
@@ -1228,10 +1391,11 @@
             },
             "description": "Delete a student account (admin only)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: DELETE {{baseUrl}}/students/student-uuid-1\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Get Student Statistics",
+          "name": "[ADMIN] Get Student Statistics",
           "request": {
             "method": "GET",
             "header": [
@@ -1259,200 +1423,685 @@
             },
             "description": "Get student statistics (attendance, average marks, exams, attendance days)"
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/students/student-uuid-1/stats\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
+        },
+        {
+          "name": "[ADMIN] Export Students CSV",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/export?search=&classId=&className=&section=&status=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "export"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "classId",
+                  "value": ""
+                },
+                {
+                  "key": "className",
+                  "value": ""
+                },
+                {
+                  "key": "section",
+                  "value": ""
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/students/export?search=&classId=&className=&section=&status=\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: search, classId, className, section, status. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
         }
-      ]
+      ],
+      "description": "Role: Mostly [ADMIN]. Includes listing, CRUD, statistics, and CSV export."
     },
     {
-      "name": "Dashboard",
+      "name": "Dashboard (Role Based)",
       "item": [
         {
-          "name": "Get Complete Dashboard",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+          "name": "Admin Dashboard (ADMIN)",
+          "description": "Only call with admin token. Analytics and global metrics for admin panel.",
+          "item": [
+            {
+              "name": "[ADMIN] Get Complete Dashboard",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "dashboard"
+                  ]
+                },
+                "description": "Get complete admin dashboard data (overview, charts, activities) Role: ADMIN"
               },
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/dashboard",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "dashboard"
-              ]
+              "response": [],
+              "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/dashboard\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
             },
-            "description": "Get complete admin dashboard data (overview, charts, activities)"
-          },
-          "response": []
+            {
+              "name": "[ADMIN] Get Dashboard Overview",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/overview",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "overview"
+                  ]
+                },
+                "description": "Get dashboard overview statistics (total students, teachers, classes, parents) Role: ADMIN"
+              },
+              "response": [],
+              "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/dashboard/overview\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
+            },
+            {
+              "name": "[ADMIN] Get Attendance Trend",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/attendance-trend",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "attendance-trend"
+                  ]
+                },
+                "description": "Get attendance trend data for line chart (last 6 months) Role: ADMIN"
+              },
+              "response": [],
+              "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/dashboard/attendance-trend\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
+            },
+            {
+              "name": "[ADMIN] Get Performance by Subject",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/performance",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "performance"
+                  ]
+                },
+                "description": "Get performance by subject for bar chart Role: ADMIN"
+              },
+              "response": [],
+              "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/dashboard/performance\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
+            },
+            {
+              "name": "[ADMIN] Get Today's Attendance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/todays-attendance",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "todays-attendance"
+                  ]
+                },
+                "description": "Get today's attendance overview (pie chart data: present, absent, late) Role: ADMIN"
+              },
+              "response": [],
+              "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/dashboard/todays-attendance\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
+            },
+            {
+              "name": "[ADMIN] Get Recent Activity",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/recent-activity?limit=10",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "recent-activity"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                },
+                "description": "Get recent activities (student enrollment, exam published, meetings, etc.) Role: ADMIN"
+              },
+              "response": [],
+              "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/dashboard/recent-activity?limit=10\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: limit. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
+            },
+            {
+              "name": "[ADMIN] Get Class Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/class-statistics?page=1&pageSize=10",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "class-statistics"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    }
+                  ]
+                },
+                "description": "Get statistics for all classes (total students, attendance by status) Role: ADMIN"
+              },
+              "response": [],
+              "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/dashboard/class-statistics?page=1&pageSize=10\nAuth: Bearer {{token}}\nPagination: use page and pageSize query params.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
+            },
+            {
+              "name": "[ADMIN] Get Teacher Performance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/teacher-performance?page=1&pageSize=10",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "teacher-performance"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    }
+                  ]
+                },
+                "description": "Get teacher performance metrics (classes, subjects, attendance, classes conducted) Role: ADMIN"
+              },
+              "response": [],
+              "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/dashboard/teacher-performance?page=1&pageSize=10\nAuth: Bearer {{token}}\nPagination: use page and pageSize query params.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
+            },
+            {
+              "name": "[ADMIN] Get Student Performance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/student-performance?page=1&pageSize=10",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "student-performance"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "classId",
+                      "value": "",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Get student performance metrics (attendance, average grade, performance level) Role: ADMIN"
+              },
+              "response": [],
+              "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/dashboard/student-performance?page=1&pageSize=10\nAuth: Bearer {{token}}\nPagination: use page and pageSize query params.\nFilters: classId. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
+            },
+            {
+              "name": "[ADMIN] Get Fee Collection Summary",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/fee-collection",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "fee-collection"
+                  ]
+                },
+                "description": "Get fee collection summary (expected, collected, pending amounts) Role: ADMIN"
+              },
+              "response": [],
+              "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/dashboard/fee-collection\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
+            },
+            {
+              "name": "[ADMIN] Get Exam Summary",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/exam-summary",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "exam-summary"
+                  ]
+                },
+                "description": "Get exam summary (total exams, upcoming, completed, average score) Role: ADMIN"
+              },
+              "response": [],
+              "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/dashboard/exam-summary\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
+            }
+          ]
         },
         {
-          "name": "Get Dashboard Overview",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+          "name": "Teacher Dashboard (TEACHER)",
+          "description": "Only call with teacher token. Operational APIs for teacher panel.",
+          "item": [
+            {
+              "name": "[TEACHER] Get Teacher Dashboard",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/dashboard/teacher",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "teacher"
+                  ]
+                },
+                "description": "Teacher dashboard overview. Role: TEACHER"
               },
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/dashboard/overview",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "dashboard",
-                "overview"
-              ]
+              "response": [],
+              "description": "Frontend Guide:\nRole: TEACHER\nCall: GET {{baseUrl}}/dashboard/teacher\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
             },
-            "description": "Get dashboard overview statistics (total students, teachers, classes, parents)"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Attendance Trend",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+            {
+              "name": "[TEACHER] Get Teacher Classes",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/teachers/me/classes",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "teachers",
+                    "me",
+                    "classes"
+                  ]
+                },
+                "description": "Teacher assigned classes. Role: TEACHER (Teachers feature)"
               },
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/dashboard/attendance-trend",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "dashboard",
-                "attendance-trend"
-              ]
+              "response": [],
+              "description": "Frontend Guide:\nRole: TEACHER\nCall: GET {{baseUrl}}/teachers/me/classes\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
             },
-            "description": "Get attendance trend data for line chart (last 6 months)"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Performance by Subject",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+            {
+              "name": "[TEACHER] Get Teacher Schedule",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/teachers/me/schedule?date=2026-03-13",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "teachers",
+                    "me",
+                    "schedule"
+                  ],
+                  "query": [
+                    {
+                      "key": "date",
+                      "value": "2026-03-13"
+                    }
+                  ]
+                },
+                "description": "Teacher daily schedule by date. Role: TEACHER (Teachers feature)"
               },
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/dashboard/performance",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "dashboard",
-                "performance"
-              ]
+              "response": [],
+              "description": "Frontend Guide:\nRole: TEACHER\nCall: GET {{baseUrl}}/teachers/me/schedule?date=2026-03-13\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: date. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
             },
-            "description": "Get performance by subject for bar chart"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Today's Attendance",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
+            {
+              "name": "[TEACHER] Get Teacher Attendance Sheet",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/attendance/teacher/sheet?classId=&date=2026-03-13",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "attendance",
+                    "teacher",
+                    "sheet"
+                  ],
+                  "query": [
+                    {
+                      "key": "classId",
+                      "value": ""
+                    },
+                    {
+                      "key": "date",
+                      "value": "2026-03-13"
+                    }
+                  ]
+                },
+                "description": "Get attendance sheet for selected class/date. Role: TEACHER (Attendance feature)"
               },
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/dashboard/todays-attendance",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "dashboard",
-                "todays-attendance"
-              ]
+              "response": [],
+              "description": "Frontend Guide:\nRole: TEACHER\nCall: GET {{baseUrl}}/attendance/teacher/sheet?classId=&date=2026-03-13\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: classId, date. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
             },
-            "description": "Get today's attendance overview (pie chart data: present, absent, late)"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Recent Activity",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/dashboard/recent-activity?limit=10",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "dashboard",
-                "recent-activity"
-              ],
-              "query": [
-                {
-                  "key": "limit",
-                  "value": "10"
+            {
+              "name": "[TEACHER] Save Teacher Attendance Sheet",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/attendance/teacher/sheet",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "attendance",
+                    "teacher",
+                    "sheet"
+                  ]
+                },
+                "description": "Save class attendance records. Role: TEACHER (Attendance feature)",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"classId\": \"\",\n  \"date\": \"2026-03-13\",\n  \"attendances\": [\n    {\n      \"studentId\": \"\",\n      \"status\": \"PRESENT\"\n    }\n  ]\n}"
                 }
-              ]
+              },
+              "response": [],
+              "description": "Frontend Guide:\nRole: TEACHER\nCall: POST {{baseUrl}}/attendance/teacher/sheet\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
             },
-            "description": "Get recent activities (student enrollment, exam published, meetings, etc.)"
-          },
-          "response": []
-        },
+            {
+              "name": "[TEACHER] Get Teacher Recent Attendance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/attendance/teacher/recent?limit=5",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "attendance",
+                    "teacher",
+                    "recent"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "5"
+                    }
+                  ]
+                },
+                "description": "Recent attendance summaries marked by teacher. Role: TEACHER (Attendance feature)"
+              },
+              "response": [],
+              "description": "Frontend Guide:\nRole: TEACHER\nCall: GET {{baseUrl}}/attendance/teacher/recent?limit=5\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: limit. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
+            }
+          ]
+        }
+      ],
+      "description": "Role-separated dashboard APIs. Use Admin Dashboard (ADMIN) or Teacher Dashboard (TEACHER) subfolder based on token role."
+    },
+    {
+      "name": "Exams",
+      "item": [
         {
-          "name": "Get Class Statistics",
+          "name": "[AUTH] Get All Exams",
           "request": {
             "method": "GET",
             "header": [
@@ -1468,13 +2117,12 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/dashboard/class-statistics?page=1&pageSize=10",
+              "raw": "{{baseUrl}}/exams?page=1&pageSize=10&status=&classId=&subjectId=&type=&search=",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "dashboard",
-                "class-statistics"
+                "exams"
               ],
               "query": [
                 {
@@ -1484,15 +2132,35 @@
                 {
                   "key": "pageSize",
                   "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                },
+                {
+                  "key": "classId",
+                  "value": ""
+                },
+                {
+                  "key": "subjectId",
+                  "value": ""
+                },
+                {
+                  "key": "type",
+                  "value": ""
+                },
+                {
+                  "key": "search",
+                  "value": ""
                 }
               ]
-            },
-            "description": "Get statistics for all classes (total students, attendance by status)"
+            }
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: AUTH\nCall: GET {{baseUrl}}/exams?page=1&pageSize=10&status=&classId=&subjectId=&type=&search=\nAuth: Bearer {{token}}\nPagination: use page and pageSize query params.\nFilters: status, classId, subjectId, type, search. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Get Teacher Performance",
+          "name": "[AUTH] Export Exams CSV",
           "request": {
             "method": "GET",
             "header": [
@@ -1508,39 +2176,183 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/dashboard/teacher-performance?page=1&pageSize=10",
+              "raw": "{{baseUrl}}/exams/export?status=&classId=&subjectId=&type=&search=",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "dashboard",
-                "teacher-performance"
+                "exams",
+                "export"
               ],
               "query": [
                 {
-                  "key": "page",
-                  "value": "1"
+                  "key": "status",
+                  "value": ""
                 },
                 {
-                  "key": "pageSize",
-                  "value": "10"
+                  "key": "classId",
+                  "value": ""
+                },
+                {
+                  "key": "subjectId",
+                  "value": ""
+                },
+                {
+                  "key": "type",
+                  "value": ""
+                },
+                {
+                  "key": "search",
+                  "value": ""
                 }
               ]
-            },
-            "description": "Get teacher performance metrics (classes, subjects, attendance, classes conducted)"
+            }
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: AUTH\nCall: GET {{baseUrl}}/exams/export?status=&classId=&subjectId=&type=&search=\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: status, classId, subjectId, type, search. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Get Student Performance",
+          "name": "Teacher Exams (TEACHER)",
+          "item": [
+            {
+              "name": "[TEACHER] Get Teacher Exams",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/exams/teacher?page=1&pageSize=10&status=&classId=&subjectId=",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "exams",
+                    "teacher"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "status",
+                      "value": ""
+                    },
+                    {
+                      "key": "classId",
+                      "value": ""
+                    },
+                    {
+                      "key": "subjectId",
+                      "value": ""
+                    }
+                  ]
+                },
+                "description": "Teacher assigned class-subject exams. Role: TEACHER"
+              },
+              "response": [],
+              "description": "Frontend Guide:\nRole: TEACHER\nCall: GET {{baseUrl}}/exams/teacher?page=1&pageSize=10&status=&classId=&subjectId=\nAuth: Bearer {{token}}\nPagination: use page and pageSize query params.\nFilters: status, classId, subjectId. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
+            },
+            {
+              "name": "[TEACHER] Create Teacher Exam",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/exams/teacher",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "exams",
+                    "teacher"
+                  ]
+                },
+                "description": "Create exam for assigned class-subject. Role: TEACHER",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Monthly Test\",\n  \"classId\": \"\",\n  \"subjectId\": \"\",\n  \"date\": \"2026-03-20\",\n  \"duration\": \"2h\",\n  \"totalMarks\": 100,\n  \"type\": \"MONTHLY\",\n  \"status\": \"UPCOMING\"\n}"
+                }
+              },
+              "response": [],
+              "description": "Frontend Guide:\nRole: TEACHER\nCall: POST {{baseUrl}}/exams/teacher\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
+            },
+            {
+              "name": "[TEACHER] Upload Teacher Question Paper",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/exams/teacher/{{examId}}/question-paper",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "exams",
+                    "teacher",
+                    "{{examId}}",
+                    "question-paper"
+                  ]
+                },
+                "description": "Upload teacher question paper URL. Role: TEACHER",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fileUrl\": \"https://example.com/question-paper.pdf\"\n}"
+                }
+              },
+              "response": [],
+              "description": "Frontend Guide:\nRole: TEACHER\nCall: POST {{baseUrl}}/exams/teacher/{{examId}}/question-paper\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
+            }
+          ],
+          "description": "Only call with teacher token. Teacher can manage assigned class-subject exams."
+        }
+      ],
+      "description": "Role: Mixed. Admin exam management and Teacher exam operations are separated."
+    },
+    {
+      "name": "Attendance",
+      "item": [
+        {
+          "name": "[ADMIN] Get Attendance Records",
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
-              },
               {
                 "key": "Accept",
                 "value": "application/json",
@@ -1548,13 +2360,12 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/dashboard/student-performance?page=1&pageSize=10",
+              "raw": "{{baseUrl}}/attendance?page=1&pageSize=10&classId=&studentId=&status=&startDate=&endDate=",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "dashboard",
-                "student-performance"
+                "attendance"
               ],
               "query": [
                 {
@@ -1567,25 +2378,35 @@
                 },
                 {
                   "key": "classId",
-                  "value": "",
-                  "disabled": true
+                  "value": ""
+                },
+                {
+                  "key": "studentId",
+                  "value": ""
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                },
+                {
+                  "key": "startDate",
+                  "value": ""
+                },
+                {
+                  "key": "endDate",
+                  "value": ""
                 }
               ]
-            },
-            "description": "Get student performance metrics (attendance, average grade, performance level)"
+            }
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/attendance?page=1&pageSize=10&classId=&studentId=&status=&startDate=&endDate=\nAuth: Bearer {{token}}\nPagination: use page and pageSize query params.\nFilters: classId, studentId, status, startDate, endDate. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
         },
         {
-          "name": "Get Fee Collection Summary",
+          "name": "[ADMIN] Export Attendance CSV",
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
-              },
               {
                 "key": "Accept",
                 "value": "application/json",
@@ -1593,50 +2414,209 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/dashboard/fee-collection",
+              "raw": "{{baseUrl}}/attendance/export?date=&startDate=&endDate=&classId=&studentId=&status=",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "dashboard",
-                "fee-collection"
-              ]
-            },
-            "description": "Get fee collection summary (expected, collected, pending amounts)"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Exam Summary",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "type": "text"
-              },
-              {
-                "key": "Accept",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/dashboard/exam-summary",
-              "host": [
-                "{{baseUrl}}"
+                "attendance",
+                "export"
               ],
-              "path": [
-                "dashboard",
-                "exam-summary"
+              "query": [
+                {
+                  "key": "date",
+                  "value": ""
+                },
+                {
+                  "key": "startDate",
+                  "value": ""
+                },
+                {
+                  "key": "endDate",
+                  "value": ""
+                },
+                {
+                  "key": "classId",
+                  "value": ""
+                },
+                {
+                  "key": "studentId",
+                  "value": ""
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                }
               ]
-            },
-            "description": "Get exam summary (total exams, upcoming, completed, average score)"
+            }
           },
-          "response": []
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/attendance/export?date=&startDate=&endDate=&classId=&studentId=&status=\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: date, startDate, endDate, classId, studentId, status. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
         }
-      ]
+      ],
+      "description": "Role: Admin list/export endpoints. Teacher sheet endpoints are in Dashboard (Role Based) > Teacher Dashboard."
+    },
+    {
+      "name": "Notices",
+      "item": [
+        {
+          "name": "[AUTH] Get All Notices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notices?page=1&pageSize=10&category=&sortBy=recent",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notices"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "category",
+                  "value": ""
+                },
+                {
+                  "key": "sortBy",
+                  "value": "recent"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "description": "Frontend Guide:\nRole: AUTH\nCall: GET {{baseUrl}}/notices?page=1&pageSize=10&category=&sortBy=recent\nAuth: Bearer {{token}}\nPagination: use page and pageSize query params.\nFilters: category, sortBy. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
+        },
+        {
+          "name": "[AUTH] Get Pinned Notices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notices/pinned?limit=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notices",
+                "pinned"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "description": "Frontend Guide:\nRole: AUTH\nCall: GET {{baseUrl}}/notices/pinned?limit=5\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: limit. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
+        },
+        {
+          "name": "[TEACHER|ADMIN] Create Notice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notices",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notices"
+              ]
+            },
+            "description": "Create notice using shared notices feature. Role: TEACHER or ADMIN",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Class Update\",\n  \"message\": \"Tomorrow there will be a revision session.\",\n  \"category\": \"GENERAL\",\n  \"priority\": \"NORMAL\",\n  \"pinned\": false\n}"
+            }
+          },
+          "response": [],
+          "description": "Frontend Guide:\nRole: TEACHER or ADMIN\nCall: POST {{baseUrl}}/notices\nAuth: Bearer {{token}}\nPagination: Not required.\nFilters: none.\nResponse Handling: read success/data/message fields from JSON response."
+        }
+      ],
+      "description": "Role: Mixed. Read endpoints for authenticated users; create notice available to teacher/admin."
+    },
+    {
+      "name": "Classes",
+      "item": [
+        {
+          "name": "[ADMIN] Get All Classes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/classes?page=1&pageSize=10&search=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "classes"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": [],
+          "description": "Frontend Guide:\nRole: ADMIN\nCall: GET {{baseUrl}}/classes?page=1&pageSize=10&search=\nAuth: Bearer {{token}}\nPagination: use page and pageSize query params.\nFilters: search. Keep empty value to skip a filter.\nResponse Handling: read success/data/message fields from JSON response."
+        }
+      ],
+      "description": "Role: Primarily [ADMIN] for class management and listing."
     }
   ],
   "event": [
@@ -1658,5 +2638,15 @@
         ]
       }
     }
-  ]
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  }
 }

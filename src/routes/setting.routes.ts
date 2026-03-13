@@ -81,7 +81,7 @@ router.get("/general", settingController.getGeneralSettings.bind(settingControll
 router.put(
   "/general",
   verifyToken,
-  requireRole("ADMIN"),
+  requireRole("ADMIN", "admin"),
   [
     body("schoolName")
       .trim()
@@ -480,7 +480,7 @@ router.put(
 router.get(
   "/:key",
   verifyToken,
-  requireRole("ADMIN"),
+  requireRole("ADMIN", "admin"),
   [param("key").trim().notEmpty()],
   handleValidationErrors,
   settingController.getSettingByKey.bind(settingController)
@@ -518,7 +518,7 @@ router.get(
 router.put(
   "/bulk",
   verifyToken,
-  requireRole("ADMIN"),
+  requireRole("ADMIN", "admin"),
   [body("settings").isObject().withMessage("Settings must be an object")],
   handleValidationErrors,
   settingController.bulkUpdateSettings.bind(settingController)

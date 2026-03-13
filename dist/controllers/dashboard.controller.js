@@ -287,6 +287,18 @@ export class DashboardController {
             });
         }
     }
+    async getTeacherDashboard(req, res) {
+        try {
+            if (!req.user?.id)
+                throw new ValidationError("User authentication required");
+            const dashboard = await dashboardService.getTeacherDashboard(req.user.id);
+            res.json({ success: true, message: "Teacher dashboard retrieved successfully", data: dashboard });
+        }
+        catch (error) {
+            const status = error.statusCode || 500;
+            res.status(status).json({ success: false, message: error.message || "Failed to retrieve teacher dashboard", error: error.message });
+        }
+    }
 }
 export const dashboardController = new DashboardController();
 //# sourceMappingURL=dashboard.controller.js.map

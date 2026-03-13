@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { examController } from "../controllers/exam.controller.js";
-import { verifyToken } from "../middlewares/auth.middleware.js";
+import { verifyToken, requireRole } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -122,6 +122,18 @@ router.get("/stats", verifyToken, (req, res) => examController.getStatistics(req
  */
 router.get("/export", verifyToken, (req, res) => examController.exportExams(req, res));
 
+router.get("/teacher", verifyToken, requireRole("TEACHER", "teacher"), (req, res) =>
+	examController.getTeacherExams(req, res)
+);
+
+router.post("/teacher", verifyToken, requireRole("TEACHER", "teacher"), (req, res) =>
+	examController.createTeacherExam(req, res)
+);
+
+router.post("/teacher/:examId/question-paper", verifyToken, requireRole("TEACHER", "teacher"), (req, res) =>
+	examController.uploadTeacherQuestionPaper(req, res)
+);
+
 /**
  * @swagger
  * /api/v1/exams/{id}:
@@ -226,7 +238,7 @@ router.get("/:id/results", verifyToken, (req, res) => examController.getExamWith
  *       201:
  *         description: Exam created successfully
  */
-router.post("/", verifyToken, (req, res) => examController.createExam(req, res));
+router.post("/", verifyToken, requireRole("ADMIN", "admin"), (req, res) => examController.createExam(req, res));
 
 /**
  * @swagger
@@ -283,7 +295,7 @@ router.post("/", verifyToken, (req, res) => examController.createExam(req, res))
  *       201:
  *         description: Bulk exams created successfully
  */
-router.post("/bulk", verifyToken, (req, res) => examController.bulkCreateExams(req, res));
+router.post("/bulk", verifyToken, requireRole("ADMIN", "admin"), (req, res) => examController.bulkCreateExams(req, res));
 
 /**
  * @swagger
@@ -330,7 +342,7 @@ router.post("/bulk", verifyToken, (req, res) => examController.bulkCreateExams(r
  *       404:
  *         description: Exam not found
  */
-router.put("/:id", verifyToken, (req, res) => examController.updateExam(req, res));
+router.put("/:id", verifyToken, requireRole("ADMIN", "admin"), (req, res) => examController.updateExam(req, res));
 
 /**
  * @swagger
@@ -355,6 +367,6 @@ router.put("/:id", verifyToken, (req, res) => examController.updateExam(req, res
  *       404:
  *         description: Exam not found
  */
-router.delete("/:id", verifyToken, (req, res) => examController.deleteExam(req, res));
+router.delete("/:id", verifyToken, requireRole("ADMIN", "admin"), (req, res) => examController.deleteExam(req, res));
 
 export default router;

@@ -4,7 +4,7 @@
  */
 import { Router } from "express";
 import { dashboardController } from "../controllers/dashboard.controller.js";
-import { verifyToken } from "../middlewares/auth.middleware.js";
+import { verifyToken, requireRole } from "../middlewares/auth.middleware.js";
 const router = Router();
 // Apply authentication middleware to all routes
 router.use(verifyToken);
@@ -13,7 +13,7 @@ router.use(verifyToken);
  * @access  Private (Admin)
  * @desc    Get complete admin dashboard data
  */
-router.get("/", (req, res) => {
+router.get("/", requireRole("ADMIN", "admin"), (req, res) => {
     dashboardController.getDashboard(req, res);
 });
 /**
@@ -21,7 +21,7 @@ router.get("/", (req, res) => {
  * @access  Private (Admin)
  * @desc    Get dashboard overview statistics
  */
-router.get("/overview", (req, res) => {
+router.get("/overview", requireRole("ADMIN", "admin"), (req, res) => {
     dashboardController.getOverview(req, res);
 });
 /**
@@ -29,7 +29,7 @@ router.get("/overview", (req, res) => {
  * @access  Private (Admin)
  * @desc    Get attendance trend data for charts
  */
-router.get("/attendance-trend", (req, res) => {
+router.get("/attendance-trend", requireRole("ADMIN", "admin"), (req, res) => {
     dashboardController.getAttendanceTrend(req, res);
 });
 /**
@@ -37,7 +37,7 @@ router.get("/attendance-trend", (req, res) => {
  * @access  Private (Admin)
  * @desc    Get performance by subject for charts
  */
-router.get("/performance", (req, res) => {
+router.get("/performance", requireRole("ADMIN", "admin"), (req, res) => {
     dashboardController.getPerformanceBySubject(req, res);
 });
 /**
@@ -45,7 +45,7 @@ router.get("/performance", (req, res) => {
  * @access  Private (Admin)
  * @desc    Get today's attendance overview (pie chart data)
  */
-router.get("/todays-attendance", (req, res) => {
+router.get("/todays-attendance", requireRole("ADMIN", "admin"), (req, res) => {
     dashboardController.getTodaysAttendance(req, res);
 });
 /**
@@ -54,7 +54,7 @@ router.get("/todays-attendance", (req, res) => {
  * @desc    Get recent activities
  * @query   limit
  */
-router.get("/recent-activity", (req, res) => {
+router.get("/recent-activity", requireRole("ADMIN", "admin"), (req, res) => {
     dashboardController.getRecentActivity(req, res);
 });
 /**
@@ -63,7 +63,7 @@ router.get("/recent-activity", (req, res) => {
  * @desc    Get statistics for all classes
  * @query   page, pageSize
  */
-router.get("/class-statistics", (req, res) => {
+router.get("/class-statistics", requireRole("ADMIN", "admin"), (req, res) => {
     dashboardController.getClassStatistics(req, res);
 });
 /**
@@ -72,7 +72,7 @@ router.get("/class-statistics", (req, res) => {
  * @desc    Get teacher performance metrics
  * @query   page, pageSize
  */
-router.get("/teacher-performance", (req, res) => {
+router.get("/teacher-performance", requireRole("ADMIN", "admin"), (req, res) => {
     dashboardController.getTeacherPerformance(req, res);
 });
 /**
@@ -81,7 +81,7 @@ router.get("/teacher-performance", (req, res) => {
  * @desc    Get student performance metrics
  * @query   page, pageSize, classId
  */
-router.get("/student-performance", (req, res) => {
+router.get("/student-performance", requireRole("ADMIN", "admin"), (req, res) => {
     dashboardController.getStudentPerformance(req, res);
 });
 /**
@@ -89,7 +89,7 @@ router.get("/student-performance", (req, res) => {
  * @access  Private (Admin)
  * @desc    Get fee collection summary
  */
-router.get("/fee-collection", (req, res) => {
+router.get("/fee-collection", requireRole("ADMIN", "admin"), (req, res) => {
     dashboardController.getFeeCollectionSummary(req, res);
 });
 /**
@@ -97,8 +97,11 @@ router.get("/fee-collection", (req, res) => {
  * @access  Private (Admin)
  * @desc    Get exam summary
  */
-router.get("/exam-summary", (req, res) => {
+router.get("/exam-summary", requireRole("ADMIN", "admin"), (req, res) => {
     dashboardController.getExamSummary(req, res);
+});
+router.get("/teacher", requireRole("TEACHER", "teacher"), (req, res) => {
+    dashboardController.getTeacherDashboard(req, res);
 });
 export default router;
 //# sourceMappingURL=dashboard.routes.js.map

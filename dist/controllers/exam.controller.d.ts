@@ -61,6 +61,21 @@ export declare class ExamController {
      * Search exams
      */
     searchExams(req: Request, res: Response): Promise<void>;
+    /**
+     * GET /api/v1/exams/teacher
+     * Get teacher exams with assignment-based filtering
+     */
+    getTeacherExams(req: Request, res: Response): Promise<void>;
+    /**
+     * POST /api/v1/exams/teacher
+     * Create exam as teacher for assigned class and subject
+     */
+    createTeacherExam(req: Request, res: Response): Promise<void>;
+    /**
+     * POST /api/v1/exams/teacher/:examId/question-paper
+     * Upload question paper as teacher
+     */
+    uploadTeacherQuestionPaper(req: Request, res: Response): Promise<void>;
 }
 export declare const examController: ExamController;
 //# sourceMappingURL=exam.controller.d.ts.map

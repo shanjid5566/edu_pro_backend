@@ -1,5 +1,6 @@
 import { db } from "../config/database.config.js";
 import { BadRequestError, NotFoundError } from "../utils/errors.js";
+import { teacherService } from "./teacher.service.js";
 import {
   CreateExamInput,
   UpdateExamInput,
@@ -437,6 +438,119 @@ export class ExamService {
       throw new BadRequestError("Search query cannot be empty");
     }
     return this.getExams(page, pageSize, undefined, undefined, undefined, undefined, query);
+  }
+
+  /**
+   * Get exams visible to a teacher (limited to assigned class-subject pairs)
+   */
+  async getTeacherExams(
+    userId: string,
+    page: number = 1,
+    pageSize: number = 10,
+    status?: string,
+    classId?: string,
+    subjectId?: string
+  ): Promise<any> {
+    const teacher = await teacherService.getTeacherByUserId(userId);
+    const classIds = teacher.classes.map((tc: { classId: string }) => tc.classId);
+    const subjectIds = teacher.subjects.map((ts: { subjectId: string }) => ts.subjectId);
+
+    const allowedClassIds = classId ? [classId].filter((id: string) => classIds.includes(id)) : classIds;
+    const allowedSubjectIds = subjectId ? [subjectId].filter((id: string) => subjectIds.includes(id)) : subjectIds;
+
+    const result = await this.getExams(
+      page,
+      pageSize,
+      status,
+      allowedClassIds[0] && classId ? classId : undefined,
+      allowedSubjectIds[0] && subjectId ? subjectId : undefined
+    );
+
+    const exams = result.exams.filter(
+      (exam: { classId: string; subjectId: string }) => classIds.includes(exam.classId) && subjectIds.includes(exam.subjectId)
+    );
+
+    return {
+      exams,
+      pagination: result.pagination,
+    };
+  }
+
+  /**
+   * Create exam by teacher for assigned class and subject only
+   */
+  async createTeacherExam(
+    userId: string,
+    input: {
+      name: string;
+      classId: string;
+      subjectId: string;
+      date: Date;
+      duration: string;
+      totalMarks: number;
+      type: string;
+      status?: string;
+    }
+  ): Promise<any> {
+    const teacher = await teacherService.getTeacherByUserId(userId);
+
+    const isClassAllowed = teacher.classes.some((tc: { classId: string }) => tc.classId === input.classId);
+    const isSubjectAllowed = teacher.subjects.some((ts: { subjectId: string }) => ts.subjectId === input.subjectId);
+
+    if (!isClassAllowed || !isSubjectAllowed) {
+      throw new BadRequestError("You can create exams only for your assigned classes and subjects");
+    }
+
+    return this.createExam(input as any);
+  }
+
+  /**
+   * Upload question paper for teacher-owned exam
+   */
+  async uploadTeacherQuestionPaper(userId: string, examId: string, fileUrl: string): Promise<any> {
+    if (!fileUrl || !fileUrl.trim()) {
+      throw new BadRequestError("fileUrl is required");
+    }
+
+    const teacher = await teacherService.getTeacherByUserId(userId);
+    const exam = await db.exam.findUnique({ where: { id: examId } });
+
+    if (!exam) {
+      throw new NotFoundError("Exam not found");
+    }
+
+    const isClassAllowed = teacher.classes.some((tc: { classId: string }) => tc.classId === exam.classId);
+    const isSubjectAllowed = teacher.subjects.some((ts: { subjectId: string }) => ts.subjectId === exam.subjectId);
+
+    if (!isClassAllowed || !isSubjectAllowed) {
+      throw new BadRequestError("You can upload question papers only for your assigned class-subject exams");
+    }
+
+    return db.questionPaper.create({
+      data: {
+        examId,
+        teacherId: teacher.id,
+        fileUrl: fileUrl.trim(),
+        status: "PENDING",
+      },
+      include: {
+        exam: {
+          include: {
+            class: {
+              select: {
+                name: true,
+                section: true,
+              },
+            },
+            subject: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 }
 

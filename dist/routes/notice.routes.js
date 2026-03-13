@@ -200,7 +200,7 @@ router.get("/:id", [
  *   post:
  *     tags: [Notices]
  *     summary: Create new notice
- *     description: Create a new notice (admin only)
+ *     description: Create a new notice (admin and teacher)
  *     security:
  *       - BearerAuth: []
  *     requestBody:
@@ -241,7 +241,7 @@ router.get("/:id", [
  *       500:
  *         description: Server error
  */
-router.post("/", verifyToken, requireRole("admin"), [
+router.post("/", verifyToken, requireRole("admin", "ADMIN", "teacher", "TEACHER"), [
     body("title").notEmpty().trim().withMessage("Title is required"),
     body("message").notEmpty().trim().withMessage("Message is required"),
     body("category").notEmpty().isIn(["GENERAL", "EXAM", "EVENT", "HOLIDAY"]).withMessage("Invalid category"),
@@ -296,7 +296,7 @@ router.post("/", verifyToken, requireRole("admin"), [
  *       500:
  *         description: Server error
  */
-router.put("/:id", verifyToken, requireRole("admin"), [
+router.put("/:id", verifyToken, requireRole("ADMIN", "admin"), [
     param("id").notEmpty().withMessage("Notice ID is required"),
     body("title").optional().trim().notEmpty().withMessage("Title cannot be empty"),
     body("message").optional().trim().notEmpty().withMessage("Message cannot be empty"),
@@ -345,7 +345,7 @@ router.put("/:id", verifyToken, requireRole("admin"), [
  *       500:
  *         description: Server error
  */
-router.put("/:id/pin", verifyToken, requireRole("admin"), [
+router.put("/:id/pin", verifyToken, requireRole("ADMIN", "admin"), [
     param("id").notEmpty().withMessage("Notice ID is required"),
     body("pinned").isBoolean().withMessage("Pinned must be a boolean value"),
 ], handleValidationErrors, noticeController.togglePinNotice.bind(noticeController));
@@ -376,7 +376,7 @@ router.put("/:id/pin", verifyToken, requireRole("admin"), [
  *       500:
  *         description: Server error
  */
-router.delete("/:id", verifyToken, requireRole("admin"), [
+router.delete("/:id", verifyToken, requireRole("ADMIN", "admin"), [
     param("id").notEmpty().withMessage("Notice ID is required"),
 ], handleValidationErrors, noticeController.deleteNotice.bind(noticeController));
 export default router;

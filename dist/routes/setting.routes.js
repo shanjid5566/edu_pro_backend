@@ -73,7 +73,7 @@ router.get("/general", settingController.getGeneralSettings.bind(settingControll
  *       422:
  *         description: Validation error
  */
-router.put("/general", verifyToken, requireRole("ADMIN"), [
+router.put("/general", verifyToken, requireRole("ADMIN", "admin"), [
     body("schoolName")
         .trim()
         .notEmpty()
@@ -406,7 +406,7 @@ router.put("/user/appearance", verifyToken, [
  *       404:
  *         description: Setting not found
  */
-router.get("/:key", verifyToken, requireRole("ADMIN"), [param("key").trim().notEmpty()], handleValidationErrors, settingController.getSettingByKey.bind(settingController));
+router.get("/:key", verifyToken, requireRole("ADMIN", "admin"), [param("key").trim().notEmpty()], handleValidationErrors, settingController.getSettingByKey.bind(settingController));
 /**
  * @swagger
  * /api/v1/settings/bulk:
@@ -436,7 +436,7 @@ router.get("/:key", verifyToken, requireRole("ADMIN"), [param("key").trim().notE
  *       401:
  *         description: Unauthorized
  */
-router.put("/bulk", verifyToken, requireRole("ADMIN"), [body("settings").isObject().withMessage("Settings must be an object")], handleValidationErrors, settingController.bulkUpdateSettings.bind(settingController));
+router.put("/bulk", verifyToken, requireRole("ADMIN", "admin"), [body("settings").isObject().withMessage("Settings must be an object")], handleValidationErrors, settingController.bulkUpdateSettings.bind(settingController));
 // ========================
 // System Health Check
 // ========================

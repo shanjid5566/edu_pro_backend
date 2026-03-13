@@ -5,7 +5,7 @@
 
 import { Router, Request, Response } from "express";
 import { dashboardController } from "../controllers/dashboard.controller.js";
-import { verifyToken } from "../middlewares/auth.middleware.js";
+import { verifyToken, requireRole } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -17,7 +17,7 @@ router.use(verifyToken);
  * @access  Private (Admin)
  * @desc    Get complete admin dashboard data
  */
-router.get("/", (req: Request, res: Response) => {
+router.get("/", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   dashboardController.getDashboard(req, res);
 });
 
@@ -26,7 +26,7 @@ router.get("/", (req: Request, res: Response) => {
  * @access  Private (Admin)
  * @desc    Get dashboard overview statistics
  */
-router.get("/overview", (req: Request, res: Response) => {
+router.get("/overview", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   dashboardController.getOverview(req, res);
 });
 
@@ -35,7 +35,7 @@ router.get("/overview", (req: Request, res: Response) => {
  * @access  Private (Admin)
  * @desc    Get attendance trend data for charts
  */
-router.get("/attendance-trend", (req: Request, res: Response) => {
+router.get("/attendance-trend", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   dashboardController.getAttendanceTrend(req, res);
 });
 
@@ -44,7 +44,7 @@ router.get("/attendance-trend", (req: Request, res: Response) => {
  * @access  Private (Admin)
  * @desc    Get performance by subject for charts
  */
-router.get("/performance", (req: Request, res: Response) => {
+router.get("/performance", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   dashboardController.getPerformanceBySubject(req, res);
 });
 
@@ -53,7 +53,7 @@ router.get("/performance", (req: Request, res: Response) => {
  * @access  Private (Admin)
  * @desc    Get today's attendance overview (pie chart data)
  */
-router.get("/todays-attendance", (req: Request, res: Response) => {
+router.get("/todays-attendance", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   dashboardController.getTodaysAttendance(req, res);
 });
 
@@ -63,7 +63,7 @@ router.get("/todays-attendance", (req: Request, res: Response) => {
  * @desc    Get recent activities
  * @query   limit
  */
-router.get("/recent-activity", (req: Request, res: Response) => {
+router.get("/recent-activity", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   dashboardController.getRecentActivity(req, res);
 });
 
@@ -73,7 +73,7 @@ router.get("/recent-activity", (req: Request, res: Response) => {
  * @desc    Get statistics for all classes
  * @query   page, pageSize
  */
-router.get("/class-statistics", (req: Request, res: Response) => {
+router.get("/class-statistics", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   dashboardController.getClassStatistics(req, res);
 });
 
@@ -83,7 +83,7 @@ router.get("/class-statistics", (req: Request, res: Response) => {
  * @desc    Get teacher performance metrics
  * @query   page, pageSize
  */
-router.get("/teacher-performance", (req: Request, res: Response) => {
+router.get("/teacher-performance", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   dashboardController.getTeacherPerformance(req, res);
 });
 
@@ -93,7 +93,7 @@ router.get("/teacher-performance", (req: Request, res: Response) => {
  * @desc    Get student performance metrics
  * @query   page, pageSize, classId
  */
-router.get("/student-performance", (req: Request, res: Response) => {
+router.get("/student-performance", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   dashboardController.getStudentPerformance(req, res);
 });
 
@@ -102,7 +102,7 @@ router.get("/student-performance", (req: Request, res: Response) => {
  * @access  Private (Admin)
  * @desc    Get fee collection summary
  */
-router.get("/fee-collection", (req: Request, res: Response) => {
+router.get("/fee-collection", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   dashboardController.getFeeCollectionSummary(req, res);
 });
 
@@ -111,8 +111,12 @@ router.get("/fee-collection", (req: Request, res: Response) => {
  * @access  Private (Admin)
  * @desc    Get exam summary
  */
-router.get("/exam-summary", (req: Request, res: Response) => {
+router.get("/exam-summary", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   dashboardController.getExamSummary(req, res);
+});
+
+router.get("/teacher", requireRole("TEACHER", "teacher"), (req: Request, res: Response) => {
+  dashboardController.getTeacherDashboard(req, res);
 });
 
 export default router;

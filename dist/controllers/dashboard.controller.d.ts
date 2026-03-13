@@ -74,6 +74,7 @@ export declare class DashboardController {
      * Get exam summary
      */
     getExamSummary(req: Request, res: Response): Promise<void>;
+    getTeacherDashboard(req: Request, res: Response): Promise<void>;
 }
 export declare const dashboardController: DashboardController;
 //# sourceMappingURL=dashboard.controller.d.ts.map

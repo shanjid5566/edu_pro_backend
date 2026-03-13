@@ -5,7 +5,7 @@
 
 import { Router, Request, Response } from "express";
 import { studentController } from "../controllers/student.controller.js";
-import { verifyToken } from "../middlewares/auth.middleware.js";
+import { verifyToken, requireRole } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -18,7 +18,7 @@ router.use(verifyToken);
  * @desc    Get all students with pagination and filtering
  * @query   page, pageSize, search, classId, section
  */
-router.get("/", (req: Request, res: Response) => {
+router.get("/", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   studentController.getStudents(req, res);
 });
 
@@ -28,7 +28,7 @@ router.get("/", (req: Request, res: Response) => {
  * @desc    Create new student
  * @body    { name, email, password, phone, classId, section, rollNumber, dateOfBirth, gender, address, parentName, parentEmail }
  */
-router.post("/", (req: Request, res: Response) => {
+router.post("/", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   studentController.createStudent(req, res);
 });
 
@@ -38,7 +38,7 @@ router.post("/", (req: Request, res: Response) => {
  * @desc    Export students as CSV with filters
  * @query   search, classId, className, class, section, status
  */
-router.get("/export", (req: Request, res: Response) => {
+router.get("/export", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   studentController.exportStudents(req, res);
 });
 
@@ -75,7 +75,7 @@ router.get("/:id/stats", (req: Request, res: Response) => {
  * @desc    Update student information
  * @body    { name, phone, classId, section, rollNumber, dateOfBirth, gender, address, status }
  */
-router.put("/:id", (req: Request, res: Response) => {
+router.put("/:id", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   studentController.updateStudent(req, res);
 });
 
@@ -84,7 +84,7 @@ router.put("/:id", (req: Request, res: Response) => {
  * @access  Private (Admin)
  * @desc    Delete student
  */
-router.delete("/:id", (req: Request, res: Response) => {
+router.delete("/:id", requireRole("ADMIN", "admin"), (req: Request, res: Response) => {
   studentController.deleteStudent(req, res);
 });
 

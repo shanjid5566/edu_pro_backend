@@ -308,6 +308,48 @@ router.get(
 );
 
 // ========================
+// Teacher Routes (Auth Required - Teacher Only)
+// ========================
+
+router.get(
+  "/teacher/sheet",
+  verifyToken,
+  requireRole("TEACHER", "teacher"),
+  [
+    query("classId").notEmpty().withMessage("classId is required"),
+    query("date").optional().isISO8601().withMessage("Invalid date format"),
+  ],
+  handleValidationErrors,
+  attendanceController.getTeacherAttendanceSheet.bind(attendanceController)
+);
+
+router.post(
+  "/teacher/sheet",
+  verifyToken,
+  requireRole("TEACHER", "teacher"),
+  [
+    body("classId").notEmpty().trim().withMessage("classId is required"),
+    body("date").notEmpty().isISO8601().withMessage("Valid date is required"),
+    body("attendances").isArray().withMessage("attendances must be an array"),
+    body("attendances.*.studentId").notEmpty().withMessage("studentId is required"),
+    body("attendances.*.status").isIn(["PRESENT", "ABSENT", "LATE"]).withMessage("status must be PRESENT, ABSENT, or LATE"),
+  ],
+  handleValidationErrors,
+  attendanceController.saveTeacherAttendanceSheet.bind(attendanceController)
+);
+
+router.get(
+  "/teacher/recent",
+  verifyToken,
+  requireRole("TEACHER", "teacher"),
+  [
+    query("limit").optional().isInt({ min: 1, max: 50 }).withMessage("limit must be between 1 and 50"),
+  ],
+  handleValidationErrors,
+  attendanceController.getTeacherRecentAttendance.bind(attendanceController)
+);
+
+// ========================
 // Protected Routes (Auth Required - Admin Only)
 // ========================
 
@@ -355,7 +397,7 @@ router.get(
 router.post(
   "/",
   verifyToken,
-  requireRole("admin"),
+  requireRole("ADMIN", "admin"),
   [
     body("studentId").notEmpty().trim().withMessage("Student ID is required"),
     body("classId").notEmpty().trim().withMessage("Class ID is required"),
@@ -410,7 +452,7 @@ router.post(
 router.put(
   "/:id",
   verifyToken,
-  requireRole("admin"),
+  requireRole("ADMIN", "admin"),
   [
     param("id").notEmpty().withMessage("Attendance ID is required"),
     body("status").optional().isIn(["PRESENT", "ABSENT", "LATE"]).withMessage("Invalid status"),
@@ -449,7 +491,7 @@ router.put(
 router.delete(
   "/:id",
   verifyToken,
-  requireRole("admin"),
+  requireRole("ADMIN", "admin"),
   [
     param("id").notEmpty().withMessage("Attendance ID is required"),
   ],
@@ -508,7 +550,7 @@ router.delete(
 router.post(
   "/bulk",
   verifyToken,
-  requireRole("admin"),
+  requireRole("ADMIN", "admin"),
   [
     body("classId").notEmpty().trim().withMessage("Class ID is required"),
     body("date").notEmpty().isISO8601().withMessage("Valid date is required"),

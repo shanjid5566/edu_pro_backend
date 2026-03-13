@@ -44,6 +44,27 @@ export declare class ExamService {
      * Search exams
      */
     searchExams(query: string, page?: number, pageSize?: number): Promise<ExamListResponse>;
+    /**
+     * Get exams visible to a teacher (limited to assigned class-subject pairs)
+     */
+    getTeacherExams(userId: string, page?: number, pageSize?: number, status?: string, classId?: string, subjectId?: string): Promise<any>;
+    /**
+     * Create exam by teacher for assigned class and subject only
+     */
+    createTeacherExam(userId: string, input: {
+        name: string;
+        classId: string;
+        subjectId: string;
+        date: Date;
+        duration: string;
+        totalMarks: number;
+        type: string;
+        status?: string;
+    }): Promise<any>;
+    /**
+     * Upload question paper for teacher-owned exam
+     */
+    uploadTeacherQuestionPaper(userId: string, examId: string, fileUrl: string): Promise<any>;
 }
 export declare const examService: ExamService;
 //# sourceMappingURL=exam.service.d.ts.map
