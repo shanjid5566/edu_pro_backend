@@ -2,9 +2,9 @@
  * Teacher Controller
  * Handles HTTP requests for teacher management
  */
-import { teacherService } from "../services/teacher.service";
-import { ValidationError } from "../utils/errors";
-import { buildCsv } from "../utils/csv";
+import { teacherService } from "../services/teacher.service.js";
+import { ValidationError } from "../utils/errors.js";
+import { buildCsv } from "../utils/csv.js";
 export class TeacherController {
     /**
      * GET /api/v1/teachers

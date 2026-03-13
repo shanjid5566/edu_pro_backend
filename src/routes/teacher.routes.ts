@@ -4,8 +4,8 @@
  */
 
 import { Router, Request, Response } from "express";
-import { teacherController } from "../controllers/teacher.controller";
-import { verifyToken } from "../middlewares/auth.middleware";
+import { teacherController } from "../controllers/teacher.controller.js";
+import { verifyToken } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 

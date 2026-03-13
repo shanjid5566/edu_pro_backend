@@ -3,8 +3,8 @@
  * Business logic for dashboard data aggregation and statistics
  */
 
-import { db } from "../config/database.config";
-import { NotFoundError } from "../utils/errors";
+import { db } from "../config/database.config.js";
+import { NotFoundError } from "../utils/errors.js";
 import {
   AdminDashboardResponse,
   DashboardOverview,
@@ -20,7 +20,7 @@ import {
   StudentPerformanceResponse,
   FeeCollectionSummary,
   ExamSummary,
-} from "../types/dashboard.dto";
+} from "../types/dashboard.dto.js";
 
 export class DashboardService {
   /**

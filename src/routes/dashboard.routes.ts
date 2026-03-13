@@ -4,8 +4,8 @@
  */
 
 import { Router, Request, Response } from "express";
-import { dashboardController } from "../controllers/dashboard.controller";
-import { verifyToken } from "../middlewares/auth.middleware";
+import { dashboardController } from "../controllers/dashboard.controller.js";
+import { verifyToken } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 

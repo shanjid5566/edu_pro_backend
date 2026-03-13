@@ -1,4 +1,4 @@
-import { CreateNoticeInput, UpdateNoticeInput, NoticeResponse, NoticeListResponse } from "../types/notice.dto";
+import { CreateNoticeInput, UpdateNoticeInput, NoticeResponse, NoticeListResponse } from "../types/notice.dto.js";
 export declare class NoticeService {
     /**
      * Get all notices with pagination and filters

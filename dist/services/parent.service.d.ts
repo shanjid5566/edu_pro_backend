@@ -1,4 +1,4 @@
-import { CreateParentInput, UpdateParentInput, ParentResponse, ParentWithStudents, ParentListResponse, ParentStatistics, BulkCreateParentsInput, BulkCreateParentsResponse, AssignStudentInput } from "../types/parent.dto";
+import { CreateParentInput, UpdateParentInput, ParentResponse, ParentWithStudents, ParentListResponse, ParentStatistics, BulkCreateParentsInput, BulkCreateParentsResponse, AssignStudentInput } from "../types/parent.dto.js";
 export declare class ParentService {
     /**
      * Create a new parent

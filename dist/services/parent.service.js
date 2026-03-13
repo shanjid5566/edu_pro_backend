@@ -1,5 +1,5 @@
-import { db } from "../config/database.config";
-import { BadRequestError, NotFoundError } from "../utils/errors";
+import { db } from "../config/database.config.js";
+import { BadRequestError, NotFoundError } from "../utils/errors.js";
 import bcrypt from "bcrypt";
 export class ParentService {
     /**

@@ -2,7 +2,7 @@
  * Dashboard Service
  * Business logic for dashboard data aggregation and statistics
  */
-import { AdminDashboardResponse, DashboardOverview, AttendanceTrendData, PerformanceBySubject, TodaysAttendance, RecentActivityItem, ClassStatisticsResponse, TeacherPerformanceResponse, StudentPerformanceResponse, FeeCollectionSummary, ExamSummary } from "../types/dashboard.dto";
+import { AdminDashboardResponse, DashboardOverview, AttendanceTrendData, PerformanceBySubject, TodaysAttendance, RecentActivityItem, ClassStatisticsResponse, TeacherPerformanceResponse, StudentPerformanceResponse, FeeCollectionSummary, ExamSummary } from "../types/dashboard.dto.js";
 export declare class DashboardService {
     /**
      * Get complete admin dashboard data

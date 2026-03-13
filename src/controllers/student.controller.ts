@@ -4,9 +4,9 @@
  */
 
 import { Request, Response } from "express";
-import { studentService } from "../services/student.service";
-import { ValidationError, BadRequestError } from "../utils/errors";
-import { buildCsv } from "../utils/csv";
+import { studentService } from "../services/student.service.js";
+import { ValidationError, BadRequestError } from "../utils/errors.js";
+import { buildCsv } from "../utils/csv.js";
 
 declare global {
   namespace Express {

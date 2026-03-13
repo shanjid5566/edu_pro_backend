@@ -1,6 +1,6 @@
-import { examService } from "../services/exam.service";
-import { ValidationError } from "../utils/errors";
-import { buildCsv } from "../utils/csv";
+import { examService } from "../services/exam.service.js";
+import { ValidationError } from "../utils/errors.js";
+import { buildCsv } from "../utils/csv.js";
 export class ExamController {
     /**
      * GET /api/v1/exams

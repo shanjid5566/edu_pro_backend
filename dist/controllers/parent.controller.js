@@ -1,6 +1,6 @@
-import { parentService } from "../services/parent.service";
-import { ValidationError } from "../utils/errors";
-import { buildCsv } from "../utils/csv";
+import { parentService } from "../services/parent.service.js";
+import { ValidationError } from "../utils/errors.js";
+import { buildCsv } from "../utils/csv.js";
 export class ParentController {
     /**
      * GET /api/v1/parents

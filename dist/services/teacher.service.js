@@ -2,8 +2,8 @@
  * Teacher Service
  * Business logic for teacher management
  */
-import { db } from "../config/database.config";
-import { BadRequestError, NotFoundError } from "../utils/errors";
+import { db } from "../config/database.config.js";
+import { BadRequestError, NotFoundError } from "../utils/errors.js";
 import bcrypt from "bcryptjs";
 export class TeacherService {
     /**

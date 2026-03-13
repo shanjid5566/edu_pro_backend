@@ -2,9 +2,9 @@
  * Student Controller
  * Handles HTTP requests for student management
  */
-import { studentService } from "../services/student.service";
-import { ValidationError } from "../utils/errors";
-import { buildCsv } from "../utils/csv";
+import { studentService } from "../services/student.service.js";
+import { ValidationError } from "../utils/errors.js";
+import { buildCsv } from "../utils/csv.js";
 export class StudentController {
     /**
      * GET /api/v1/students

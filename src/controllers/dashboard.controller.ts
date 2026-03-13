@@ -4,8 +4,8 @@
  */
 
 import { Request, Response } from "express";
-import { dashboardService } from "../services/dashboard.service";
-import { ValidationError } from "../utils/errors";
+import { dashboardService } from "../services/dashboard.service.js";
+import { ValidationError } from "../utils/errors.js";
 
 declare global {
   namespace Express {

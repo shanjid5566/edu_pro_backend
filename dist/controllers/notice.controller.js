@@ -1,5 +1,5 @@
-import { noticeService } from "../services/notice.service";
-import { ValidationError } from "../utils/errors";
+import { noticeService } from "../services/notice.service.js";
+import { ValidationError } from "../utils/errors.js";
 export class NoticeController {
     /**
      * GET /api/v1/notices

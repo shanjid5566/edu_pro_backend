@@ -2,7 +2,7 @@
  * Student Service
  * Business logic for student management
  */
-import { CreateStudentInput, UpdateStudentInput, StudentResponse, StudentWithStats, StudentListResponse, StudentClassListResponse } from "../types/student.dto";
+import { CreateStudentInput, UpdateStudentInput, StudentResponse, StudentWithStats, StudentListResponse, StudentClassListResponse } from "../types/student.dto.js";
 export declare class StudentService {
     /**
      * Get all students with pagination and search

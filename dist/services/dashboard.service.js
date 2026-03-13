@@ -2,7 +2,7 @@
  * Dashboard Service
  * Business logic for dashboard data aggregation and statistics
  */
-import { db } from "../config/database.config";
+import { db } from "../config/database.config.js";
 export class DashboardService {
     /**
      * Get complete admin dashboard data

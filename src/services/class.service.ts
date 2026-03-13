@@ -1,5 +1,5 @@
-import { db } from "../config/database.config";
-import { BadRequestError, NotFoundError } from "../utils/errors";
+import { db } from "../config/database.config.js";
+import { BadRequestError, NotFoundError } from "../utils/errors.js";
 import {
   CreateClassInput,
   UpdateClassInput,
@@ -10,7 +10,7 @@ import {
   BulkCreateClassesInput,
   BulkCreateClassesResponse,
   AssignSubjectsInput,
-} from "../types/class.dto";
+} from "../types/class.dto.js";
 
 export class ClassService {
   /**

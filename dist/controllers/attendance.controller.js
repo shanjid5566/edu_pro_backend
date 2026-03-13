@@ -1,6 +1,6 @@
-import { attendanceService } from "../services/attendance.service";
-import { ValidationError } from "../utils/errors";
-import { buildCsv } from "../utils/csv";
+import { attendanceService } from "../services/attendance.service.js";
+import { ValidationError } from "../utils/errors.js";
+import { buildCsv } from "../utils/csv.js";
 export class AttendanceController {
     /**
      * GET /api/v1/attendance/daily-stats

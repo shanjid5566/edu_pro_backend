@@ -1,4 +1,4 @@
-import { CreateExamInput, UpdateExamInput, ExamResponse, ExamListResponse, ExamStatistics, ExamWithResults, BulkCreateExamsInput, BulkCreateExamsResponse } from "../types/exam.dto";
+import { CreateExamInput, UpdateExamInput, ExamResponse, ExamListResponse, ExamStatistics, ExamWithResults, BulkCreateExamsInput, BulkCreateExamsResponse } from "../types/exam.dto.js";
 export declare class ExamService {
     /**
      * Create a new exam

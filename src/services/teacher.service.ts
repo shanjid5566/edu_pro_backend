@@ -3,8 +3,8 @@
  * Business logic for teacher management
  */
 
-import { db } from "../config/database.config";
-import { BadRequestError, NotFoundError } from "../utils/errors";
+import { db } from "../config/database.config.js";
+import { BadRequestError, NotFoundError } from "../utils/errors.js";
 import {
   CreateTeacherInput,
   UpdateTeacherInput,
@@ -13,7 +13,7 @@ import {
   TeacherListResponse,
   AssignClassesInput,
   AssignSubjectsInput,
-} from "../types/teacher.dto";
+} from "../types/teacher.dto.js";
 import bcrypt from "bcryptjs";
 
 export class TeacherService {

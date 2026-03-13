@@ -1,4 +1,4 @@
-import { MarkAttendanceInput, UpdateAttendanceInput, AttendanceResponse, AttendanceSummary, ClassWiseAttendance, DailyStatistics, AttendanceReport, AttendanceListResponse, BulkMarkAttendanceInput, BulkMarkAttendanceResponse } from "../types/attendance.dto";
+import { MarkAttendanceInput, UpdateAttendanceInput, AttendanceResponse, AttendanceSummary, ClassWiseAttendance, DailyStatistics, AttendanceReport, AttendanceListResponse, BulkMarkAttendanceInput, BulkMarkAttendanceResponse } from "../types/attendance.dto.js";
 export declare class AttendanceService {
     /**
      * Mark attendance for a student

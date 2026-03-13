@@ -1,4 +1,4 @@
-import { CreateClassInput, UpdateClassInput, ClassResponse, ClassWithStats, ClassListResponse, ClassStatistics, BulkCreateClassesInput, BulkCreateClassesResponse, AssignSubjectsInput } from "../types/class.dto";
+import { CreateClassInput, UpdateClassInput, ClassResponse, ClassWithStats, ClassListResponse, ClassStatistics, BulkCreateClassesInput, BulkCreateClassesResponse, AssignSubjectsInput } from "../types/class.dto.js";
 export declare class ClassService {
     /**
      * Create a new class

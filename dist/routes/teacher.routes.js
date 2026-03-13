@@ -3,8 +3,8 @@
  * API routes for teacher management
  */
 import { Router } from "express";
-import { teacherController } from "../controllers/teacher.controller";
-import { verifyToken } from "../middlewares/auth.middleware";
+import { teacherController } from "../controllers/teacher.controller.js";
+import { verifyToken } from "../middlewares/auth.middleware.js";
 const router = Router();
 // Apply authentication middleware to all routes
 router.use(verifyToken);

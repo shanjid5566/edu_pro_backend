@@ -2,8 +2,8 @@
  * Dashboard Controller
  * Handles HTTP requests for dashboard data
  */
-import { dashboardService } from "../services/dashboard.service";
-import { ValidationError } from "../utils/errors";
+import { dashboardService } from "../services/dashboard.service.js";
+import { ValidationError } from "../utils/errors.js";
 export class DashboardController {
     /**
      * GET /api/v1/dashboard

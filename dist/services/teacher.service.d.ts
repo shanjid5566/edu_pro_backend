@@ -2,7 +2,7 @@
  * Teacher Service
  * Business logic for teacher management
  */
-import { CreateTeacherInput, UpdateTeacherInput, TeacherResponse, TeacherWithStats, TeacherListResponse, AssignClassesInput, AssignSubjectsInput } from "../types/teacher.dto";
+import { CreateTeacherInput, UpdateTeacherInput, TeacherResponse, TeacherWithStats, TeacherListResponse, AssignClassesInput, AssignSubjectsInput } from "../types/teacher.dto.js";
 export declare class TeacherService {
     /**
      * Get all teachers with pagination and search

@@ -1,5 +1,5 @@
-import { classService } from "../services/class.service";
-import { ValidationError } from "../utils/errors";
+import { classService } from "../services/class.service.js";
+import { ValidationError } from "../utils/errors.js";
 export class ClassController {
     /**
      * GET /api/v1/classes

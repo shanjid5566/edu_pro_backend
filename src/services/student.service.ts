@@ -3,8 +3,8 @@
  * Business logic for student management
  */
 
-import { db } from "../config/database.config";
-import { BadRequestError, NotFoundError } from "../utils/errors";
+import { db } from "../config/database.config.js";
+import { BadRequestError, NotFoundError } from "../utils/errors.js";
 import {
   CreateStudentInput,
   UpdateStudentInput,
@@ -12,7 +12,7 @@ import {
   StudentWithStats,
   StudentListResponse,
   StudentClassListResponse,
-} from "../types/student.dto";
+} from "../types/student.dto.js";
 import bcrypt from "bcryptjs";
 
 export class StudentService {

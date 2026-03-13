@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { classService } from "../services/class.service";
-import { ValidationError } from "../utils/errors";
+import { classService } from "../services/class.service.js";
+import { ValidationError } from "../utils/errors.js";
 
 declare global {
   namespace Express {

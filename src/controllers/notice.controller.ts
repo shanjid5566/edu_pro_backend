@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { noticeService } from "../services/notice.service";
-import { ValidationError, BadRequestError } from "../utils/errors";
+import { noticeService } from "../services/notice.service.js";
+import { ValidationError, BadRequestError } from "../utils/errors.js";
 
 // Extend Express Request to include user
 declare global {
