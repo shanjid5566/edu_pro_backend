@@ -11,6 +11,10 @@ let prisma: PrismaClient | null = null;
  */
 export const getPrismaClient = (): PrismaClient => {
   if (!prisma) {
+    if (!config.DATABASE_URL) {
+      throw new Error("DATABASE_URL is not configured. Set it in your deployment environment variables.");
+    }
+
     const pool = new pg.Pool({ connectionString: config.DATABASE_URL });
     const adapter = new PrismaPg(pool);
     
@@ -52,6 +56,10 @@ export const disconnectDatabase = async (): Promise<void> => {
   }
 };
 
-// Export prisma client
-export const db = getPrismaClient();
+// Lazy db proxy prevents startup crashes in serverless environments.
+export const db: PrismaClient = new Proxy({} as PrismaClient, {
+  get(_target, prop, receiver) {
+    return Reflect.get(getPrismaClient() as unknown as object, prop, receiver);
+  },
+});
 export default db;

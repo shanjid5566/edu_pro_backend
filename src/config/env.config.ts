@@ -35,10 +35,15 @@ const missingEnvVars = requiredEnvVars.filter(
   (envVar) => !process.env[envVar]
 );
 
-if (missingEnvVars.length > 0 && config.NODE_ENV === "production") {
-  throw new Error(
-    `Missing required environment variables: ${missingEnvVars.join(", ")}`
-  );
+if (missingEnvVars.length > 0) {
+  const message = `Missing required environment variables: ${missingEnvVars.join(", ")}`;
+  const isVercel = process.env.VERCEL === "1";
+
+  if (config.NODE_ENV === "production" && !isVercel) {
+    throw new Error(message);
+  }
+
+  console.warn(`⚠️ ${message}`);
 }
 
 export default config;
