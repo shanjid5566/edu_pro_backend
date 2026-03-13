@@ -4,11 +4,12 @@
  */
 import { teacherService } from "../services/teacher.service";
 import { ValidationError } from "../utils/errors";
+import { buildCsv } from "../utils/csv";
 export class TeacherController {
     /**
      * GET /api/v1/teachers
      * Get all teachers with pagination and optional filtering
-     * Query params: page, pageSize, search, department
+    * Query params: page, pageSize, search, department, status
      */
     async getTeachers(req, res) {
         try {
@@ -16,6 +17,7 @@ export class TeacherController {
             const pageSizeParam = String(Array.isArray(req.query.pageSize) ? req.query.pageSize[0] : req.query.pageSize || "");
             const searchParam = String(Array.isArray(req.query.search) ? req.query.search[0] : req.query.search || "");
             const departmentParam = String(Array.isArray(req.query.department) ? req.query.department[0] : req.query.department || "");
+            const statusParam = String(Array.isArray(req.query.status) ? req.query.status[0] : req.query.status || "");
             const page = parseInt(pageParam || "1") || 1;
             const pageSize = parseInt(pageSizeParam || "10") || 10;
             if (page < 1) {
@@ -24,7 +26,7 @@ export class TeacherController {
             if (pageSize < 1 || pageSize > 100) {
                 throw new ValidationError("PageSize must be between 1 and 100");
             }
-            const result = await teacherService.getTeachers(page, pageSize, searchParam || undefined, departmentParam || undefined);
+            const result = await teacherService.getTeachers(page, pageSize, searchParam || undefined, departmentParam || undefined, statusParam || undefined);
             res.json({
                 success: true,
                 message: "Teachers retrieved successfully",
@@ -36,6 +38,55 @@ export class TeacherController {
             res.status(status).json({
                 success: false,
                 message: error.message || "Failed to retrieve teachers",
+                error: error.message,
+            });
+        }
+    }
+    /**
+     * GET /api/v1/teachers/export
+     * Export filtered teachers as CSV
+     */
+    async exportTeachers(req, res) {
+        try {
+            const searchParam = String(Array.isArray(req.query.search) ? req.query.search[0] : req.query.search || "");
+            const departmentParam = String(Array.isArray(req.query.department) ? req.query.department[0] : req.query.department || "");
+            const statusParam = String(Array.isArray(req.query.status) ? req.query.status[0] : req.query.status || "");
+            const firstPage = await teacherService.getTeachers(1, 1, searchParam || undefined, departmentParam || undefined, statusParam || undefined);
+            const pageSize = Math.max(firstPage.total, 1);
+            const result = await teacherService.getTeachers(1, pageSize, searchParam || undefined, departmentParam || undefined, statusParam || undefined);
+            const rows = result.data.map((teacher) => ({
+                id: teacher.id,
+                name: teacher.name,
+                email: teacher.email,
+                phone: teacher.phone || "",
+                department: teacher.department,
+                classesTaken: teacher.classesTaken,
+                subjects: (teacher.subjects || []).map((subject) => subject.name).join(" | "),
+                classes: (teacher.classes || []).map((classRecord) => `${classRecord.name}-${classRecord.section}`).join(" | "),
+                status: teacher.status,
+                joinDate: teacher.joinDate,
+            }));
+            const csv = buildCsv(rows, [
+                "id",
+                "name",
+                "email",
+                "phone",
+                "department",
+                "classesTaken",
+                "subjects",
+                "classes",
+                "status",
+                "joinDate",
+            ]);
+            res.setHeader("Content-Type", "text/csv; charset=utf-8");
+            res.setHeader("Content-Disposition", `attachment; filename=teachers-${new Date().toISOString().slice(0, 10)}.csv`);
+            res.status(200).send(csv);
+        }
+        catch (error) {
+            const status = error.statusCode || 500;
+            res.status(status).json({
+                success: false,
+                message: error.message || "Failed to export teachers",
                 error: error.message,
             });
         }

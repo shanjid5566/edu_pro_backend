@@ -9,7 +9,7 @@ export class StudentService {
     /**
      * Get all students with pagination and search
      */
-    async getStudents(page, pageSize, search, classId, section) {
+    async getStudents(page, pageSize, search, classId, section, className, status) {
         const skip = (page - 1) * pageSize;
         const whereCondition = {};
         if (search) {
@@ -22,8 +22,23 @@ export class StudentService {
         if (classId) {
             whereCondition.classId = classId;
         }
+        if (className) {
+            whereCondition.class = {
+                name: { contains: className, mode: "insensitive" },
+            };
+        }
         if (section) {
             whereCondition.section = { contains: section, mode: "insensitive" };
+        }
+        if (status) {
+            const normalizedStatus = status.toLowerCase();
+            if (!["active", "inactive"].includes(normalizedStatus)) {
+                throw new BadRequestError("Status must be either active or inactive");
+            }
+            whereCondition.user = {
+                ...(whereCondition.user ?? {}),
+                status: normalizedStatus,
+            };
         }
         const [students, total] = await Promise.all([
             db.student.findMany({
@@ -73,7 +88,7 @@ export class StudentService {
                     examResults: {
                         select: {
                             id: true,
-                            marks: true,
+                            marksObtained: true,
                         },
                     },
                 },
@@ -180,15 +195,14 @@ export class StudentService {
             where: { id },
             include: {
                 user: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        phone: true,
-                        avatar: true,
-                        status: true,
-                        createdAt: true,
-                        updatedAt: true,
+                    include: {
+                        profile: {
+                            select: {
+                                dateOfBirth: true,
+                                gender: true,
+                                address: true,
+                            },
+                        },
                     },
                 },
                 class: {
@@ -223,14 +237,14 @@ export class StudentService {
                 examResults: {
                     select: {
                         id: true,
-                        marks: true,
-                        totalMarks: true,
+                        marksObtained: true,
+                        grade: true,
                     },
                 },
                 feePayments: {
                     select: {
                         id: true,
-                        amount: true,
+                        amountPaid: true,
                         status: true,
                     },
                 },
@@ -299,14 +313,18 @@ export class StudentService {
                 phone: input.phone?.trim(),
                 role: "STUDENT",
                 status: "active",
+                profile: {
+                    create: {
+                        dateOfBirth: input.dateOfBirth,
+                        gender: input.gender,
+                        address: input.address?.trim(),
+                    },
+                },
                 student: {
                     create: {
                         classId: input.classId,
                         section: input.section.trim(),
                         rollNumber: input.rollNumber.trim(),
-                        dateOfBirth: input.dateOfBirth,
-                        gender: input.gender,
-                        address: input.address?.trim(),
                         admissionDate: new Date(),
                     },
                 },
@@ -338,6 +356,7 @@ export class StudentService {
                         },
                     },
                 },
+                profile: true,
             },
         });
         const student = user.student;
@@ -355,9 +374,9 @@ export class StudentService {
                 section: student.class.section,
             },
             rollNumber: student.rollNumber,
-            dateOfBirth: student.dateOfBirth || undefined,
-            gender: student.gender || undefined,
-            address: student.address || undefined,
+            dateOfBirth: user.profile?.dateOfBirth || undefined,
+            gender: user.profile?.gender || undefined,
+            address: user.profile?.address || undefined,
             admissionDate: student.admissionDate,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
@@ -421,40 +440,69 @@ export class StudentService {
             },
         });
         const updatedStudent = updatedUser.student;
-        // Update student-specific fields
-        if (input.classId || input.section || input.rollNumber || input.dateOfBirth || input.gender || input.address) {
-            await db.student.update({
-                where: { id },
+        // Update profile-specific fields
+        if (input.dateOfBirth !== undefined || input.gender !== undefined || input.address !== undefined) {
+            await db.profile.update({
+                where: { userId: updatedUser.id },
                 data: {
-                    classId: input.classId,
-                    section: input.section ? input.section.trim() : undefined,
-                    rollNumber: input.rollNumber ? input.rollNumber.trim() : undefined,
                     dateOfBirth: input.dateOfBirth,
                     gender: input.gender,
                     address: input.address ? input.address.trim() : undefined,
                 },
             });
         }
-        return {
-            id: updatedStudent.id,
-            userId: updatedUser.id,
-            name: updatedUser.name,
-            email: updatedUser.email,
-            phone: updatedUser.phone || undefined,
-            avatar: updatedUser.avatar || undefined,
-            status: updatedUser.status,
-            class: {
-                id: updatedStudent.class.id,
-                name: updatedStudent.class.name,
-                section: updatedStudent.class.section,
+        // Update student-specific fields
+        if (input.classId || input.section || input.rollNumber) {
+            await db.student.update({
+                where: { id },
+                data: {
+                    classId: input.classId,
+                    section: input.section ? input.section.trim() : undefined,
+                    rollNumber: input.rollNumber ? input.rollNumber.trim() : undefined,
+                },
+            });
+        }
+        // Fetch updated student with profile
+        const finalStudent = await db.student.findUnique({
+            where: { id },
+            include: {
+                user: {
+                    include: {
+                        profile: true,
+                    },
+                },
+                class: {
+                    select: {
+                        id: true,
+                        name: true,
+                        section: true,
+                    },
+                },
             },
-            rollNumber: updatedStudent.rollNumber,
-            dateOfBirth: updatedStudent.dateOfBirth || undefined,
-            gender: updatedStudent.gender || undefined,
-            address: updatedStudent.address || undefined,
-            admissionDate: updatedStudent.admissionDate,
-            createdAt: updatedUser.createdAt,
-            updatedAt: updatedUser.updatedAt,
+        });
+        if (!finalStudent) {
+            throw new NotFoundError("Student not found");
+        }
+        return {
+            id: finalStudent.id,
+            userId: finalStudent.userId,
+            name: finalStudent.user.name,
+            email: finalStudent.user.email,
+            phone: finalStudent.user.phone || undefined,
+            avatar: finalStudent.user.avatar || undefined,
+            status: finalStudent.user.status,
+            class: {
+                id: finalStudent.class.id,
+                name: finalStudent.class.name,
+                section: finalStudent.class.section,
+            },
+            rollNumber: finalStudent.rollNumber,
+            dateOfBirth: finalStudent.user.profile?.dateOfBirth || undefined,
+            gender: finalStudent.user.profile?.gender || undefined,
+            address: finalStudent.user.profile?.address || undefined,
+            admissionDate: finalStudent.admissionDate,
+            createdAt: finalStudent.user.createdAt,
+            updatedAt: finalStudent.user.updatedAt,
         };
     }
     /**
@@ -486,8 +534,8 @@ export class StudentService {
                 },
                 examResults: {
                     select: {
-                        marks: true,
-                        totalMarks: true,
+                        marksObtained: true,
+                        remarks: true,
                     },
                 },
             },
@@ -496,12 +544,12 @@ export class StudentService {
             throw new NotFoundError("Student not found");
         }
         // Calculate attendance percentage
-        const presentDays = student.attendances.filter((a) => a.status === "present").length;
+        const presentDays = student.attendances.filter((a) => a.status === "PRESENT").length;
         const attendancePercentage = student.attendances.length > 0 ? (presentDays / student.attendances.length) * 100 : 0;
         // Calculate average grade
         let averageMarks = 0;
         if (student.examResults.length > 0) {
-            const totalMarks = student.examResults.reduce((sum, r) => sum + r.marks, 0);
+            const totalMarks = student.examResults.reduce((sum, r) => sum + r.marksObtained, 0);
             averageMarks = totalMarks / student.examResults.length;
         }
         return {
@@ -538,9 +586,9 @@ export class StudentService {
                 section: student.class.section,
             },
             rollNumber: student.rollNumber,
-            dateOfBirth: student.dateOfBirth || undefined,
-            gender: student.gender || undefined,
-            address: student.address || undefined,
+            dateOfBirth: student.user.profile?.dateOfBirth || undefined,
+            gender: student.user.profile?.gender || undefined,
+            address: student.user.profile?.address || undefined,
             parent,
             admissionDate: student.admissionDate,
             createdAt: student.user.createdAt,

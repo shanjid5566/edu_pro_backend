@@ -17,6 +17,11 @@ export declare class ParentController {
      */
     getParents(req: Request, res: Response): Promise<void>;
     /**
+     * GET /api/v1/parents/export
+     * Export filtered parents as CSV
+     */
+    exportParents(req: Request, res: Response): Promise<void>;
+    /**
      * GET /api/v1/parents/:id
      * Get single parent
      */

@@ -179,6 +179,26 @@ export class SettingController {
   }
 
   /**
+   * @route   PUT /api/v1/settings/user/two-factor
+   * @desc    Enable or disable two-factor authentication
+   * @access  Private
+   */
+  async toggleTwoFactor(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        throw new Error("User not authenticated");
+      }
+
+      const enabled = Boolean(req.body.enabled);
+      const result = await settingService.toggleTwoFactor(userId, enabled);
+      return ApiResponse.success(res, result, result.message);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
    * @route   PUT /api/v1/settings/user/notifications
    * @desc    Update notification preferences
    * @access  Private

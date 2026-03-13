@@ -27,6 +27,15 @@ router.post("/", (req, res) => {
     studentController.createStudent(req, res);
 });
 /**
+ * @route   GET /api/v1/students/export
+ * @access  Private (Admin)
+ * @desc    Export students as CSV with filters
+ * @query   search, classId, className, class, section, status
+ */
+router.get("/export", (req, res) => {
+    studentController.exportStudents(req, res);
+});
+/**
  * @route   GET /api/v1/students/class/:classId
  * @access  Private
  * @desc    Get students by class

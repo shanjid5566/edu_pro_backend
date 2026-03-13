@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { parentService } from "../services/parent.service";
 import { ValidationError } from "../utils/errors";
+import { buildCsv } from "../utils/csv";
 
 declare global {
   namespace Express {
@@ -25,6 +26,9 @@ export class ParentController {
       const pageSizeParam = String(Array.isArray(req.query.pageSize) ? req.query.pageSize[0] : req.query.pageSize || "");
       const searchParam = String(Array.isArray(req.query.search) ? req.query.search[0] : req.query.search || "");
       const statusParam = String(Array.isArray(req.query.status) ? req.query.status[0] : req.query.status || "");
+      const occupationParam = String(
+        Array.isArray(req.query.occupation) ? req.query.occupation[0] : req.query.occupation || ""
+      );
 
       const page = parseInt(pageParam || "1") || 1;
       const pageSize = parseInt(pageSizeParam || "10") || 10;
@@ -40,7 +44,8 @@ export class ParentController {
         page,
         pageSize,
         searchParam || undefined,
-        statusParam || undefined
+        statusParam || undefined,
+        occupationParam || undefined
       );
 
       res.json({
@@ -53,6 +58,61 @@ export class ParentController {
       res.status(status).json({
         success: false,
         message: error.message || "Failed to retrieve parents",
+        error: error.message,
+      });
+    }
+  }
+
+  /**
+   * GET /api/v1/parents/export
+   * Export filtered parents as CSV
+   */
+  async exportParents(req: Request, res: Response): Promise<void> {
+    try {
+      const searchParam = String(Array.isArray(req.query.search) ? req.query.search[0] : req.query.search || "");
+      const statusParam = String(Array.isArray(req.query.status) ? req.query.status[0] : req.query.status || "");
+      const occupationParam = String(
+        Array.isArray(req.query.occupation) ? req.query.occupation[0] : req.query.occupation || ""
+      );
+
+      const firstPage = await parentService.getParents(
+        1,
+        1,
+        searchParam || undefined,
+        statusParam || undefined,
+        occupationParam || undefined
+      );
+
+      const pageSize = Math.max(firstPage.pagination.total, 1);
+      const result = await parentService.getParents(
+        1,
+        pageSize,
+        searchParam || undefined,
+        statusParam || undefined,
+        occupationParam || undefined
+      );
+
+      const rows = result.parents.map((parent) => ({
+        id: parent.id,
+        name: parent.name,
+        email: parent.email,
+        phone: parent.phone,
+        occupation: parent.occupation || "",
+        status: parent.status,
+        children: parent.students.map((student) => student.name).join(" | "),
+        createdAt: parent.createdAt,
+      }));
+
+      const csv = buildCsv(rows, ["id", "name", "email", "phone", "occupation", "status", "children", "createdAt"]);
+
+      res.setHeader("Content-Type", "text/csv; charset=utf-8");
+      res.setHeader("Content-Disposition", `attachment; filename=parents-${new Date().toISOString().slice(0, 10)}.csv`);
+      res.status(200).send(csv);
+    } catch (error: any) {
+      const status = error.statusCode || 500;
+      res.status(status).json({
+        success: false,
+        message: error.message || "Failed to export parents",
         error: error.message,
       });
     }

@@ -106,6 +106,18 @@ router.get("/search/:query", verifyToken, (req, res) => examController.searchExa
 router.get("/stats", verifyToken, (req, res) => examController.getStatistics(req, res));
 /**
  * @swagger
+ * /api/v1/exams/export:
+ *   get:
+ *     tags:
+ *       - Exams
+ *     summary: Export exams as CSV
+ *     description: Export exams using the same filters as list API
+ *     security:
+ *       - BearerAuth: []
+ */
+router.get("/export", verifyToken, (req, res) => examController.exportExams(req, res));
+/**
+ * @swagger
  * /api/v1/exams/{id}:
  *   get:
  *     tags:

@@ -18,9 +18,14 @@ export declare class StudentController {
     /**
      * GET /api/v1/students
      * Get all students with pagination and optional filtering
-     * Query params: page, pageSize, search, classId, section
+     * Query params: page, pageSize, search, classId, section, className, class, status
      */
     getStudents(req: Request, res: Response): Promise<void>;
+    /**
+     * GET /api/v1/students/export
+     * Export filtered students as CSV
+     */
+    exportStudents(req: Request, res: Response): Promise<void>;
     /**
      * GET /api/v1/students/class/:classId
      * Get students by class

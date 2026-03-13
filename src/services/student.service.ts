@@ -24,7 +24,9 @@ export class StudentService {
     pageSize: number,
     search?: string,
     classId?: string,
-    section?: string
+    section?: string,
+    className?: string,
+    status?: string
   ): Promise<StudentListResponse> {
     const skip = (page - 1) * pageSize;
 
@@ -42,8 +44,26 @@ export class StudentService {
       whereCondition.classId = classId;
     }
 
+    if (className) {
+      whereCondition.class = {
+        name: { contains: className, mode: "insensitive" },
+      };
+    }
+
     if (section) {
       whereCondition.section = { contains: section, mode: "insensitive" };
+    }
+
+    if (status) {
+      const normalizedStatus = status.toLowerCase();
+      if (!["active", "inactive"].includes(normalizedStatus)) {
+        throw new BadRequestError("Status must be either active or inactive");
+      }
+
+      whereCondition.user = {
+        ...(whereCondition.user ?? {}),
+        status: normalizedStatus,
+      };
     }
 
     const [students, total] = await Promise.all([

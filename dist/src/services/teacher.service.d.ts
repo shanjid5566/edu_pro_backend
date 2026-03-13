@@ -7,7 +7,7 @@ export declare class TeacherService {
     /**
      * Get all teachers with pagination and search
      */
-    getTeachers(page: number, pageSize: number, search?: string, department?: string): Promise<TeacherListResponse>;
+    getTeachers(page: number, pageSize: number, search?: string, department?: string, status?: string): Promise<TeacherListResponse>;
     /**
      * Get single teacher by ID
      */

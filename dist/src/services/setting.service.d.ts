@@ -85,6 +85,15 @@ export declare class SettingService {
         updatedAt: Date;
     }>;
     /**
+     * Toggle two-factor authentication setting for a user
+     */
+    toggleTwoFactor(userId: string, enabled: boolean): Promise<{
+        success: boolean;
+        enabled: boolean;
+        message: string;
+        updatedAt: Date;
+    }>;
+    /**
      * Update notification preferences
      */
     updateNotificationPreferences(userId: string, input: NotificationPreferencesInput): Promise<{

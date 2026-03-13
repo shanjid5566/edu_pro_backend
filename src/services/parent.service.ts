@@ -157,7 +157,8 @@ export class ParentService {
     page: number = 1,
     pageSize: number = 10,
     search?: string,
-    status?: string
+    status?: string,
+    occupation?: string
   ): Promise<ParentListResponse> {
     const skip = (page - 1) * pageSize;
 
@@ -182,6 +183,13 @@ export class ParentService {
           { email: { contains: search.trim(), mode: "insensitive" } },
           { phone: { contains: search.trim(), mode: "insensitive" } },
         ],
+      };
+    }
+
+    if (occupation) {
+      where.occupation = {
+        contains: occupation.trim(),
+        mode: "insensitive",
       };
     }
 

@@ -127,7 +127,7 @@ export class ParentService {
     /**
      * Get all parents with pagination and filters
      */
-    async getParents(page = 1, pageSize = 10, search, status) {
+    async getParents(page = 1, pageSize = 10, search, status, occupation) {
         const skip = (page - 1) * pageSize;
         // Build where clause
         const where = {};
@@ -148,6 +148,12 @@ export class ParentService {
                     { email: { contains: search.trim(), mode: "insensitive" } },
                     { phone: { contains: search.trim(), mode: "insensitive" } },
                 ],
+            };
+        }
+        if (occupation) {
+            where.occupation = {
+                contains: occupation.trim(),
+                mode: "insensitive",
             };
         }
         const total = await db.parent.count({ where });

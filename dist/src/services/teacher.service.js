@@ -9,7 +9,7 @@ export class TeacherService {
     /**
      * Get all teachers with pagination and search
      */
-    async getTeachers(page, pageSize, search, department) {
+    async getTeachers(page, pageSize, search, department, status) {
         const skip = (page - 1) * pageSize;
         const whereCondition = {};
         if (search) {
@@ -21,6 +21,16 @@ export class TeacherService {
         }
         if (department) {
             whereCondition.department = { contains: department, mode: "insensitive" };
+        }
+        if (status) {
+            const normalizedStatus = status.toLowerCase();
+            if (!["active", "inactive"].includes(normalizedStatus)) {
+                throw new BadRequestError("Status must be either active or inactive");
+            }
+            whereCondition.user = {
+                ...(whereCondition.user ?? {}),
+                status: normalizedStatus,
+            };
         }
         const [teachers, total] = await Promise.all([
             db.teacher.findMany({

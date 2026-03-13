@@ -306,6 +306,34 @@ export class SettingService {
   }
 
   /**
+   * Toggle two-factor authentication setting for a user
+   */
+  async toggleTwoFactor(userId: string, enabled: boolean) {
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      select: { id: true },
+    });
+
+    if (!user) {
+      throw new BadRequestError("User not found");
+    }
+
+    const key = `twoFactorEnabled:${userId}`;
+    await db.setting.upsert({
+      where: { key },
+      update: { value: String(enabled) },
+      create: { key, value: String(enabled) },
+    });
+
+    return {
+      success: true,
+      enabled,
+      message: `Two-factor authentication ${enabled ? "enabled" : "disabled"} successfully`,
+      updatedAt: new Date(),
+    };
+  }
+
+  /**
    * Update notification preferences
    */
   async updateNotificationPreferences(

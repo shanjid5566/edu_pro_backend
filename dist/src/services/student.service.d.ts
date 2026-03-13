@@ -7,7 +7,7 @@ export declare class StudentService {
     /**
      * Get all students with pagination and search
      */
-    getStudents(page: number, pageSize: number, search?: string, classId?: string, section?: string): Promise<StudentListResponse>;
+    getStudents(page: number, pageSize: number, search?: string, classId?: string, section?: string, className?: string, status?: string): Promise<StudentListResponse>;
     /**
      * Get students by class
      */
@@ -34,8 +34,8 @@ export declare class StudentService {
     getStudentStats(id: string): Promise<{
         attendance: number;
         averageMarks: number;
-        totalExams: any;
-        totalAttendanceDays: any;
+        totalExams: number;
+        totalAttendanceDays: number;
     }>;
     /**
      * Map student database record to response DTO

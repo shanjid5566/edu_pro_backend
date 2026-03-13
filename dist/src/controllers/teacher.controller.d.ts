@@ -18,9 +18,14 @@ export declare class TeacherController {
     /**
      * GET /api/v1/teachers
      * Get all teachers with pagination and optional filtering
-     * Query params: page, pageSize, search, department
+    * Query params: page, pageSize, search, department, status
      */
     getTeachers(req: Request, res: Response): Promise<void>;
+    /**
+     * GET /api/v1/teachers/export
+     * Export filtered teachers as CSV
+     */
+    exportTeachers(req: Request, res: Response): Promise<void>;
     /**
      * GET /api/v1/teachers/:id
      * Get single teacher by ID with statistics

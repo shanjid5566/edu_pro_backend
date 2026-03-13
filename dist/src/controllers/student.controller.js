@@ -4,11 +4,12 @@
  */
 import { studentService } from "../services/student.service";
 import { ValidationError } from "../utils/errors";
+import { buildCsv } from "../utils/csv";
 export class StudentController {
     /**
      * GET /api/v1/students
      * Get all students with pagination and optional filtering
-     * Query params: page, pageSize, search, classId, section
+     * Query params: page, pageSize, search, classId, section, className, class, status
      */
     async getStudents(req, res) {
         try {
@@ -17,6 +18,8 @@ export class StudentController {
             const searchParam = String(Array.isArray(req.query.search) ? req.query.search[0] : req.query.search || "");
             const classIdParam = String(Array.isArray(req.query.classId) ? req.query.classId[0] : req.query.classId || "");
             const sectionParam = String(Array.isArray(req.query.section) ? req.query.section[0] : req.query.section || "");
+            const classNameParam = String(Array.isArray(req.query.className) ? req.query.className[0] : req.query.className || req.query.class || "");
+            const statusParam = String(Array.isArray(req.query.status) ? req.query.status[0] : req.query.status || "");
             const page = parseInt(pageParam || "1") || 1;
             const pageSize = parseInt(pageSizeParam || "10") || 10;
             if (page < 1) {
@@ -25,7 +28,7 @@ export class StudentController {
             if (pageSize < 1 || pageSize > 100) {
                 throw new ValidationError("PageSize must be between 1 and 100");
             }
-            const result = await studentService.getStudents(page, pageSize, searchParam || undefined, classIdParam || undefined, sectionParam || undefined);
+            const result = await studentService.getStudents(page, pageSize, searchParam || undefined, classIdParam || undefined, sectionParam || undefined, classNameParam || undefined, statusParam || undefined);
             res.json({
                 success: true,
                 message: "Students retrieved successfully",
@@ -37,6 +40,44 @@ export class StudentController {
             res.status(status).json({
                 success: false,
                 message: error.message || "Failed to retrieve students",
+                error: error.message,
+            });
+        }
+    }
+    /**
+     * GET /api/v1/students/export
+     * Export filtered students as CSV
+     */
+    async exportStudents(req, res) {
+        try {
+            const searchParam = String(Array.isArray(req.query.search) ? req.query.search[0] : req.query.search || "");
+            const classIdParam = String(Array.isArray(req.query.classId) ? req.query.classId[0] : req.query.classId || "");
+            const sectionParam = String(Array.isArray(req.query.section) ? req.query.section[0] : req.query.section || "");
+            const classNameParam = String(Array.isArray(req.query.className) ? req.query.className[0] : req.query.className || req.query.class || "");
+            const statusParam = String(Array.isArray(req.query.status) ? req.query.status[0] : req.query.status || "");
+            const firstPage = await studentService.getStudents(1, 1, searchParam || undefined, classIdParam || undefined, sectionParam || undefined, classNameParam || undefined, statusParam || undefined);
+            const pageSize = Math.max(firstPage.total, 1);
+            const result = await studentService.getStudents(1, pageSize, searchParam || undefined, classIdParam || undefined, sectionParam || undefined, classNameParam || undefined, statusParam || undefined);
+            const rows = result.data.map((student) => ({
+                id: student.id,
+                name: student.name,
+                email: student.email,
+                phone: student.phone || "",
+                class: `${student.class.name}-${student.class.section}`,
+                rollNumber: student.rollNumber,
+                status: student.status,
+                admissionDate: student.admissionDate,
+            }));
+            const csv = buildCsv(rows, ["id", "name", "email", "phone", "class", "rollNumber", "status", "admissionDate"]);
+            res.setHeader("Content-Type", "text/csv; charset=utf-8");
+            res.setHeader("Content-Disposition", `attachment; filename=students-${new Date().toISOString().slice(0, 10)}.csv`);
+            res.status(200).send(csv);
+        }
+        catch (error) {
+            const status = error.statusCode || 500;
+            res.status(status).json({
+                success: false,
+                message: error.message || "Failed to export students",
                 error: error.message,
             });
         }

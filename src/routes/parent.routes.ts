@@ -95,6 +95,19 @@ router.get("/stats", verifyToken, (req, res) => parentController.getStatistics(r
 
 /**
  * @swagger
+ * /api/v1/parents/export:
+ *   get:
+ *     tags:
+ *       - Parents
+ *     summary: Export parents as CSV
+ *     description: Export filtered parent records
+ *     security:
+ *       - BearerAuth: []
+ */
+router.get("/export", verifyToken, (req, res) => parentController.exportParents(req, res));
+
+/**
+ * @swagger
  * /api/v1/parents/{id}:
  *   get:
  *     tags:

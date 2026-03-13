@@ -11,7 +11,7 @@ export declare class ParentService {
     /**
      * Get all parents with pagination and filters
      */
-    getParents(page?: number, pageSize?: number, search?: string, status?: string): Promise<ParentListResponse>;
+    getParents(page?: number, pageSize?: number, search?: string, status?: string, occupation?: string): Promise<ParentListResponse>;
     /**
      * Update parent
      */

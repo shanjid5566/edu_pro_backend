@@ -181,6 +181,19 @@ router.get(
 
 /**
  * @swagger
+ * /api/v1/attendance/export:
+ *   get:
+ *     tags: [Attendance]
+ *     summary: Export attendance records as CSV
+ *     description: Export filtered attendance records (supports date or start/end range)
+ */
+router.get(
+  "/export",
+  attendanceController.exportAttendance.bind(attendanceController)
+);
+
+/**
+ * @swagger
  * /api/v1/attendance/{id}:
  *   get:
  *     tags: [Attendance]

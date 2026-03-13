@@ -1,5 +1,6 @@
 import { attendanceService } from "../services/attendance.service";
 import { ValidationError } from "../utils/errors";
+import { buildCsv } from "../utils/csv";
 export class AttendanceController {
     /**
      * GET /api/v1/attendance/daily-stats
@@ -129,6 +130,71 @@ export class AttendanceController {
         catch (error) {
             const status = error.statusCode || 500;
             const message = error.message || "Failed to retrieve attendance records";
+            res.status(status).json({
+                success: false,
+                message,
+                error: error.message,
+            });
+        }
+    }
+    /**
+     * GET /api/v1/attendance/export
+     * Export attendance records as CSV
+     */
+    async exportAttendance(req, res) {
+        try {
+            const classIdParam = String(Array.isArray(req.query.classId) ? req.query.classId[0] : req.query.classId || "");
+            const studentIdParam = String(Array.isArray(req.query.studentId) ? req.query.studentId[0] : req.query.studentId || "");
+            const statusParam = String(Array.isArray(req.query.status) ? req.query.status[0] : req.query.status || "");
+            const startDateParam = String(Array.isArray(req.query.startDate) ? req.query.startDate[0] : req.query.startDate || "");
+            const endDateParam = String(Array.isArray(req.query.endDate) ? req.query.endDate[0] : req.query.endDate || "");
+            const dateParam = String(Array.isArray(req.query.date) ? req.query.date[0] : req.query.date || "");
+            let startDate;
+            let endDate;
+            if (dateParam) {
+                const selectedDate = new Date(dateParam);
+                if (isNaN(selectedDate.getTime())) {
+                    throw new ValidationError("Invalid date format");
+                }
+                startDate = new Date(selectedDate);
+                startDate.setHours(0, 0, 0, 0);
+                endDate = new Date(selectedDate);
+                endDate.setHours(23, 59, 59, 999);
+            }
+            else {
+                if (startDateParam) {
+                    startDate = new Date(startDateParam);
+                    if (isNaN(startDate.getTime())) {
+                        throw new ValidationError("Invalid start date format");
+                    }
+                }
+                if (endDateParam) {
+                    endDate = new Date(endDateParam);
+                    if (isNaN(endDate.getTime())) {
+                        throw new ValidationError("Invalid end date format");
+                    }
+                }
+            }
+            const firstPage = await attendanceService.getAttendanceRecords(1, 1, classIdParam || undefined, studentIdParam || undefined, startDate, endDate, statusParam || undefined);
+            const pageSize = Math.max(firstPage.pagination.total, 1);
+            const result = await attendanceService.getAttendanceRecords(1, pageSize, classIdParam || undefined, studentIdParam || undefined, startDate, endDate, statusParam || undefined);
+            const rows = result.records.map((record) => ({
+                id: record.id,
+                date: record.date,
+                class: `${record.class?.name || ""}-${record.class?.section || ""}`,
+                studentName: record.student?.user?.name || "",
+                studentEmail: record.student?.user?.email || "",
+                status: record.status,
+                markedBy: record.teacher?.user?.name || "",
+            }));
+            const csv = buildCsv(rows, ["id", "date", "class", "studentName", "studentEmail", "status", "markedBy"]);
+            res.setHeader("Content-Type", "text/csv; charset=utf-8");
+            res.setHeader("Content-Disposition", `attachment; filename=attendance-${new Date().toISOString().slice(0, 10)}.csv`);
+            res.status(200).send(csv);
+        }
+        catch (error) {
+            const status = error.statusCode || 500;
+            const message = error.message || "Failed to export attendance";
             res.status(status).json({
                 success: false,
                 message,

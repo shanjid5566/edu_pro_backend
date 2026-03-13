@@ -17,6 +17,11 @@ export declare class ExamController {
      */
     getExams(req: Request, res: Response): Promise<void>;
     /**
+     * GET /api/v1/exams/export
+     * Export filtered exams as CSV
+     */
+    exportExams(req: Request, res: Response): Promise<void>;
+    /**
      * GET /api/v1/exams/:id
      * Get single exam
      */

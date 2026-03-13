@@ -1,5 +1,6 @@
 import { examService } from "../services/exam.service";
 import { ValidationError } from "../utils/errors";
+import { buildCsv } from "../utils/csv";
 export class ExamController {
     /**
      * GET /api/v1/exams
@@ -34,6 +35,55 @@ export class ExamController {
             res.status(status).json({
                 success: false,
                 message: error.message || "Failed to retrieve exams",
+                error: error.message,
+            });
+        }
+    }
+    /**
+     * GET /api/v1/exams/export
+     * Export filtered exams as CSV
+     */
+    async exportExams(req, res) {
+        try {
+            const statusParam = String(Array.isArray(req.query.status) ? req.query.status[0] : req.query.status || "");
+            const classIdParam = String(Array.isArray(req.query.classId) ? req.query.classId[0] : req.query.classId || "");
+            const subjectIdParam = String(Array.isArray(req.query.subjectId) ? req.query.subjectId[0] : req.query.subjectId || "");
+            const typeParam = String(Array.isArray(req.query.type) ? req.query.type[0] : req.query.type || "");
+            const searchParam = String(Array.isArray(req.query.search) ? req.query.search[0] : req.query.search || "");
+            const firstPage = await examService.getExams(1, 1, statusParam || undefined, classIdParam || undefined, subjectIdParam || undefined, typeParam || undefined, searchParam || undefined);
+            const pageSize = Math.max(firstPage.pagination.total, 1);
+            const result = await examService.getExams(1, pageSize, statusParam || undefined, classIdParam || undefined, subjectIdParam || undefined, typeParam || undefined, searchParam || undefined);
+            const rows = result.exams.map((exam) => ({
+                id: exam.id,
+                name: exam.name,
+                class: `${exam.class?.name || ""}-${exam.class?.section || ""}`,
+                subject: exam.subject?.name || "",
+                date: exam.date,
+                duration: exam.duration,
+                totalMarks: exam.totalMarks,
+                type: exam.type,
+                status: exam.status,
+            }));
+            const csv = buildCsv(rows, [
+                "id",
+                "name",
+                "class",
+                "subject",
+                "date",
+                "duration",
+                "totalMarks",
+                "type",
+                "status",
+            ]);
+            res.setHeader("Content-Type", "text/csv; charset=utf-8");
+            res.setHeader("Content-Disposition", `attachment; filename=exams-${new Date().toISOString().slice(0, 10)}.csv`);
+            res.status(200).send(csv);
+        }
+        catch (error) {
+            const status = error.statusCode || 500;
+            res.status(status).json({
+                success: false,
+                message: error.message || "Failed to export exams",
                 error: error.message,
             });
         }

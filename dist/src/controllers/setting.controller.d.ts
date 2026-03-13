@@ -44,6 +44,12 @@ export declare class SettingController {
      */
     changePassword(req: AuthRequest, res: Response, next: NextFunction): Promise<Response<any, Record<string, any>> | undefined>;
     /**
+     * @route   PUT /api/v1/settings/user/two-factor
+     * @desc    Enable or disable two-factor authentication
+     * @access  Private
+     */
+    toggleTwoFactor(req: AuthRequest, res: Response, next: NextFunction): Promise<Response<any, Record<string, any>> | undefined>;
+    /**
      * @route   PUT /api/v1/settings/user/notifications
      * @desc    Update notification preferences
      * @access  Private

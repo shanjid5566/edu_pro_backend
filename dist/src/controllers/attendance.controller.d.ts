@@ -32,6 +32,11 @@ export declare class AttendanceController {
      */
     getAttendanceRecords(req: Request, res: Response): Promise<void>;
     /**
+     * GET /api/v1/attendance/export
+     * Export attendance records as CSV
+     */
+    exportAttendance(req: Request, res: Response): Promise<void>;
+    /**
      * GET /api/v1/attendance/:id
      * Get single attendance record
      */

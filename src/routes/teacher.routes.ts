@@ -33,6 +33,16 @@ router.post("/", (req: Request, res: Response) => {
 });
 
 /**
+ * @route   GET /api/v1/teachers/export
+ * @access  Private (Admin)
+ * @desc    Export teachers as CSV with filters
+ * @query   search, department, status
+ */
+router.get("/export", (req: Request, res: Response) => {
+  teacherController.exportTeachers(req, res);
+});
+
+/**
  * @route   GET /api/v1/teachers/:id
  * @access  Private
  * @desc    Get single teacher by ID with statistics

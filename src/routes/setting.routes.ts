@@ -324,6 +324,26 @@ router.post(
   settingController.changePassword.bind(settingController)
 );
 
+/**
+ * @swagger
+ * /api/v1/settings/user/two-factor:
+ *   put:
+ *     tags: [Settings]
+ *     summary: Enable or disable two-factor authentication
+ *     description: Toggle two-factor authentication status for the current user
+ *     security:
+ *       - BearerAuth: []
+ */
+router.put(
+  "/user/two-factor",
+  verifyToken,
+  [
+    body("enabled").isBoolean().withMessage("Enabled must be a boolean"),
+  ],
+  handleValidationErrors,
+  settingController.toggleTwoFactor.bind(settingController)
+);
+
 // ========================
 // Notification Settings
 // ========================
