@@ -390,9 +390,9 @@ export class AttendanceService {
     });
 
     const total = attendances.length;
-    const present = attendances.filter((a) => a.status === "PRESENT").length;
-    const absent = attendances.filter((a) => a.status === "ABSENT").length;
-    const late = attendances.filter((a) => a.status === "LATE").length;
+    const present = attendances.filter((a: { status: string }) => a.status === "PRESENT").length;
+    const absent = attendances.filter((a: { status: string }) => a.status === "ABSENT").length;
+    const late = attendances.filter((a: { status: string }) => a.status === "LATE").length;
 
     return {
       date: startDate,
@@ -431,9 +431,9 @@ export class AttendanceService {
       });
 
       const total = attendances.length;
-      const present = attendances.filter((a) => a.status === "PRESENT").length;
-      const absent = attendances.filter((a) => a.status === "ABSENT").length;
-      const late = attendances.filter((a) => a.status === "LATE").length;
+      const present = attendances.filter((a: { status: string }) => a.status === "PRESENT").length;
+      const absent = attendances.filter((a: { status: string }) => a.status === "ABSENT").length;
+      const late = attendances.filter((a: { status: string }) => a.status === "LATE").length;
 
       result.push({
         classId: classRecord.id,
