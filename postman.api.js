@@ -6,12 +6,61 @@
  * 2) Use helpers to generate URLs and request payloads consistently.
  */
 
-const BASE_URL = "{{baseUrl}}";
-const TOKEN = "{{token}}";
-
 const jsonHeader = { key: "Content-Type", value: "application/json" };
-const authHeader = { key: "Authorization", value: `Bearer ${TOKEN}` };
 const acceptHeader = { key: "Accept", value: "application/json" };
+
+function readVar(key) {
+  if (typeof pm !== "undefined") {
+    const scopedValue =
+      pm.variables.get(key) ||
+      pm.environment.get(key) ||
+      pm.collectionVariables.get(key) ||
+      pm.globals.get(key);
+
+    if (scopedValue !== undefined && scopedValue !== null && String(scopedValue).trim() !== "") {
+      return String(scopedValue);
+    }
+  }
+
+  return `{{${key}}}`;
+}
+
+function resolveBaseUrl() {
+  return readVar("baseUrl");
+}
+
+function resolveToken() {
+  return readVar("token");
+}
+
+function authHeaderFromToken(token) {
+  return { key: "Authorization", value: `Bearer ${token}` };
+}
+
+function setToken(token, scope = "environment") {
+  if (typeof pm === "undefined") return;
+  if (scope === "collection") pm.collectionVariables.set("token", token);
+  else if (scope === "global") pm.globals.set("token", token);
+  else pm.environment.set("token", token);
+}
+
+function clearToken(scope = "environment") {
+  if (typeof pm === "undefined") return;
+  if (scope === "collection") pm.collectionVariables.unset("token");
+  else if (scope === "global") pm.globals.unset("token");
+  else pm.environment.unset("token");
+}
+
+function saveTokenFromLoginResponse(responseJson, scope = "environment") {
+  const token =
+    responseJson?.data?.token ||
+    responseJson?.token ||
+    responseJson?.accessToken ||
+    "";
+
+  if (token) setToken(token, scope);
+  return token;
+}
 
 function cleanParams(params = {}) {
   const out = {};
@@ -31,17 +80,22 @@ function buildQuery(params = {}) {
 
 function createRequest(method, path, options = {}) {
   const query = options.query ? buildQuery(options.query) : "";
-  const requiresAuth = options.requiresAuth ?? true;
+  const authMode = options.authMode || "auto";
   const hasBody = options.body !== undefined;
+  const tokenOverride = options.token;
+  const token = tokenOverride || resolveToken();
+  const shouldAttachAuth =
+    authMode === "required" ||
+    (authMode === "auto" && token && !/^\{\{.+\}\}$/.test(token));
 
   const headers = [acceptHeader];
-  if (requiresAuth) headers.push(authHeader);
+  if (shouldAttachAuth) headers.push(authHeaderFromToken(token));
   if (hasBody) headers.push(jsonHeader);
 
   const request = {
     method,
     header: headers,
-    url: `${BASE_URL}${path}${query}`,
+    url: `${resolveBaseUrl()}${path}${query}`,
   };
 
   if (hasBody) {
@@ -54,16 +108,16 @@ function createRequest(method, path, options = {}) {
   return request;
 }
 
-export const Api = {
+const Api = {
   health: {
-    status: () => createRequest("GET", "/health", { requiresAuth: false }),
-    ping: () => createRequest("GET", "/health/ping", { requiresAuth: false }),
+    status: () => createRequest("GET", "/health", { authMode: "none" }),
+    ping: () => createRequest("GET", "/health/ping", { authMode: "none" }),
   },
 
   auth: {
     login: (email, password) =>
       createRequest("POST", "/auth/login", {
-        requiresAuth: false,
+        authMode: "none",
         body: { email, password },
       }),
   },
@@ -184,12 +238,12 @@ export const Api = {
 
   notices: {
     list: ({ page, pageSize, category, sortBy } = {}) =>
-      createRequest("GET", "/notices", { requiresAuth: false, query: { page, pageSize, category, sortBy } }),
-    pinned: (limit) => createRequest("GET", "/notices/pinned", { requiresAuth: false, query: { limit } }),
+      createRequest("GET", "/notices", { authMode: "none", query: { page, pageSize, category, sortBy } }),
+    pinned: (limit) => createRequest("GET", "/notices/pinned", { authMode: "none", query: { limit } }),
     byCategory: (category, page, pageSize) =>
-      createRequest("GET", `/notices/category/${category}`, { requiresAuth: false, query: { page, pageSize } }),
-    search: (q, page, pageSize) => createRequest("GET", "/notices/search", { requiresAuth: false, query: { q, page, pageSize } }),
-    get: (id) => createRequest("GET", `/notices/${id}`, { requiresAuth: false }),
+      createRequest("GET", `/notices/category/${category}`, { authMode: "none", query: { page, pageSize } }),
+    search: (q, page, pageSize) => createRequest("GET", "/notices/search", { authMode: "none", query: { q, page, pageSize } }),
+    get: (id) => createRequest("GET", `/notices/${id}`, { authMode: "none" }),
     create: (payload) => createRequest("POST", "/notices", { body: payload }),
     update: (id, payload) => createRequest("PUT", `/notices/${id}`, { body: payload }),
     pin: (id, pinned) => createRequest("PUT", `/notices/${id}/pin`, { body: { pinned } }),
@@ -197,7 +251,7 @@ export const Api = {
   },
 
   settings: {
-    generalGet: () => createRequest("GET", "/settings/general", { requiresAuth: false }),
+    generalGet: () => createRequest("GET", "/settings/general", { authMode: "none" }),
     generalUpdate: (payload) => createRequest("PUT", "/settings/general", { body: payload }),
 
     userPreferencesGet: () => createRequest("GET", "/settings/user/preferences"),
@@ -217,6 +271,22 @@ export const Api = {
     healthCheck: () => createRequest("GET", "/settings/health/check"),
   },
 };
+
+if (typeof pm !== "undefined") {
+  pm.globals.set("ApiHelperLoaded", "true");
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    Api,
+    createRequest,
+    buildQuery,
+    cleanParams,
+    setToken,
+    clearToken,
+    saveTokenFromLoginResponse,
+  };
+}
 
 /**
  * Example:
