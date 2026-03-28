@@ -70,6 +70,11 @@ export type TeacherSubject = Prisma.TeacherSubjectModel
  */
 export type TeacherClass = Prisma.TeacherClassModel
 /**
+ * Model ClassSchedule
+ * 
+ */
+export type ClassSchedule = Prisma.ClassScheduleModel
+/**
  * Model ChatMessage
  * 
  */

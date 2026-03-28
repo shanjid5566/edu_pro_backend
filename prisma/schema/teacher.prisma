@@ -11,6 +11,7 @@ model Teacher {
   classTeacherOf    Class[]          @relation("ClassTeacher")
   attendancesMarked Attendance[]
   questionPapers    QuestionPaper[]
+  schedules         ClassSchedule[]
 
   @@map("teachers")
 }

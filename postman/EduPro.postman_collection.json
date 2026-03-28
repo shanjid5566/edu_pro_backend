@@ -75,6 +75,143 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "Dashboard",
+          "item": [
+            {
+              "name": "Get Complete Dashboard",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/dashboard",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "dashboard"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Overall Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/dashboard/stats",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "dashboard", "stats"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Attendance Trend",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/dashboard/attendance-trend",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "dashboard", "attendance-trend"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Performance by Subject",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/dashboard/performance",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "dashboard", "performance"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Today's Attendance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/dashboard/today-attendance",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "dashboard", "today-attendance"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Recent Activity",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/dashboard/recent-activity",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "dashboard", "recent-activity"]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },

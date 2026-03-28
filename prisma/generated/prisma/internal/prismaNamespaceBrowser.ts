@@ -57,6 +57,7 @@ export const ModelName = {
   ClassSubject: 'ClassSubject',
   TeacherSubject: 'TeacherSubject',
   TeacherClass: 'TeacherClass',
+  ClassSchedule: 'ClassSchedule',
   ChatMessage: 'ChatMessage',
   Notice: 'Notice',
   Exam: 'Exam',
@@ -148,6 +149,22 @@ export const TeacherClassScalarFieldEnum = {
 } as const
 
 export type TeacherClassScalarFieldEnum = (typeof TeacherClassScalarFieldEnum)[keyof typeof TeacherClassScalarFieldEnum]
+
+
+export const ClassScheduleScalarFieldEnum = {
+  id: 'id',
+  classId: 'classId',
+  subjectId: 'subjectId',
+  teacherId: 'teacherId',
+  day: 'day',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  roomNumber: 'roomNumber',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ClassScheduleScalarFieldEnum = (typeof ClassScheduleScalarFieldEnum)[keyof typeof ClassScheduleScalarFieldEnum]
 
 
 export const ChatMessageScalarFieldEnum = {

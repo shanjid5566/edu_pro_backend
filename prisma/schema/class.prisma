@@ -16,6 +16,7 @@ model Class {
   exams         Exam[]
   attendances   Attendance[]
   feeStructures FeeStructure[]
+  schedules     ClassSchedule[]
 
   @@unique([name, section])
   @@map("classes")
@@ -26,9 +27,10 @@ model Subject {
   name String
   code String @unique
 
-  classes  ClassSubject[]
-  teachers TeacherSubject[]
-  exams    Exam[]
+  classes   ClassSubject[]
+  teachers  TeacherSubject[]
+  exams     Exam[]
+  schedules ClassSchedule[]
 
   @@map("subjects")
 }
@@ -67,4 +69,24 @@ model TeacherClass {
 
   @@unique([teacherId, classId])
   @@map("teacher_classes")
+}
+
+model ClassSchedule {
+  id        String   @id @default(uuid())
+  classId   String
+  subjectId String
+  teacherId String
+  day       String   // Monday, Tuesday, Wednesday, etc.
+  startTime String   // HH:mm format
+  endTime   String   // HH:mm format
+  roomNumber String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, day, startTime])
+  @@map("class_schedules")
 }

@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import { prisma } from "../lib/prisma";
 import { UserRole } from "../../prisma/generated/prisma/enums";
 
@@ -104,15 +104,17 @@ class AuthService {
    * Generate JWT token
    */
   private generateToken(userId: string, email: string, role: UserRole): string {
-    return jwt.sign(
-      {
-        userId,
-        email,
-        role,
-      },
-      this.jwtSecret,
-      { expiresIn: this.jwtExpiry }
-    );
+    const payload = {
+      userId,
+      email,
+      role,
+    };
+    
+    const secret: string = this.jwtSecret;
+    
+    return jwt.sign(payload, secret, { 
+      expiresIn: this.jwtExpiry 
+    } as SignOptions);
   }
 
   /**
