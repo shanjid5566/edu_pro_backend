@@ -212,6 +212,251 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "Students",
+          "item": [
+            {
+              "name": "Get All Students",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/students?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "students"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student By ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/students/:studentId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "students", ":studentId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Search Students",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/students/search?query=john&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "students", "search"],
+                  "query": [
+                    {
+                      "key": "query",
+                      "value": "john"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Students by Class",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/students/class/:classId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "students", "class", ":classId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create New Student",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"student@123\",\n  \"classId\": \"class-id-here\",\n  \"section\": \"A\",\n  \"rollNumber\": \"101\",\n  \"dateOfBirth\": \"2008-03-15\",\n  \"gender\": \"Male\",\n  \"phone\": \"+1 555 0000\",\n  \"parentName\": \"Jane Doe\",\n  \"address\": \"123 Main St\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/students",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "students"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Student",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fullName\": \"John Doe Updated\",\n  \"grade\": \"A\",\n  \"status\": \"active\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/students/:studentId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "students", ":studentId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Student",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/students/:studentId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "students", ":studentId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Export Students to CSV",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/students/export/csv?search=&classId=&status=",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "students", "export", "csv"],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": ""
+                    },
+                    {
+                      "key": "classId",
+                      "value": ""
+                    },
+                    {
+                      "key": "status",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Classes",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/students/classes/list",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "students", "classes", "list"]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
