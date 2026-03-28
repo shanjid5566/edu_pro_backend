@@ -1,0 +1,37 @@
+// ========================
+// ⚙️ System
+// ========================
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      String // info | success | warning | error
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  userId      String
+  action      String
+  description String?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("activity_logs")
+}
+
+model Setting {
+  id    String @id @default(uuid())
+  key   String @unique
+  value String
+
+  @@map("settings")
+}

@@ -1,0 +1,44 @@
+// ========================
+// 💰 Fees & Billing
+// ========================
+
+enum FeeType {
+  MONTHLY
+  QUARTERLY
+  HALF_YEARLY
+  YEARLY
+}
+
+enum PaymentStatus {
+  PAID
+  UNPAID
+  PARTIAL
+}
+
+model FeeStructure {
+  id      String  @id @default(uuid())
+  classId String
+  feeType FeeType
+  amount  Float
+
+  class    Class        @relation(fields: [classId], references: [id])
+  payments FeePayment[]
+
+  @@unique([classId, feeType])
+  @@map("fee_structures")
+}
+
+model FeePayment {
+  id             String        @id @default(uuid())
+  studentId      String
+  feeStructureId String
+  amountPaid     Float
+  paymentDate    DateTime?
+  status         PaymentStatus @default(UNPAID)
+  receiptUrl     String?
+
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  feeStructure FeeStructure @relation(fields: [feeStructureId], references: [id])
+
+  @@map("fee_payments")
+}

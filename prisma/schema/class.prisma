@@ -1,0 +1,70 @@
+// ========================
+// 🏫 Class & Subject
+// ========================
+
+model Class {
+  id             String  @id @default(uuid())
+  name           String
+  section        String
+  classTeacherId String?
+  capacity       Int     @default(40)
+
+  classTeacher  Teacher?       @relation("ClassTeacher", fields: [classTeacherId], references: [id])
+  students      Student[]
+  subjects      ClassSubject[]
+  teachers      TeacherClass[]
+  exams         Exam[]
+  attendances   Attendance[]
+  feeStructures FeeStructure[]
+
+  @@unique([name, section])
+  @@map("classes")
+}
+
+model Subject {
+  id   String @id @default(uuid())
+  name String
+  code String @unique
+
+  classes  ClassSubject[]
+  teachers TeacherSubject[]
+  exams    Exam[]
+
+  @@map("subjects")
+}
+
+model ClassSubject {
+  id        String @id @default(uuid())
+  classId   String
+  subjectId String
+
+  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, subjectId])
+  @@map("class_subjects")
+}
+
+model TeacherSubject {
+  id        String @id @default(uuid())
+  teacherId String
+  subjectId String
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([teacherId, subjectId])
+  @@map("teacher_subjects")
+}
+
+model TeacherClass {
+  id        String @id @default(uuid())
+  teacherId String
+  classId   String
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([teacherId, classId])
+  @@map("teacher_classes")
+}

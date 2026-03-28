@@ -1,0 +1,16 @@
+model Teacher {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  department   String
+  joinDate     DateTime @default(now())
+  classesTaken Int      @default(0)
+
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjects          TeacherSubject[]
+  classes           TeacherClass[]
+  classTeacherOf    Class[]          @relation("ClassTeacher")
+  attendancesMarked Attendance[]
+  questionPapers    QuestionPaper[]
+
+  @@map("teachers")
+}

@@ -1,0 +1,18 @@
+model Student {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  classId       String
+  section       String
+  rollNumber    String
+  admissionDate DateTime @default(now())
+  grade         String?
+
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class       Class           @relation(fields: [classId], references: [id])
+  parents     ParentStudent[]
+  attendances Attendance[]
+  examResults ExamResult[]
+  feePayments FeePayment[]
+
+  @@map("students")
+}

@@ -1,0 +1,25 @@
+// ========================
+// 📋 Attendance
+// ========================
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+model Attendance {
+  id        String           @id @default(uuid())
+  studentId String
+  classId   String
+  date      DateTime
+  status    AttendanceStatus
+  markedBy  String
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class   Class   @relation(fields: [classId], references: [id])
+  teacher Teacher @relation(fields: [markedBy], references: [id])
+
+  @@unique([studentId, date])
+  @@map("attendances")
+}

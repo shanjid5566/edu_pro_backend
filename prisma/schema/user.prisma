@@ -1,0 +1,31 @@
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole
+  avatar    String?
+  phone     String?
+  status    String   @default("active") // active | inactive
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile          Profile?
+  student          Student?
+  teacher          Teacher?
+  parent           Parent?
+  sentMessages     ChatMessage[]  @relation("Sender")
+  receivedMessages ChatMessage[]  @relation("Receiver")
+  notifications    Notification[]
+  activityLogs     ActivityLog[]
+  notices          Notice[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  TEACHER
+  STUDENT
+  PARENT
+}

@@ -1,0 +1,26 @@
+// ========================
+// 👪 Parents
+// ========================
+
+model Parent {
+  id         String  @id @default(uuid())
+  userId     String  @unique
+  occupation String?
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  students ParentStudent[]
+
+  @@map("parents")
+}
+
+model ParentStudent {
+  id        String @id @default(uuid())
+  parentId  String
+  studentId String
+
+  parent  Parent  @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([parentId, studentId])
+  @@map("parent_students")
+}

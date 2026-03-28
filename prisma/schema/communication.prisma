@@ -1,0 +1,32 @@
+// ========================
+// 💬 Chat & Communication
+// ========================
+
+model ChatMessage {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String
+  message    String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("Sender", fields: [senderId], references: [id])
+  receiver User @relation("Receiver", fields: [receiverId], references: [id])
+
+  @@map("chat_messages")
+}
+
+model Notice {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  category  String // general | exam | event | holiday
+  priority  String   @default("normal") // normal | high | urgent
+  pinned    Boolean  @default(false)
+  createdBy String
+  createdAt DateTime @default(now())
+
+  author User @relation(fields: [createdBy], references: [id])
+
+  @@map("notices")
+}

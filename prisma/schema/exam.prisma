@@ -1,0 +1,70 @@
+// ========================
+// 📝 Exams & Results
+// ========================
+
+enum ExamStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+}
+
+enum ExamType {
+  MONTHLY
+  QUARTERLY
+  HALF_YEARLY
+  YEARLY
+}
+
+enum PaperStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Exam {
+  id         String     @id @default(uuid())
+  name       String
+  classId    String
+  subjectId  String
+  date       DateTime
+  duration   String
+  totalMarks Int
+  type       ExamType
+  status     ExamStatus @default(UPCOMING)
+
+  class          Class           @relation(fields: [classId], references: [id])
+  subject        Subject         @relation(fields: [subjectId], references: [id])
+  results        ExamResult[]
+  questionPapers QuestionPaper[]
+
+  @@map("exams")
+}
+
+model ExamResult {
+  id            String  @id @default(uuid())
+  examId        String
+  studentId     String
+  marksObtained Float
+  grade         String?
+  remarks       String?
+
+  exam    Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([examId, studentId])
+  @@map("exam_results")
+}
+
+model QuestionPaper {
+  id        String      @id @default(uuid())
+  examId    String
+  teacherId String
+  fileUrl   String
+  status    PaperStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+
+  exam    Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+
+  @@map("question_papers")
+}
