@@ -457,6 +457,978 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "Teachers",
+          "item": [
+            {
+              "name": "Get All Teachers",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/teachers?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "teachers"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Teacher By ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/teachers/:teacherId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "teachers", ":teacherId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Search Teachers",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/teachers/search?query=emily&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "teachers", "search"],
+                  "query": [
+                    {
+                      "key": "query",
+                      "value": "emily"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Departments",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/teachers/departments/list",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "teachers", "departments", "list"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Teachers by Department",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/teachers/department/:department",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "teachers", "department", ":department"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create New Teacher",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fullName\": \"Emily Carter\",\n  \"email\": \"emily@school.com\",\n  \"password\": \"teacher@123\",\n  \"phone\": \"+1 555 1001\",\n  \"department\": \"Science\",\n  \"subjects\": [],\n  \"assignClasses\": [],\n  \"joinDate\": \"2018-08-15\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/teachers",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "teachers"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Teacher",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fullName\": \"Emily Carter Updated\",\n  \"phone\": \"+1 555 1002\",\n  \"department\": \"Science\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/teachers/:teacherId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "teachers", ":teacherId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Teacher",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/teachers/:teacherId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "teachers", ":teacherId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Export Teachers to CSV",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/teachers/export/csv?search=&department=&status=",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "teachers", "export", "csv"],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": ""
+                    },
+                    {
+                      "key": "department",
+                      "value": ""
+                    },
+                    {
+                      "key": "status",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Parents",
+          "item": [
+            {
+              "name": "Get All Parents",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/parents?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "parents"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Parent By ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/parents/:parentId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "parents", ":parentId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Search Parents",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/parents/search?query=michael&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "parents", "search"],
+                  "query": [
+                    {
+                      "key": "query",
+                      "value": "michael"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Occupations",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/parents/occupations/list",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "parents", "occupations", "list"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Parents by Occupation",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/parents/occupation/:occupation",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "parents", "occupation", ":occupation"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create New Parent",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fullName\": \"Michael Johnson\",\n  \"email\": \"michael@email.com\",\n  \"password\": \"parent@123\",\n  \"phone\": \"+1 555 0101\",\n  \"occupation\": \"Engineer\",\n  \"studentIds\": []\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/parents",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "parents"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Parent",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fullName\": \"Michael Johnson Updated\",\n  \"phone\": \"+1 555 0102\",\n  \"occupation\": \"Engineer\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/parents/:parentId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "parents", ":parentId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Parent",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/parents/:parentId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "parents", ":parentId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Export Parents to CSV",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/parents/export/csv?search=&occupation=&status=",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "parents", "export", "csv"],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": ""
+                    },
+                    {
+                      "key": "occupation",
+                      "value": ""
+                    },
+                    {
+                      "key": "status",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Classes",
+          "item": [
+        {
+          "name": "Get All Classes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/classes?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "classes"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Class By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/classes/:classId",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "classes", ":classId"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Classes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/classes/search?q=class&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "classes", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "class"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Class",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"10th Grade\",\n  \"section\": \"A\",\n  \"capacity\": 40,\n  \"classTeacherId\": \"teacher_id_here\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/classes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "classes"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Class",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"10th Grade\",\n  \"section\": \"A\",\n  \"capacity\": 45,\n  \"classTeacherId\": \"teacher_id_here\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/classes/:classId",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "classes", ":classId"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Class",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/classes/:classId",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "classes", ":classId"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Export Classes to CSV",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/classes/export/csv?search=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "classes", "export", "csv"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+        {
+          "name": "Class Schedules",
+          "item": [
+            {
+              "name": "Get All Schedules",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/class-schedules?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "class-schedules"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Schedule By ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/class-schedules/:scheduleId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "class-schedules", ":scheduleId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Search Schedules",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/class-schedules/search?q=Mathematics&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "class-schedules", "search"],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "Mathematics"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Schedules by Class",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/class-schedules/by-class/:classId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "class-schedules", "by-class", ":classId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Schedules by Day",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/class-schedules/by-day/Monday",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "class-schedules", "by-day", "Monday"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Classes (Dropdown)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/class-schedules/dropdown/classes",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "class-schedules", "dropdown", "classes"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Teachers (Dropdown)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/class-schedules/dropdown/teachers",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "class-schedules", "dropdown", "teachers"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Schedule",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"classId\": \"class_id_here\",\n  \"subjectId\": \"subject_id_here\",\n  \"day\": \"Monday\",\n  \"teacherId\": \"teacher_id_here\",\n  \"startTime\": \"09:00\",\n  \"endTime\": \"10:00\",\n  \"roomNumber\": \"101\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/class-schedules",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "class-schedules"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Schedule",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"day\": \"Monday\",\n  \"subjectId\": \"subject_id_here\",\n  \"teacherId\": \"teacher_id_here\",\n  \"startTime\": \"09:30\",\n  \"endTime\": \"10:30\",\n  \"roomNumber\": \"102\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/class-schedules/:scheduleId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "class-schedules", ":scheduleId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Schedule",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/class-schedules/:scheduleId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "class-schedules", ":scheduleId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Export Schedules to CSV",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/class-schedules/export/csv?search=&classId=&day=",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "class-schedules", "export", "csv"],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": ""
+                    },
+                    {
+                      "key": "classId",
+                      "value": ""
+                    },
+                    {
+                      "key": "day",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
