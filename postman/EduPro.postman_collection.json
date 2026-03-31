@@ -1429,6 +1429,1058 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "Exams",
+          "item": [
+            {
+              "name": "Get All Exams",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/exams?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "exams"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Exam Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/exams/statistics",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "exams", "statistics"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Search Exams",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/exams/search?q=Mathematics&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "exams", "search"],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "Mathematics"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Exams by Status",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/exams/status/UPCOMING",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "exams", "status", "UPCOMING"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Exams by Class",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/exams/class/:classId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "exams", "class", ":classId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Exam By ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/exams/:examId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "exams", ":examId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Exam",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Mid-Term Examination\",\n  \"classId\": \"class_id_here\",\n  \"subjectId\": \"subject_id_here\",\n  \"date\": \"2026-03-15\",\n  \"duration\": \"3 hours\",\n  \"totalMarks\": 100,\n  \"description\": \"Mid-term examination for Mathematics\",\n  \"status\": \"UPCOMING\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/exams",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "exams"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Exam",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Mid-Term Examination Updated\",\n  \"date\": \"2026-03-20\",\n  \"duration\": \"3 hours\",\n  \"totalMarks\": 100,\n  \"status\": \"ONGOING\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/exams/:examId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "exams", ":examId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Exam",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/exams/:examId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "exams", ":examId"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Attendance",
+          "item": [
+            {
+              "name": "Get Today Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/attendance/statistics/today",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "attendance", "statistics", "today"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Today Overview",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/attendance/overview/today",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "attendance", "overview", "today"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Class-wise Attendance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/attendance/classwise?date=2026-03-31",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "attendance", "classwise"],
+                  "query": [
+                    {
+                      "key": "date",
+                      "value": "2026-03-31"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Attendance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/attendance?page=1&limit=10&classId=&status=",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "attendance"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "classId",
+                      "value": ""
+                    },
+                    {
+                      "key": "status",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Mark Attendance",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"classId\": \"class_id_here\",\n  \"date\": \"2026-03-31\",\n  \"attendanceData\": [\n    {\n      \"studentId\": \"student_id_1\",\n      \"status\": \"PRESENT\"\n    },\n    {\n      \"studentId\": \"student_id_2\",\n      \"status\": \"ABSENT\"\n    },\n    {\n      \"studentId\": \"student_id_3\",\n      \"status\": \"LATE\"\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/attendance/mark",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "attendance", "mark"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Attendance by Date Range",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/attendance/range?startDate=2026-03-01&endDate=2026-03-31&classId=",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "attendance", "range"],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2026-03-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2026-03-31"
+                    },
+                    {
+                      "key": "classId",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Attendance History",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/attendance/student/:studentId?limit=30",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "attendance", "student", ":studentId"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "30"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Attendance Report by Class",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/attendance/report/class/:classId?startDate=2026-03-01&endDate=2026-03-31",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "attendance", "report", "class", ":classId"],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2026-03-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2026-03-31"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Attendance By ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/attendance/:attendanceId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "attendance", ":attendanceId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Attendance",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"PRESENT\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/attendance/:attendanceId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "attendance", ":attendanceId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Attendance",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/attendance/:attendanceId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "attendance", ":attendanceId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Export Attendance to CSV",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/attendance/export/csv?startDate=2026-03-01&endDate=2026-03-31&classId=",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "attendance", "export", "csv"],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2026-03-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2026-03-31"
+                    },
+                    {
+                      "key": "classId",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Notices",
+          "item": [
+            {
+              "name": "Get All Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/notices?page=1&limit=10&category=all&search=",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "notices"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "category",
+                      "value": "all"
+                    },
+                    {
+                      "key": "search",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Notices by Category",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/notices/category/exam",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "notices", "category", "exam"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Pinned Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/notices/pinned",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "notices", "pinned"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Recent Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/notices/recent?limit=5",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "notices", "recent"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Search Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/notices/search?query=exam",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "notices", "search"],
+                  "query": [
+                    {
+                      "key": "query",
+                      "value": "exam"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Notice Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/notices/statistics",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "notices", "statistics"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Notice By ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/notices/:noticeId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "notices", ":noticeId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Notice",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Annual Sports Day\",\n  \"message\": \"Annual Sports Day will be held on March 20, 2026. All students must participate in at least one event.\",\n  \"category\": \"event\",\n  \"priority\": \"high\",\n  \"pinned\": true\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/notices",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "notices"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Notice",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Updated Notice Title\",\n  \"message\": \"Updated notice message\",\n  \"category\": \"general\",\n  \"priority\": \"normal\",\n  \"pinned\": false\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/notices/:noticeId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "notices", ":noticeId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Toggle Pin Notice",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/notices/:noticeId/pin",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "notices", ":noticeId", "pin"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Notice",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/notices/:noticeId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "notices", ":noticeId"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Settings",
+          "item": [
+            {
+              "name": "General Settings - Get",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/settings/general",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "settings", "general"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "General Settings - Update",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schoolName\": \"EduPro Academy\",\n  \"schoolEmail\": \"admin@edupro.com\",\n  \"phone\": \"+1 234 567 890\",\n  \"academicYear\": \"2025-2026\",\n  \"address\": \"123 Education Blvd, Learning City, LC 10001\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/settings/general",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "settings", "general"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Profile Settings - Get",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/settings/profile",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "settings", "profile"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Profile Settings - Update",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fullName\": \"John Anderson\",\n  \"phone\": \"+1 234 567 890\",\n  \"avatar\": \"https://example.com/avatar.jpg\",\n  \"address\": \"123 Education Blvd, Learning City, LC 10001\",\n  \"dateOfBirth\": \"1995-01-15\",\n  \"gender\": \"MALE\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/settings/profile",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "settings", "profile"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Notification Preferences - Get",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/settings/notifications",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "settings", "notifications"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Notification Preferences - Update",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"emailNotifications\": true,\n  \"pushNotifications\": true,\n  \"smsAlerts\": false,\n  \"attendanceAlerts\": true,\n  \"examReminders\": true,\n  \"enrollmentAlerts\": true\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/settings/notifications",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "settings", "notifications"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Password",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentPassword\": \"admin@123\",\n  \"newPassword\": \"newadmin@123\",\n  \"confirmPassword\": \"newadmin@123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/settings/security/password",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "settings", "security", "password"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User Preferences - Get",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/settings/preferences",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "settings", "preferences"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User Preferences - Update",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"theme\": \"dark\",\n  \"sidebarStyle\": \"expanded\",\n  \"language\": \"en\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/settings/preferences",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "settings", "preferences"]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
@@ -1496,6 +2548,127 @@
                   "raw": "{{base_url}}/api/v1/auth/profile",
                   "host": ["{{base_url}}"],
                   "path": ["api", "v1", "auth", "profile"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Dashboard Overview",
+          "item": [
+            {
+              "name": "Get Dashboard Overview",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/dashboard/overview",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "dashboard", "overview"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Attendance Trend",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/dashboard/attendance-trend?months=6",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "dashboard", "attendance-trend"],
+                  "query": [
+                    {
+                      "key": "months",
+                      "value": "6"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Performance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/dashboard/student-performance",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "dashboard", "student-performance"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Classes",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/dashboard/my-classes",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "dashboard", "my-classes"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Teacher Profile",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/dashboard/profile",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "dashboard", "profile"]
                 }
               },
               "response": []

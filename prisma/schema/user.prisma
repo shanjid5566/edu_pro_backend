@@ -10,15 +10,17 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  profile          Profile?
-  student          Student?
-  teacher          Teacher?
-  parent           Parent?
-  sentMessages     ChatMessage[]  @relation("Sender")
-  receivedMessages ChatMessage[]  @relation("Receiver")
-  notifications    Notification[]
-  activityLogs     ActivityLog[]
-  notices          Notice[]
+  profile                   Profile?
+  student                   Student?
+  teacher                   Teacher?
+  parent                    Parent?
+  sentMessages              ChatMessage[]  @relation("Sender")
+  receivedMessages          ChatMessage[]  @relation("Receiver")
+  notifications             Notification[]
+  activityLogs              ActivityLog[]
+  notices                   Notice[]
+  userPreference            UserPreference?
+  notificationPreference    NotificationPreference?
 
   @@map("users")
 }

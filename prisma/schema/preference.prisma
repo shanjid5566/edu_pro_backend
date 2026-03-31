@@ -1,0 +1,32 @@
+// ========================
+// 🎨 User Preferences
+// ========================
+
+model UserPreference {
+  id           String @id @default(uuid())
+  userId       String @unique
+  theme        String @default("light") // light | dark | system
+  sidebarStyle String @default("expanded") // expanded | compact
+  language     String @default("en")
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+model NotificationPreference {
+  id                  String  @id @default(uuid())
+  userId              String  @unique
+  emailNotifications  Boolean @default(true)
+  pushNotifications   Boolean @default(true)
+  smsAlerts           Boolean @default(false)
+  attendanceAlerts    Boolean @default(true)
+  examReminders       Boolean @default(true)
+  enrollmentAlerts    Boolean @default(true)
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_preferences")
+}
