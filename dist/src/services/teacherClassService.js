@@ -209,22 +209,17 @@ class TeacherClassService {
             const examResults = await prisma_js_1.prisma.examResult.findMany({
                 where: {
                     exam: {
-                        classes: { some: { id: classId } },
+                        classId: classId,
                     },
                 },
                 select: {
                     marksObtained: true,
-                    totalMarks: true,
                 },
             });
             let averagePercentage = 0;
             if (examResults.length > 0) {
                 const totalMarksObtained = examResults.reduce((sum, result) => sum + result.marksObtained, 0);
-                const totalMarksCount = examResults.reduce((sum, result) => sum + result.totalMarks, 0);
-                averagePercentage =
-                    totalMarksCount > 0
-                        ? Math.round((totalMarksObtained / totalMarksCount) * 100)
-                        : 0;
+                averagePercentage = Math.round(totalMarksObtained / examResults.length) || 0;
             }
             return {
                 success: true,

@@ -56,11 +56,9 @@ class TeacherDashboardService {
             const examResults = await prisma_js_1.prisma.examResult.findMany({
                 where: {
                     exam: {
-                        classes: {
-                            some: {
-                                teachers: {
-                                    some: { teacherId },
-                                },
+                        class: {
+                            teachers: {
+                                some: { teacherId },
                             },
                         },
                     },
@@ -70,17 +68,12 @@ class TeacherDashboardService {
                 },
                 select: {
                     marksObtained: true,
-                    totalMarks: true,
                 },
             });
             let averagePerformance = 0;
             if (examResults.length > 0) {
                 const totalMarksObtained = examResults.reduce((sum, result) => sum + result.marksObtained, 0);
-                const totalMarksCount = examResults.reduce((sum, result) => sum + result.totalMarks, 0);
-                averagePerformance =
-                    totalMarksCount > 0
-                        ? Math.round((totalMarksObtained / totalMarksCount) * 100)
-                        : 0;
+                averagePerformance = Math.round(totalMarksObtained / examResults.length) || 0;
             }
             // Get previous month average for comparison
             const twoMonthsAgo = new Date();
@@ -88,11 +81,9 @@ class TeacherDashboardService {
             const previousMonthResults = await prisma_js_1.prisma.examResult.findMany({
                 where: {
                     exam: {
-                        classes: {
-                            some: {
-                                teachers: {
-                                    some: { teacherId },
-                                },
+                        class: {
+                            teachers: {
+                                some: { teacherId },
                             },
                         },
                     },
@@ -103,17 +94,12 @@ class TeacherDashboardService {
                 },
                 select: {
                     marksObtained: true,
-                    totalMarks: true,
                 },
             });
             let previousMonthAverage = 0;
             if (previousMonthResults.length > 0) {
                 const totalMarksObtained = previousMonthResults.reduce((sum, result) => sum + result.marksObtained, 0);
-                const totalMarksCount = previousMonthResults.reduce((sum, result) => sum + result.totalMarks, 0);
-                previousMonthAverage =
-                    totalMarksCount > 0
-                        ? Math.round((totalMarksObtained / totalMarksCount) * 100)
-                        : 0;
+                previousMonthAverage = Math.round(totalMarksObtained / previousMonthResults.length) || 0;
             }
             const performanceChange = averagePerformance - previousMonthAverage;
             return {
@@ -233,19 +219,17 @@ class TeacherDashboardService {
                     name: true,
                     exams: {
                         where: {
-                            classes: {
-                                some: {
-                                    teachers: {
-                                        some: { teacherId },
-                                    },
+                            class: {
+                                teachers: {
+                                    some: { teacherId },
                                 },
                             },
                         },
                         select: {
+                            totalMarks: true,
                             results: {
                                 select: {
                                     marksObtained: true,
-                                    totalMarks: true,
                                 },
                             },
                         },
@@ -259,7 +243,7 @@ class TeacherDashboardService {
                 subject.exams.forEach((exam) => {
                     exam.results.forEach((result) => {
                         totalMarksObtained += result.marksObtained;
-                        totalMarksCount += result.totalMarks;
+                        totalMarksCount += exam.totalMarks;
                         resultCount++;
                     });
                 });

@@ -170,7 +170,7 @@ class TeacherExamController {
                     message: "Unauthorized",
                 });
             }
-            const result = await teacherExamService_js_1.default.getExamStatistics(teacherId);
+            const result = await teacherExamService_js_1.default.getExamsByStatus(teacherId, status);
             return res.status(200).json(result);
         }
         catch (error) {

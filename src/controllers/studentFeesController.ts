@@ -147,7 +147,7 @@ class StudentFeesController {
         });
       }
 
-      const result = await studentFeesService.getUpcomingFees(studentId);
+      const result = await studentFeesService.getPendingFees(studentId);
       return res.status(200).json(result);
     } catch (error) {
       console.error("Error in getUpcomingFees:", error);
@@ -171,7 +171,7 @@ class StudentFeesController {
         });
       }
 
-      const result = await studentFeesService.getOverdueFees(studentId);
+      const result = await studentFeesService.getPaidFees(studentId);
       return res.status(200).json(result);
     } catch (error) {
       console.error("Error in getOverdueFees:", error);

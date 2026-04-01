@@ -9,14 +9,13 @@ class StudentNoticeService {
                 select: {
                     id: true,
                     title: true,
-                    content: true,
-                    date: true,
+                    message: true,
+                    createdAt: true,
                     category: true,
-                    status: true,
-                    isPinned: true,
+                    pinned: true,
                     createdBy: true,
                 },
-                orderBy: [{ isPinned: "desc" }, { date: "desc" }],
+                orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
                 take: limit,
                 skip: offset,
             });
@@ -26,11 +25,10 @@ class StudentNoticeService {
                 data: notices.map((notice) => ({
                     id: notice.id,
                     title: notice.title,
-                    content: notice.content,
-                    date: notice.date.toISOString().split("T")[0],
+                    message: notice.message,
+                    date: notice.createdAt.toISOString().split("T")[0],
                     category: notice.category,
-                    status: notice.status,
-                    isPinned: notice.isPinned,
+                    pinned: notice.pinned,
                     createdBy: notice.createdBy,
                 })),
                 pagination: {
@@ -50,24 +48,24 @@ class StudentNoticeService {
     async getPinnedNotices(studentId) {
         try {
             const pinnedNotices = await prisma_js_1.prisma.notice.findMany({
-                where: { isPinned: true },
+                where: { pinned: true },
                 select: {
                     id: true,
                     title: true,
-                    content: true,
-                    date: true,
+                    message: true,
+                    createdAt: true,
                     category: true,
                     createdBy: true,
                 },
-                orderBy: { date: "desc" },
+                orderBy: { createdAt: "desc" },
             });
             return {
                 success: true,
                 data: pinnedNotices.map((notice) => ({
                     id: notice.id,
                     title: notice.title,
-                    content: notice.content,
-                    date: notice.date.toISOString().split("T")[0],
+                    message: notice.message,
+                    date: notice.createdAt.toISOString().split("T")[0],
                     category: notice.category,
                     createdBy: notice.createdBy,
                 })),
@@ -85,14 +83,13 @@ class StudentNoticeService {
                 select: {
                     id: true,
                     title: true,
-                    content: true,
-                    date: true,
+                    message: true,
+                    createdAt: true,
                     category: true,
-                    status: true,
-                    isPinned: true,
+                    pinned: true,
                     createdBy: true,
                 },
-                orderBy: { date: "desc" },
+                orderBy: { createdAt: "desc" },
                 take: limit,
             });
             return {
@@ -100,11 +97,10 @@ class StudentNoticeService {
                 data: recentNotices.map((notice) => ({
                     id: notice.id,
                     title: notice.title,
-                    content: notice.content,
-                    date: notice.date.toISOString().split("T")[0],
+                    message: notice.message,
+                    date: notice.createdAt.toISOString().split("T")[0],
                     category: notice.category,
-                    status: notice.status,
-                    isPinned: notice.isPinned,
+                    pinned: notice.pinned,
                     createdBy: notice.createdBy,
                 })),
             };
@@ -126,14 +122,13 @@ class StudentNoticeService {
                 select: {
                     id: true,
                     title: true,
-                    content: true,
-                    date: true,
+                    message: true,
+                    createdAt: true,
                     category: true,
-                    status: true,
-                    isPinned: true,
+                    pinned: true,
                     createdBy: true,
                 },
-                orderBy: [{ isPinned: "desc" }, { date: "desc" }],
+                orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
                 take: limit,
                 skip: offset,
             });
@@ -143,11 +138,10 @@ class StudentNoticeService {
                 data: notices.map((notice) => ({
                     id: notice.id,
                     title: notice.title,
-                    content: notice.content,
-                    date: notice.date.toISOString().split("T")[0],
+                    message: notice.message,
+                    date: notice.createdAt.toISOString().split("T")[0],
                     category: notice.category,
-                    status: notice.status,
-                    isPinned: notice.isPinned,
+                    pinned: notice.pinned,
                     createdBy: notice.createdBy,
                 })),
                 pagination: {
@@ -170,20 +164,19 @@ class StudentNoticeService {
                 where: {
                     OR: [
                         { title: { contains: keyword, mode: "insensitive" } },
-                        { content: { contains: keyword, mode: "insensitive" } },
+                        { message: { contains: keyword, mode: "insensitive" } },
                     ],
                 },
                 select: {
                     id: true,
                     title: true,
-                    content: true,
-                    date: true,
+                    message: true,
+                    createdAt: true,
                     category: true,
-                    status: true,
-                    isPinned: true,
+                    pinned: true,
                     createdBy: true,
                 },
-                orderBy: [{ isPinned: "desc" }, { date: "desc" }],
+                orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
                 take: limit,
                 skip: offset,
             });
@@ -200,11 +193,10 @@ class StudentNoticeService {
                 data: notices.map((notice) => ({
                     id: notice.id,
                     title: notice.title,
-                    content: notice.content,
-                    date: notice.date.toISOString().split("T")[0],
+                    message: notice.message,
+                    date: notice.createdAt.toISOString().split("T")[0],
                     category: notice.category,
-                    status: notice.status,
-                    isPinned: notice.isPinned,
+                    pinned: notice.pinned,
                     createdBy: notice.createdBy,
                 })),
                 pagination: {
@@ -228,11 +220,10 @@ class StudentNoticeService {
                 select: {
                     id: true,
                     title: true,
-                    content: true,
-                    date: true,
+                    message: true,
+                    createdAt: true,
                     category: true,
-                    status: true,
-                    isPinned: true,
+                    pinned: true,
                     createdBy: true,
                 },
             });
@@ -244,11 +235,10 @@ class StudentNoticeService {
                 data: {
                     id: notice.id,
                     title: notice.title,
-                    content: notice.content,
-                    date: notice.date.toISOString().split("T")[0],
+                    message: notice.message,
+                    date: notice.createdAt.toISOString().split("T")[0],
                     category: notice.category,
-                    status: notice.status,
-                    isPinned: notice.isPinned,
+                    pinned: notice.pinned,
                     createdBy: notice.createdBy,
                 },
             };
@@ -262,7 +252,7 @@ class StudentNoticeService {
     async getNoticesStatistics(studentId) {
         try {
             const totalNotices = await prisma_js_1.prisma.notice.count();
-            const pinnedNotices = await prisma_js_1.prisma.notice.count({ where: { isPinned: true } });
+            const pinnedNotices = await prisma_js_1.prisma.notice.count({ where: { pinned: true } });
             const noticesByCategory = await prisma_js_1.prisma.notice.groupBy({
                 by: ["category"],
                 _count: true,

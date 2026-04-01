@@ -233,7 +233,7 @@ class StudentClassService {
           },
           exams: {
             where: {
-              classes: { some: { id: student.classId } },
+              classId: student.classId,
             },
             select: {
               id: true,

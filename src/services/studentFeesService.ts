@@ -4,52 +4,34 @@ class StudentFeesService {
   // Get all fees
   async getAllFees(studentId: string) {
     try {
-      const student = await prisma.student.findUnique({
-        where: { id: studentId },
-        select: {
-          enrollmentId: true,
-          classId: true,
-        },
-      });
-
-      if (!student) {
-        throw new Error("Student not found");
-      }
-
-      const fees = await prisma.fee.findMany({
-        where: { enrollmentId: student.enrollmentId },
+      const feePayments = await prisma.feePayment.findMany({
+        where: { studentId },
         select: {
           id: true,
-          feeType: true,
-          period: true,
-          amount: true,
-          dueDate: true,
-          paidDate: true,
+          feeStructure: {
+            select: {
+              feeType: true,
+              amount: true,
+            },
+          },
+          amountPaid: true,
+          paymentDate: true,
           status: true,
-          feeCategoryId: true,
         },
-        orderBy: { dueDate: "desc" },
+        orderBy: { paymentDate: "desc" },
       });
 
       return {
         success: true,
-        data: fees.map((fee) => ({
+        data: feePayments.map((fee) => ({
           id: fee.id,
-          feeType: fee.feeType,
-          period: fee.period,
-          amount: fee.amount,
-          dueDate: fee.dueDate.toISOString().split("T")[0],
-          paidDate: fee.paidDate
-            ? fee.paidDate.toISOString().split("T")[0]
+          feeType: fee.feeStructure.feeType,
+          amount: fee.feeStructure.amount,
+          amountPaid: fee.amountPaid,
+          paymentDate: fee.paymentDate
+            ? fee.paymentDate.toISOString().split("T")[0]
             : null,
           status: fee.status,
-          daysRemaining:
-            fee.status === "PENDING"
-              ? Math.ceil(
-                  (fee.dueDate.getTime() - new Date().getTime()) /
-                    (1000 * 60 * 60 * 24)
-                )
-              : null,
         })),
       };
     } catch (error) {
@@ -61,49 +43,40 @@ class StudentFeesService {
   // Get fees by status
   async getFeesByStatus(studentId: string, status: string) {
     try {
-      const student = await prisma.student.findUnique({
-        where: { id: studentId },
-        select: {
-          enrollmentId: true,
-        },
-      });
-
-      if (!student) {
-        throw new Error("Student not found");
-      }
-
-      const validStatus = ["PAID", "PENDING", "OVERDUE"];
+      const validStatus = ["PAID", "UNPAID", "PARTIAL"];
       if (!validStatus.includes(status.toUpperCase())) {
-        throw new Error("Invalid status. Must be PAID, PENDING, or OVERDUE");
+        throw new Error("Invalid status. Must be PAID, UNPAID, or PARTIAL");
       }
 
-      const fees = await prisma.fee.findMany({
+      const feePayments = await prisma.feePayment.findMany({
         where: {
-          enrollmentId: student.enrollmentId,
-          status: status.toUpperCase() as "PAID" | "PENDING" | "OVERDUE",
+          studentId,
+          status: status.toUpperCase() as "PAID" | "UNPAID" | "PARTIAL",
         },
         select: {
           id: true,
-          feeType: true,
-          period: true,
-          amount: true,
-          dueDate: true,
-          paidDate: true,
+          feeStructure: {
+            select: {
+              feeType: true,
+              amount: true,
+            },
+          },
+          amountPaid: true,
+          paymentDate: true,
           status: true,
         },
-        orderBy: { dueDate: "desc" },
+        orderBy: { paymentDate: "desc" },
       });
 
       return {
         success: true,
-        data: fees.map((fee) => ({
+        data: feePayments.map((fee) => ({
           id: fee.id,
-          feeType: fee.feeType,
-          period: fee.period,
-          amount: fee.amount,
-          dueDate: fee.dueDate.toISOString().split("T")[0],
-          paidDate: fee.paidDate
-            ? fee.paidDate.toISOString().split("T")[0]
+          feeType: fee.feeStructure.feeType,
+          amount: fee.feeStructure.amount,
+          amountPaid: fee.amountPaid,
+          paymentDate: fee.paymentDate
+            ? fee.paymentDate.toISOString().split("T")[0]
             : null,
           status: fee.status,
         })),
@@ -117,37 +90,30 @@ class StudentFeesService {
   // Get fee summary
   async getFeeSummary(studentId: string) {
     try {
-      const student = await prisma.student.findUnique({
-        where: { id: studentId },
+      const feePayments = await prisma.feePayment.findMany({
+        where: { studentId },
         select: {
-          enrollmentId: true,
-        },
-      });
-
-      if (!student) {
-        throw new Error("Student not found");
-      }
-
-      const fees = await prisma.fee.findMany({
-        where: { enrollmentId: student.enrollmentId },
-        select: {
-          amount: true,
           status: true,
+          amountPaid: true,
+          feeStructure: {
+            select: {
+              amount: true,
+            },
+          },
         },
       });
 
       let totalPaid = 0;
-      let totalPending = 0;
-      let totalOverdue = 0;
-      const totalRecords = fees.length;
+      let totalUnpaid = 0;
+      let totalPartial = 0;
 
-      fees.forEach((fee) => {
+      feePayments.forEach((fee) => {
         if (fee.status === "PAID") {
-          totalPaid += fee.amount;
-        } else if (fee.status === "PENDING") {
-          totalPending += fee.amount;
-        } else if (fee.status === "OVERDUE") {
-          totalOverdue += fee.amount;
+          totalPaid += fee.amountPaid;
+        } else if (fee.status === "UNPAID") {
+          totalUnpaid += fee.feeStructure.amount;
+        } else if (fee.status === "PARTIAL") {
+          totalPartial += fee.feeStructure.amount - fee.amountPaid;
         }
       });
 
@@ -155,11 +121,11 @@ class StudentFeesService {
         success: true,
         data: {
           totalPaid,
-          totalPending,
-          totalOverdue,
-          totalRecords,
-          totalPayable: totalPaid + totalPending + totalOverdue,
-          pendingAmount: totalPending + totalOverdue,
+          totalUnpaid,
+          totalPartial,
+          totalRecords: feePayments.length,
+          totalPayable: totalPaid + totalUnpaid + totalPartial,
+          pendingAmount: totalUnpaid + totalPartial,
         },
       };
     } catch (error) {
@@ -171,23 +137,17 @@ class StudentFeesService {
   // Get fees by type
   async getFeesByType(studentId: string) {
     try {
-      const student = await prisma.student.findUnique({
-        where: { id: studentId },
+      const feePayments = await prisma.feePayment.findMany({
+        where: { studentId },
         select: {
-          enrollmentId: true,
-        },
-      });
-
-      if (!student) {
-        throw new Error("Student not found");
-      }
-
-      const fees = await prisma.fee.findMany({
-        where: { enrollmentId: student.enrollmentId },
-        select: {
-          feeType: true,
-          amount: true,
           status: true,
+          amountPaid: true,
+          feeStructure: {
+            select: {
+              feeType: true,
+              amount: true,
+            },
+          },
         },
       });
 
@@ -195,30 +155,31 @@ class StudentFeesService {
         string,
         {
           paid: number;
-          pending: number;
-          overdue: number;
+          unpaid: number;
+          partial: number;
           total: number;
         }
       > = {};
 
-      fees.forEach((fee) => {
-        if (!feeTypeMap[fee.feeType]) {
-          feeTypeMap[fee.feeType] = {
+      feePayments.forEach((fee) => {
+        const feeType = fee.feeStructure.feeType;
+        if (!feeTypeMap[feeType]) {
+          feeTypeMap[feeType] = {
             paid: 0,
-            pending: 0,
-            overdue: 0,
+            unpaid: 0,
+            partial: 0,
             total: 0,
           };
         }
 
-        feeTypeMap[fee.feeType].total += fee.amount;
+        feeTypeMap[feeType].total += fee.feeStructure.amount;
 
         if (fee.status === "PAID") {
-          feeTypeMap[fee.feeType].paid += fee.amount;
-        } else if (fee.status === "PENDING") {
-          feeTypeMap[fee.feeType].pending += fee.amount;
-        } else if (fee.status === "OVERDUE") {
-          feeTypeMap[fee.feeType].overdue += fee.amount;
+          feeTypeMap[feeType].paid += fee.amountPaid;
+        } else if (fee.status === "UNPAID") {
+          feeTypeMap[feeType].unpaid += fee.feeStructure.amount;
+        } else if (fee.status === "PARTIAL") {
+          feeTypeMap[feeType].partial += fee.feeStructure.amount - fee.amountPaid;
         }
       });
 
@@ -227,8 +188,8 @@ class StudentFeesService {
         data: Object.entries(feeTypeMap).map(([feeType, amounts]) => ({
           feeType,
           paid: amounts.paid,
-          pending: amounts.pending,
-          overdue: amounts.overdue,
+          unpaid: amounts.unpaid,
+          partial: amounts.partial,
           total: amounts.total,
         })),
       };
@@ -241,32 +202,25 @@ class StudentFeesService {
   // Get fee timeline (paid fees with receipts)
   async getFeeTimeline(studentId: string, limit: number = 10) {
     try {
-      const student = await prisma.student.findUnique({
-        where: { id: studentId },
-        select: {
-          enrollmentId: true,
-        },
-      });
-
-      if (!student) {
-        throw new Error("Student not found");
-      }
-
-      const paidFees = await prisma.fee.findMany({
+      const paidFees = await prisma.feePayment.findMany({
         where: {
-          enrollmentId: student.enrollmentId,
+          studentId,
           status: "PAID",
-          paidDate: { not: null },
+          paymentDate: { not: null },
         },
         select: {
           id: true,
-          feeType: true,
-          period: true,
-          amount: true,
-          paidDate: true,
-          dueDate: true,
+          feeStructure: {
+            select: {
+              feeType: true,
+              amount: true,
+            },
+          },
+          amountPaid: true,
+          paymentDate: true,
+          receiptUrl: true,
         },
-        orderBy: { paidDate: "desc" },
+        orderBy: { paymentDate: "desc" },
         take: limit,
       });
 
@@ -274,12 +228,12 @@ class StudentFeesService {
         success: true,
         data: paidFees.map((fee) => ({
           id: fee.id,
-          feeType: fee.feeType,
-          period: fee.period,
-          amount: fee.amount,
-          paidDate: fee.paidDate!.toISOString().split("T")[0],
-          dueDate: fee.dueDate.toISOString().split("T")[0],
+          feeType: fee.feeStructure.feeType,
+          amount: fee.feeStructure.amount,
+          amountPaid: fee.amountPaid,
+          paymentDate: fee.paymentDate!.toISOString().split("T")[0],
           paymentStatus: "PAID",
+          receiptUrl: fee.receiptUrl,
         })),
       };
     } catch (error) {
@@ -288,111 +242,92 @@ class StudentFeesService {
     }
   }
 
-  // Get upcoming fees
-  async getUpcomingFees(studentId: string) {
+  // Get pending fees
+  async getPendingFees(studentId: string) {
     try {
-      const student = await prisma.student.findUnique({
-        where: { id: studentId },
-        select: {
-          enrollmentId: true,
-        },
-      });
-
-      if (!student) {
-        throw new Error("Student not found");
-      }
-
-      const today = new Date();
-
-      const upcomingFees = await prisma.fee.findMany({
+      const pendingFees = await prisma.feePayment.findMany({
         where: {
-          enrollmentId: student.enrollmentId,
-          status: "PENDING",
-          dueDate: { gte: today },
+          studentId,
+          status: { in: ["UNPAID", "PARTIAL"] },
         },
         select: {
           id: true,
-          feeType: true,
-          period: true,
-          amount: true,
-          dueDate: true,
+          feeStructure: {
+            select: {
+              feeType: true,
+              amount: true,
+            },
+          },
+          amountPaid: true,
+          status: true,
         },
-        orderBy: { dueDate: "asc" },
       });
 
       return {
         success: true,
-        data: upcomingFees.map((fee) => ({
+        data: pendingFees.map((fee) => ({
           id: fee.id,
-          feeType: fee.feeType,
-          period: fee.period,
-          amount: fee.amount,
-          dueDate: fee.dueDate.toISOString().split("T")[0],
-          daysRemaining: Math.ceil(
-            (fee.dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-          ),
+          feeType: fee.feeStructure.feeType,
+          amount: fee.feeStructure.amount,
+          amountPaid: fee.amountPaid,
+          amountDue:
+            fee.status === "PARTIAL"
+              ? fee.feeStructure.amount - fee.amountPaid
+              : fee.feeStructure.amount,
+          status: fee.status,
         })),
       };
     } catch (error) {
-      console.error("Error fetching upcoming fees:", error);
+      console.error("Error fetching pending fees:", error);
       throw error;
     }
   }
 
-  // Get overdue fees
-  async getOverdueFees(studentId: string) {
+  // Get paid fees
+  async getPaidFees(studentId: string) {
     try {
-      const student = await prisma.student.findUnique({
-        where: { id: studentId },
-        select: {
-          enrollmentId: true,
-        },
-      });
-
-      if (!student) {
-        throw new Error("Student not found");
-      }
-
-      const overdueFees = await prisma.fee.findMany({
+      const paidFees = await prisma.feePayment.findMany({
         where: {
-          enrollmentId: student.enrollmentId,
-          status: "OVERDUE",
+          studentId,
+          status: "PAID",
         },
         select: {
           id: true,
-          feeType: true,
-          period: true,
-          amount: true,
-          dueDate: true,
+          feeStructure: {
+            select: {
+              feeType: true,
+              amount: true,
+            },
+          },
+          amountPaid: true,
+          paymentDate: true,
         },
-        orderBy: { dueDate: "asc" },
+        orderBy: { paymentDate: "desc" },
       });
 
-      let totalOverdue = 0;
-      overdueFees.forEach((fee) => {
-        totalOverdue += fee.amount;
+      let totalPaid = 0;
+      paidFees.forEach((fee) => {
+        totalPaid += fee.amountPaid;
       });
 
       return {
         success: true,
         data: {
-          totalOverdue,
-          count: overdueFees.length,
-          fees: overdueFees.map((fee) => ({
+          totalPaid,
+          count: paidFees.length,
+          fees: paidFees.map((fee) => ({
             id: fee.id,
-            feeType: fee.feeType,
-            period: fee.period,
-            amount: fee.amount,
-            dueDate: fee.dueDate.toISOString().split("T")[0],
-            daysOverdue: Math.ceil(
-              (new Date().getTime() - fee.dueDate.getTime()) /
-                (1000 * 60 * 60 * 24)
-            ),
+            feeType: fee.feeStructure.feeType,
+            amount: fee.feeStructure.amount,
+            amountPaid: fee.amountPaid,
+            paymentDate: fee.paymentDate
+              ? fee.paymentDate.toISOString().split("T")[0]
+              : null,
           })),
         },
       };
     } catch (error) {
-      console.error("Error fetching overdue fees:", error);
+      console.error("Error fetching paid fees:", error);
       throw error;
     }
   }

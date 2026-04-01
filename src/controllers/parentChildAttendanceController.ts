@@ -79,9 +79,9 @@ class ParentChildAttendanceController {
   async getRecentAttendance(req: Request, res: Response) {
     try {
       const parentId = (req as any).userId;
-      const studentId = req.params.studentId as string;
+      const studentId: string = req.params.studentId || "";
       const limit = getQueryNumber(req.query.limit, 10);
-      const limitParam = limit ? parseInt(limit as string) : 10;
+      const limitParam = limit ? parseInt(String(limit)) : 10;
 
       if (!parentId) {
         return res.status(401).json({

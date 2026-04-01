@@ -72,6 +72,7 @@ class ParentDashboardService {
           user: { select: { name: true } },
           class: {
             select: {
+              id: true,
               name: true,
               section: true,
               totalStudents: true,
@@ -111,10 +112,9 @@ class ParentDashboardService {
       const overallPercentage =
         totalMarksCount > 0 ? Math.round((totalMarks / totalMarksCount) * 100) : 0;
 
-      // Get class ranking
       const allResults = await prisma.examResult.findMany({
-        where: { exam: { classId: student?.class?.id } },
-        select: { studentId: true, marksObtained: true, totalMarks: true },
+        where: { exam: { class: { id: student?.class?.id } } },
+        select: { studentId: true, marksObtained: true },
       });
 
       const studentAverages: Record<string, number> = {};
@@ -123,22 +123,21 @@ class ParentDashboardService {
           if (!studentAverages[result.studentId]) {
             studentAverages[result.studentId] = 0;
           }
-          studentAverages[result.studentId] +=
-            (result.marksObtained / result.totalMarks) * 100;
+          studentAverages[result.studentId] += result.marksObtained;
         }
       });
 
       let rank = 1;
       Object.entries(studentAverages).forEach(([id, avg]) => {
-        if (avg > overallPercentage) {
+        if (avg > totalMarks) {
           rank++;
         }
       });
 
-      // Get subject count
-      const subjects = await prisma.subject.findMany({
+      // Get subject count  
+      const subjectsCount = await prisma.subject.count({
         where: {
-          class: { id: student?.class?.id },
+          exams: { some: { class: { id: student?.class?.id } } },
         },
       });
 
@@ -146,7 +145,7 @@ class ParentDashboardService {
         success: true,
         data: {
           studentName: student?.user?.name || "Unknown",
-          class: `${student?.class?.name}-${student?.class?.section}`,
+          class: `${student?.class?.name}-${student?.class?.section}` || "Unknown",
           attendance: {
             percentage: attendancePercentage,
             status:
@@ -157,7 +156,7 @@ class ParentDashboardService {
                 : "Need Improvement",
           },
           overallGrade: calculateGrade(overallPercentage),
-          subjects: subjects.length,
+          subjects: subjectsCount,
           classRank: rank,
           totalClassSize: student?.class?.totalStudents || 0,
         },

@@ -227,29 +227,31 @@ class StudentDashboardService {
     try {
       const student = await prisma.student.findUnique({
         where: { id: studentId },
+        select: { classId: true },
+      });
+
+      if (!student) {
+        throw new Error("Student not found");
+      }
+
+      const classDetails = await prisma.class.findUnique({
+        where: { id: student.classId },
         select: {
-          class: {
+          subjects: {
             select: {
-              subjects: {
+              id: true,
+              name: true,
+              exams: {
+                where: {
+                  classId: student.classId,
+                },
                 select: {
                   id: true,
-                  name: true,
-                  exams: {
-                    where: {
-                      classes: {
-                        some: {
-                          id: student?.classId,
-                        },
-                      },
-                    },
+                  totalMarks: true,
+                  results: {
+                    where: { studentId },
                     select: {
-                      results: {
-                        where: { studentId },
-                        select: {
-                          marksObtained: true,
-                          totalMarks: true,
-                        },
-                      },
+                      marksObtained: true,
                     },
                   },
                 },
@@ -259,19 +261,22 @@ class StudentDashboardService {
         },
       });
 
-      if (!student) {
-        throw new Error("Student not found");
+      if (!classDetails) {
+        return {
+          success: true,
+          data: [],
+        };
       }
 
-      const performanceData = student.class.subjects.map((subject) => {
+      const performanceData = (classDetails.subjects || []).map((subject) => {
         let totalMarksObtained = 0;
         let totalMarksCount = 0;
 
-        subject.exams.forEach((exam) => {
-          exam.results.forEach((result) => {
+        ((subject.exams || []) as any[]).forEach((exam) => {
+          (exam.results || []).forEach((result) => {
             if (result.marksObtained !== null) {
               totalMarksObtained += result.marksObtained;
-              totalMarksCount += result.totalMarks;
+              totalMarksCount += exam.totalMarks;
             }
           });
         });

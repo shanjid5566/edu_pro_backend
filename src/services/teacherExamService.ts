@@ -6,35 +6,22 @@ class TeacherExamService {
     try {
       const exams = await prisma.exam.findMany({
         where: {
-          classes: {
-            some: {
-              teachers: {
-                some: { teacherId },
-              },
+          class: {
+            teachers: {
+              some: { teacherId },
             },
           },
         },
         select: {
           id: true,
           name: true,
+          classId: true,
+          subjectId: true,
           date: true,
           duration: true,
           totalMarks: true,
           type: true,
           status: true,
-          class: {
-            select: {
-              id: true,
-              name: true,
-              section: true,
-            },
-          },
-          subject: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
           _count: {
             select: {
               results: true,
@@ -49,15 +36,27 @@ class TeacherExamService {
       const ongoing = exams.filter((e) => e.status === "ONGOING");
       const completed = exams.filter((e) => e.status === "COMPLETED");
 
+      // Fetch class and subject details
+      const classDetails = await prisma.class.findMany({
+        where: { id: { in: exams.map((e) => e.classId) } },
+        select: { id: true, name: true, section: true },
+      });
+      const subjectDetails = await prisma.subject.findMany({
+        where: { id: { in: exams.map((e) => e.subjectId) } },
+        select: { id: true, name: true },
+      });
+      const classMap = Object.fromEntries(classDetails.map((c) => [c.id, c]));
+      const subjectMap = Object.fromEntries(subjectDetails.map((s) => [s.id, s]));
+
       return {
         success: true,
         data: {
           exams: exams.map((exam) => ({
             id: exam.id,
             name: exam.name,
-            class: `${exam.class.name}-${exam.class.section}`,
-            classId: exam.class.id,
-            subject: exam.subject.name,
+            class: `${classMap[exam.classId]?.name}-${classMap[exam.classId]?.section}`,
+            classId: exam.classId,
+            subject: subjectMap[exam.subjectId]?.name,
             date: exam.date.toISOString().split("T")[0],
             totalMarks: exam.totalMarks,
             type: exam.type,
@@ -236,11 +235,9 @@ class TeacherExamService {
       const exams = await prisma.exam.findMany({
         where: {
           status: status.toUpperCase() as "UPCOMING" | "ONGOING" | "COMPLETED",
-          classes: {
-            some: {
-              teachers: {
-                some: { teacherId },
-              },
+          class: {
+            teachers: {
+              some: { teacherId },
             },
           },
         },
@@ -344,7 +341,7 @@ class TeacherExamService {
       const updatePromises = marks.map((mark) =>
         prisma.examResult.upsert({
           where: {
-            unique_student_exam: {
+            examId_studentId: {
               studentId: mark.studentId,
               examId,
             },
@@ -354,7 +351,6 @@ class TeacherExamService {
             studentId: mark.studentId,
             examId,
             marksObtained: mark.marksObtained,
-            totalMarks: exam.totalMarks,
           },
         })
       );
@@ -363,79 +359,14 @@ class TeacherExamService {
 
       return {
         success: true,
-        message: "Marks submitted successfully",
+        message: "Exam marks submitted successfully",
         data: {
           examId,
-          marksSubmitted: marks.length,
+          marksUpdated: marks.length,
         },
       };
     } catch (error) {
-      console.error("Error submitting marks:", error);
-      throw error;
-    }
-  }
-
-  // Get exam statistics
-  async getExamStatistics(teacherId: string) {
-    try {
-      const exams = await prisma.exam.findMany({
-        where: {
-          classes: {
-            some: {
-              teachers: {
-                some: { teacherId },
-              },
-            },
-          },
-        },
-        select: {
-          id: true,
-          status: true,
-          totalMarks: true,
-          results: {
-            select: {
-              marksObtained: true,
-              totalMarks: true,
-            },
-          },
-        },
-      });
-
-      const totalExams = exams.length;
-      const upcomingCount = exams.filter((e) => e.status === "UPCOMING").length;
-      const ongoingCount = exams.filter((e) => e.status === "ONGOING").length;
-      const completedCount = exams.filter((e) => e.status === "COMPLETED").length;
-
-      // Calculate average marks
-      let totalMarksObtained = 0;
-      let totalMarksCount = 0;
-
-      exams.forEach((exam) => {
-        exam.results.forEach((result) => {
-          if (result.marksObtained !== null) {
-            totalMarksObtained += result.marksObtained;
-            totalMarksCount += result.totalMarks;
-          }
-        });
-      });
-
-      const averagePercentage =
-        totalMarksCount > 0
-          ? Math.round((totalMarksObtained / totalMarksCount) * 100)
-          : 0;
-
-      return {
-        success: true,
-        data: {
-          total: totalExams,
-          upcoming: upcomingCount,
-          ongoing: ongoingCount,
-          completed: completedCount,
-          averagePercentage,
-        },
-      };
-    } catch (error) {
-      console.error("Error fetching exam statistics:", error);
+      console.error("Error submitting exam marks:", error);
       throw error;
     }
   }

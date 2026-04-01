@@ -204,7 +204,7 @@ class TeacherExamController {
         });
       }
 
-      const result = await teacherExamService.getExamStatistics(teacherId);
+      const result = await teacherExamService.getExamsByStatus(teacherId, status);
       return res.status(200).json(result);
     } catch (error) {
       console.error("Error in getStatistics:", error);

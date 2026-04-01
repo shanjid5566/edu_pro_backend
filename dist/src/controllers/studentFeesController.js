@@ -129,7 +129,7 @@ class StudentFeesController {
                     message: "Unauthorized",
                 });
             }
-            const result = await studentFeesService_js_1.default.getUpcomingFees(studentId);
+            const result = await studentFeesService_js_1.default.getPendingFees(studentId);
             return res.status(200).json(result);
         }
         catch (error) {
@@ -150,7 +150,7 @@ class StudentFeesController {
                     message: "Unauthorized",
                 });
             }
-            const result = await studentFeesService_js_1.default.getOverdueFees(studentId);
+            const result = await studentFeesService_js_1.default.getPaidFees(studentId);
             return res.status(200).json(result);
         }
         catch (error) {

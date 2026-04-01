@@ -458,8 +458,10 @@ class AdminExamService {
     async getExamsByStatus(status, limit = 10) {
         try {
             const actualLimit = Math.min(limit, 100);
+            const validStatus = ["UPCOMING", "ONGOING", "COMPLETED"];
+            const safeStatus = validStatus.includes(status) ? status : "UPCOMING";
             const exams = await prisma_1.prisma.exam.findMany({
-                where: { status },
+                where: { status: safeStatus },
                 select: {
                     id: true,
                     name: true,
