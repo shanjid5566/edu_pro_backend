@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { AdminAttendanceService } from "../services/adminAttendanceService.js";
-import { AttendanceStatus } from "@prisma/client";
+import { AttendanceStatus } from "../../prisma/generated/prisma/client";
+import { getQueryString, getQueryNumber } from "../utils/queryParams.js";
+
 
 class AdminAttendanceController {
   /**
@@ -83,10 +85,11 @@ class AdminAttendanceController {
    */
   async getAllAttendance(req: Request, res: Response) {
     try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
-      const classId = req.query.classId as string;
-      const status = req.query.status as AttendanceStatus;
+      const page = getQueryNumber(req.query.page, 1);
+      const limit = getQueryNumber(req.query.limit, 10);
+      const classId = getQueryString(req.query.classId);
+      const statusParam = getQueryString(req.query.status);
+      const status = (statusParam as AttendanceStatus | undefined) || undefined;
 
       const result = await AdminAttendanceService.getAllAttendance(
         page,
@@ -113,7 +116,7 @@ class AdminAttendanceController {
    */
   async getAttendanceById(req: Request, res: Response) {
     try {
-      const { attendanceId } = req.params;
+      const attendanceId = req.params.attendanceId as string;
       const attendance = await AdminAttendanceService.getAttendanceById(
         attendanceId
       );
@@ -177,7 +180,7 @@ class AdminAttendanceController {
    */
   async updateAttendance(req: Request, res: Response) {
     try {
-      const { attendanceId } = req.params;
+      const attendanceId = req.params.attendanceId as string;
       const { status } = req.body;
       const userId = (req as any).user?.id;
 
@@ -220,7 +223,7 @@ class AdminAttendanceController {
    */
   async deleteAttendance(req: Request, res: Response) {
     try {
-      const { attendanceId } = req.params;
+      const attendanceId = req.params.attendanceId as string;
       await AdminAttendanceService.deleteAttendance(attendanceId);
 
       res.status(200).json({
@@ -241,7 +244,9 @@ class AdminAttendanceController {
    */
   async getAttendanceByDateRange(req: Request, res: Response) {
     try {
-      const { startDate, endDate, classId } = req.query;
+      const startDate = getQueryString(req.query.startDate);
+      const endDate = getQueryString(req.query.endDate);
+      const classId = getQueryString(req.query.classId);
 
       if (!startDate || !endDate) {
         return res.status(400).json({
@@ -251,9 +256,9 @@ class AdminAttendanceController {
       }
 
       const attendance = await AdminAttendanceService.getAttendanceByDateRange(
-        new Date(startDate as string),
-        new Date(endDate as string),
-        classId as string
+        new Date(startDate),
+        new Date(endDate),
+        classId
       );
 
       res.status(200).json({
@@ -279,7 +284,7 @@ class AdminAttendanceController {
    */
   async getStudentAttendanceHistory(req: Request, res: Response) {
     try {
-      const { studentId } = req.params;
+      const studentId = req.params.studentId as string;
       const limit = parseInt(req.query.limit as string) || 30;
 
       const result = await AdminAttendanceService.getStudentAttendanceHistory(

@@ -128,8 +128,7 @@ class AdminAttendanceService {
                             id: true,
                             user: {
                                 select: {
-                                    firstName: true,
-                                    lastName: true,
+                                    name: true,
                                     email: true,
                                 },
                             },
@@ -147,8 +146,7 @@ class AdminAttendanceService {
                             id: true,
                             user: {
                                 select: {
-                                    firstName: true,
-                                    lastName: true,
+                                    name: true,
                                 },
                             },
                         },
@@ -187,8 +185,7 @@ class AdminAttendanceService {
                         id: true,
                         user: {
                             select: {
-                                firstName: true,
-                                lastName: true,
+                                name: true,
                                 email: true,
                             },
                         },
@@ -206,8 +203,7 @@ class AdminAttendanceService {
                         id: true,
                         user: {
                             select: {
-                                firstName: true,
-                                lastName: true,
+                                name: true,
                             },
                         },
                     },
@@ -270,8 +266,7 @@ class AdminAttendanceService {
                         id: true,
                         user: {
                             select: {
-                                firstName: true,
-                                lastName: true,
+                                name: true,
                             },
                         },
                     },
@@ -321,8 +316,7 @@ class AdminAttendanceService {
                         id: true,
                         user: {
                             select: {
-                                firstName: true,
-                                lastName: true,
+                                name: true,
                                 email: true,
                             },
                         },
@@ -391,8 +385,7 @@ class AdminAttendanceService {
                 id: true,
                 user: {
                     select: {
-                        firstName: true,
-                        lastName: true,
+                        name: true,
                         email: true,
                     },
                 },
@@ -422,7 +415,7 @@ class AdminAttendanceService {
             const late = attendance.filter((a) => a.status === "LATE").length;
             return {
                 studentId: student.id,
-                studentName: `${student.user.firstName} ${student.user.lastName}`,
+                studentName: student.user.name,
                 email: student.user.email,
                 present,
                 absent,

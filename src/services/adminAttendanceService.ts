@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma.js";
-import { AttendanceStatus } from "@prisma/client";
+import { AttendanceStatus } from "../../prisma/generated/prisma/client";
 
 export class AdminAttendanceService {
   /**
@@ -143,8 +143,7 @@ export class AdminAttendanceService {
               id: true,
               user: {
                 select: {
-                  firstName: true,
-                  lastName: true,
+                  name: true,
                   email: true,
                 },
               },
@@ -162,8 +161,7 @@ export class AdminAttendanceService {
               id: true,
               user: {
                 select: {
-                  firstName: true,
-                  lastName: true,
+                  name: true,
                 },
               },
             },
@@ -204,8 +202,7 @@ export class AdminAttendanceService {
             id: true,
             user: {
               select: {
-                firstName: true,
-                lastName: true,
+                name: true,
                 email: true,
               },
             },
@@ -223,8 +220,7 @@ export class AdminAttendanceService {
             id: true,
             user: {
               select: {
-                firstName: true,
-                lastName: true,
+                name: true,
               },
             },
           },
@@ -307,8 +303,7 @@ export class AdminAttendanceService {
             id: true,
             user: {
               select: {
-                firstName: true,
-                lastName: true,
+                name: true,
               },
             },
           },
@@ -367,8 +362,7 @@ export class AdminAttendanceService {
             id: true,
             user: {
               select: {
-                firstName: true,
-                lastName: true,
+                name: true,
                 email: true,
               },
             },
@@ -450,8 +444,7 @@ export class AdminAttendanceService {
         id: true,
         user: {
           select: {
-            firstName: true,
-            lastName: true,
+            name: true,
             email: true,
           },
         },
@@ -491,7 +484,7 @@ export class AdminAttendanceService {
 
         return {
           studentId: student.id,
-          studentName: `${student.user.firstName} ${student.user.lastName}`,
+          studentName: student.user.name,
           email: student.user.email,
           present,
           absent,

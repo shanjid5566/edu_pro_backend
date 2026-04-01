@@ -1,17 +1,21 @@
 import { Request, Response } from "express";
 import { adminNoticeService } from "../services/adminNoticeService.js";
+import { getQueryString, getQueryNumber } from "../utils/queryParams.js";
 
 export class AdminNoticeController {
   // Get all notices (public)
   async getAllNotices(req: Request, res: Response) {
     try {
-      const { page = 1, limit = 10, category, search } = req.query;
+      const page = getQueryNumber(req.query.page, 1);
+      const limit = getQueryNumber(req.query.limit, 10);
+      const category = getQueryString(req.query.category);
+      const search = getQueryString(req.query.search);
 
       const result = await adminNoticeService.getAllNotices(
-        Number(page),
-        Number(limit),
-        category as string,
-        search as string
+        page,
+        limit,
+        category,
+        search
       );
 
       return res.status(200).json({

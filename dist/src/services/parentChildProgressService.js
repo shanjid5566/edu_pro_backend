@@ -6,22 +6,21 @@ class ParentChildProgressService {
     // Get overall progress metrics
     async getProgressMetrics(parentId, studentId) {
         try {
-            // Verify parent-child relationship
-            const enrollment = await prisma_js_1.prisma.enrollment.findFirst({
+            // Verify parent-child relationship through ParentStudent
+            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
                 where: {
-                    student: { id: studentId },
-                    parents: { some: { id: parentId } },
+                    parentId,
+                    studentId,
                 },
             });
-            if (!enrollment) {
+            if (!parentStudent) {
                 throw new Error("Unauthorized: Child not found for this parent");
             }
             const student = await prisma_js_1.prisma.student.findUnique({
                 where: { id: studentId },
                 select: {
                     id: true,
-                    firstName: true,
-                    lastName: true,
+                    user: { select: { name: true } },
                     class: { select: { id: true, totalStudents: true } },
                 },
             });
@@ -74,7 +73,7 @@ class ParentChildProgressService {
             return {
                 success: true,
                 data: {
-                    studentName: `${student?.firstName} ${student?.lastName}`,
+                    studentName: student?.user?.name || "Unknown",
                     currentGrade: (0, gradeUtils_js_1.calculateGrade)(currentPercentage),
                     classRank: {
                         rank,
@@ -93,14 +92,14 @@ class ParentChildProgressService {
     // Get progress over time (grades/percentages by month)
     async getProgressOverTime(parentId, studentId, months = 6) {
         try {
-            // Verify parent-child relationship
-            const enrollment = await prisma_js_1.prisma.enrollment.findFirst({
+            // Verify parent-child relationship through ParentStudent
+            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
                 where: {
-                    student: { id: studentId },
-                    parents: { some: { id: parentId } },
+                    parentId,
+                    studentId,
                 },
             });
-            if (!enrollment) {
+            if (!parentStudent) {
                 throw new Error("Unauthorized: Child not found for this parent");
             }
             const startDate = new Date();
@@ -159,14 +158,14 @@ class ParentChildProgressService {
     // Get subject-wise performance with comparison
     async getSubjectWisePerformance(parentId, studentId) {
         try {
-            // Verify parent-child relationship
-            const enrollment = await prisma_js_1.prisma.enrollment.findFirst({
+            // Verify parent-child relationship through ParentStudent
+            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
                 where: {
-                    student: { id: studentId },
-                    parents: { some: { id: parentId } },
+                    parentId,
+                    studentId,
                 },
             });
-            if (!enrollment) {
+            if (!parentStudent) {
                 throw new Error("Unauthorized: Child not found for this parent");
             }
             const results = await prisma_js_1.prisma.examResult.findMany({
@@ -224,14 +223,14 @@ class ParentChildProgressService {
     // Get exam results with trends
     async getExamResultsWithTrends(parentId, studentId, limit = 10) {
         try {
-            // Verify parent-child relationship
-            const enrollment = await prisma_js_1.prisma.enrollment.findFirst({
+            // Verify parent-child relationship through ParentStudent
+            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
                 where: {
-                    student: { id: studentId },
-                    parents: { some: { id: parentId } },
+                    parentId,
+                    studentId,
                 },
             });
-            if (!enrollment) {
+            if (!parentStudent) {
                 throw new Error("Unauthorized: Child not found for this parent");
             }
             const results = await prisma_js_1.prisma.examResult.findMany({
@@ -299,14 +298,14 @@ class ParentChildProgressService {
     // Get performance summary
     async getPerformanceSummary(parentId, studentId) {
         try {
-            // Verify parent-child relationship
-            const enrollment = await prisma_js_1.prisma.enrollment.findFirst({
+            // Verify parent-child relationship through ParentStudent
+            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
                 where: {
-                    student: { id: studentId },
-                    parents: { some: { id: parentId } },
+                    parentId,
+                    studentId,
                 },
             });
-            if (!enrollment) {
+            if (!parentStudent) {
                 throw new Error("Unauthorized: Child not found for this parent");
             }
             const results = await prisma_js_1.prisma.examResult.findMany({

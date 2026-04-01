@@ -2,12 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.adminNoticeController = exports.AdminNoticeController = void 0;
 const adminNoticeService_js_1 = require("../services/adminNoticeService.js");
+const queryParams_js_1 = require("../utils/queryParams.js");
 class AdminNoticeController {
     // Get all notices (public)
     async getAllNotices(req, res) {
         try {
-            const { page = 1, limit = 10, category, search } = req.query;
-            const result = await adminNoticeService_js_1.adminNoticeService.getAllNotices(Number(page), Number(limit), category, search);
+            const page = (0, queryParams_js_1.getQueryNumber)(req.query.page, 1);
+            const limit = (0, queryParams_js_1.getQueryNumber)(req.query.limit, 10);
+            const category = (0, queryParams_js_1.getQueryString)(req.query.category);
+            const search = (0, queryParams_js_1.getQueryString)(req.query.search);
+            const result = await adminNoticeService_js_1.adminNoticeService.getAllNotices(page, limit, category, search);
             return res.status(200).json({
                 success: true,
                 data: result.data,

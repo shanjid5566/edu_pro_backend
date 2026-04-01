@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import parentChildAttendanceService from "../services/parentChildAttendanceService.js";
+import { getQueryString, getQueryNumber } from "../utils/queryParams.js";
 
 class ParentChildAttendanceController {
   // Get attendance summary
   async getAttendanceSummary(req: Request, res: Response) {
     try {
       const parentId = (req as any).userId;
-      const { studentId } = req.params;
+      const studentId = req.params.studentId as string;
 
       if (!parentId) {
         return res.status(401).json({
@@ -41,9 +42,8 @@ class ParentChildAttendanceController {
   async getAttendanceTrend(req: Request, res: Response) {
     try {
       const parentId = (req as any).userId;
-      const { studentId } = req.params;
-      const { months } = req.query;
-      const monthsParam = months ? parseInt(months as string) : 6;
+      const studentId = req.params.studentId as string;
+      const months = getQueryNumber(req.query.months, 6);
 
       if (!parentId) {
         return res.status(401).json({
@@ -62,7 +62,7 @@ class ParentChildAttendanceController {
       const result = await parentChildAttendanceService.getAttendanceTrend(
         parentId,
         studentId,
-        monthsParam
+        months
       );
       return res.status(200).json(result);
     } catch (error) {
@@ -79,8 +79,8 @@ class ParentChildAttendanceController {
   async getRecentAttendance(req: Request, res: Response) {
     try {
       const parentId = (req as any).userId;
-      const { studentId } = req.params;
-      const { limit } = req.query;
+      const studentId = req.params.studentId as string;
+      const limit = getQueryNumber(req.query.limit, 10);
       const limitParam = limit ? parseInt(limit as string) : 10;
 
       if (!parentId) {
@@ -117,8 +117,9 @@ class ParentChildAttendanceController {
   async getAttendanceByDateRange(req: Request, res: Response) {
     try {
       const parentId = (req as any).userId;
-      const { studentId } = req.params;
-      const { startDate, endDate } = req.query;
+      const studentId = req.params.studentId as string;
+      const startDate = getQueryString(req.query.startDate);
+      const endDate = getQueryString(req.query.endDate);
 
       if (!parentId) {
         return res.status(401).json({

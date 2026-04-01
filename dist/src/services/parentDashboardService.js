@@ -10,15 +10,14 @@ class ParentDashboardService {
             const parent = await prisma_js_1.prisma.parent.findUnique({
                 where: { id: parentId },
                 select: {
-                    enrollments: {
+                    students: {
                         select: {
                             id: true,
+                            studentId: true,
                             student: {
                                 select: {
                                     id: true,
-                                    firstName: true,
-                                    lastName: true,
-                                    email: true,
+                                    user: { select: { name: true, email: true } },
                                     class: {
                                         select: {
                                             name: true,
@@ -36,12 +35,12 @@ class ParentDashboardService {
             }
             return {
                 success: true,
-                data: parent.enrollments.map((enrollment) => ({
-                    enrollmentId: enrollment.id,
-                    studentId: enrollment.student.id,
-                    name: `${enrollment.student.firstName} ${enrollment.student.lastName}`,
-                    email: enrollment.student.email,
-                    class: `${enrollment.student.class.name}-${enrollment.student.class.section}`,
+                data: parent.students.map((parentStudent) => ({
+                    enrollmentId: parentStudent.id,
+                    studentId: parentStudent.student.id,
+                    name: parentStudent.student.user.name,
+                    email: parentStudent.student.user.email,
+                    class: `${parentStudent.student.class.name}-${parentStudent.student.class.section}`,
                 })),
             };
         }
@@ -53,22 +52,21 @@ class ParentDashboardService {
     // Get child overview
     async getChildOverview(parentId, studentId) {
         try {
-            // Verify parent-child relationship
-            const enrollment = await prisma_js_1.prisma.enrollment.findFirst({
+            // Verify parent-child relationship through ParentStudent
+            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
                 where: {
-                    student: { id: studentId },
-                    parents: { some: { id: parentId } },
+                    parentId,
+                    studentId,
                 },
             });
-            if (!enrollment) {
+            if (!parentStudent) {
                 throw new Error("Unauthorized: Child not found for this parent");
             }
             const student = await prisma_js_1.prisma.student.findUnique({
                 where: { id: studentId },
                 select: {
                     id: true,
-                    firstName: true,
-                    lastName: true,
+                    user: { select: { name: true } },
                     class: {
                         select: {
                             name: true,
@@ -131,7 +129,7 @@ class ParentDashboardService {
             return {
                 success: true,
                 data: {
-                    studentName: `${student?.firstName} ${student?.lastName}`,
+                    studentName: student?.user?.name || "Unknown",
                     class: `${student?.class?.name}-${student?.class?.section}`,
                     attendance: {
                         percentage: attendancePercentage,
@@ -156,14 +154,14 @@ class ParentDashboardService {
     // Get child attendance trend
     async getAttendanceTrend(parentId, studentId, months = 6) {
         try {
-            // Verify parent-child relationship
-            const enrollment = await prisma_js_1.prisma.enrollment.findFirst({
+            // Verify parent-child relationship through ParentStudent
+            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
                 where: {
-                    student: { id: studentId },
-                    parents: { some: { id: parentId } },
+                    parentId,
+                    studentId,
                 },
             });
-            if (!enrollment) {
+            if (!parentStudent) {
                 throw new Error("Unauthorized: Child not found for this parent");
             }
             const startDate = new Date();
@@ -211,14 +209,14 @@ class ParentDashboardService {
     // Get child recent results
     async getRecentResults(parentId, studentId, limit = 5) {
         try {
-            // Verify parent-child relationship
-            const enrollment = await prisma_js_1.prisma.enrollment.findFirst({
+            // Verify parent-child relationship through ParentStudent
+            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
                 where: {
-                    student: { id: studentId },
-                    parents: { some: { id: parentId } },
+                    parentId,
+                    studentId,
                 },
             });
-            if (!enrollment) {
+            if (!parentStudent) {
                 throw new Error("Unauthorized: Child not found for this parent");
             }
             const results = await prisma_js_1.prisma.examResult.findMany({
@@ -262,14 +260,14 @@ class ParentDashboardService {
     // Get child subject performance
     async getSubjectPerformance(parentId, studentId) {
         try {
-            // Verify parent-child relationship
-            const enrollment = await prisma_js_1.prisma.enrollment.findFirst({
+            // Verify parent-child relationship through ParentStudent
+            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
                 where: {
-                    student: { id: studentId },
-                    parents: { some: { id: parentId } },
+                    parentId,
+                    studentId,
                 },
             });
-            if (!enrollment) {
+            if (!parentStudent) {
                 throw new Error("Unauthorized: Child not found for this parent");
             }
             const results = await prisma_js_1.prisma.examResult.findMany({
@@ -321,14 +319,14 @@ class ParentDashboardService {
     // Get child upcoming events
     async getUpcomingEvents(parentId, studentId, limit = 5) {
         try {
-            // Verify parent-child relationship
-            const enrollment = await prisma_js_1.prisma.enrollment.findFirst({
+            // Verify parent-child relationship through ParentStudent
+            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
                 where: {
-                    student: { id: studentId },
-                    parents: { some: { id: parentId } },
+                    parentId,
+                    studentId,
                 },
             });
-            if (!enrollment) {
+            if (!parentStudent) {
                 throw new Error("Unauthorized: Child not found for this parent");
             }
             const today = new Date();
@@ -366,25 +364,25 @@ class ParentDashboardService {
     // Get notifications for child
     async getNotifications(parentId, studentId, limit = 5) {
         try {
-            // Verify parent-child relationship
-            const enrollment = await prisma_js_1.prisma.enrollment.findFirst({
+            // Verify parent-child relationship through ParentStudent
+            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
                 where: {
-                    student: { id: studentId },
-                    parents: { some: { id: parentId } },
+                    parentId,
+                    studentId,
                 },
             });
-            if (!enrollment) {
+            if (!parentStudent) {
                 throw new Error("Unauthorized: Child not found for this parent");
             }
             const notices = await prisma_js_1.prisma.notice.findMany({
                 select: {
                     id: true,
                     title: true,
-                    content: true,
-                    date: true,
+                    message: true,
+                    createdAt: true,
                     category: true,
                 },
-                orderBy: { date: "desc" },
+                orderBy: { createdAt: "desc" },
                 take: limit,
             });
             return {
@@ -392,10 +390,10 @@ class ParentDashboardService {
                 data: notices.map((notice) => ({
                     id: notice.id,
                     title: notice.title,
-                    message: notice.content.substring(0, 100) + "...",
+                    message: notice.message.substring(0, 100) + "...",
                     category: notice.category,
-                    date: notice.date.toISOString().split("T")[0],
-                    timeAgo: (0, dateUtils_js_1.getTimeAgo)(notice.date),
+                    date: notice.createdAt.toISOString().split("T")[0],
+                    timeAgo: (0, dateUtils_js_1.getTimeAgo)(notice.createdAt),
                 })),
             };
         }

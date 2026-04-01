@@ -4,12 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const parentChildAttendanceService_js_1 = __importDefault(require("../services/parentChildAttendanceService.js"));
+const queryParams_js_1 = require("../utils/queryParams.js");
 class ParentChildAttendanceController {
     // Get attendance summary
     async getAttendanceSummary(req, res) {
         try {
             const parentId = req.userId;
-            const { studentId } = req.params;
+            const studentId = req.params.studentId;
             if (!parentId) {
                 return res.status(401).json({
                     success: false,
@@ -37,9 +38,8 @@ class ParentChildAttendanceController {
     async getAttendanceTrend(req, res) {
         try {
             const parentId = req.userId;
-            const { studentId } = req.params;
-            const { months } = req.query;
-            const monthsParam = months ? parseInt(months) : 6;
+            const studentId = req.params.studentId;
+            const months = (0, queryParams_js_1.getQueryNumber)(req.query.months, 6);
             if (!parentId) {
                 return res.status(401).json({
                     success: false,
@@ -52,7 +52,7 @@ class ParentChildAttendanceController {
                     message: "Student ID is required",
                 });
             }
-            const result = await parentChildAttendanceService_js_1.default.getAttendanceTrend(parentId, studentId, monthsParam);
+            const result = await parentChildAttendanceService_js_1.default.getAttendanceTrend(parentId, studentId, months);
             return res.status(200).json(result);
         }
         catch (error) {
@@ -67,8 +67,8 @@ class ParentChildAttendanceController {
     async getRecentAttendance(req, res) {
         try {
             const parentId = req.userId;
-            const { studentId } = req.params;
-            const { limit } = req.query;
+            const studentId = req.params.studentId;
+            const limit = (0, queryParams_js_1.getQueryNumber)(req.query.limit, 10);
             const limitParam = limit ? parseInt(limit) : 10;
             if (!parentId) {
                 return res.status(401).json({
@@ -97,8 +97,9 @@ class ParentChildAttendanceController {
     async getAttendanceByDateRange(req, res) {
         try {
             const parentId = req.userId;
-            const { studentId } = req.params;
-            const { startDate, endDate } = req.query;
+            const studentId = req.params.studentId;
+            const startDate = (0, queryParams_js_1.getQueryString)(req.query.startDate);
+            const endDate = (0, queryParams_js_1.getQueryString)(req.query.endDate);
             if (!parentId) {
                 return res.status(401).json({
                     success: false,

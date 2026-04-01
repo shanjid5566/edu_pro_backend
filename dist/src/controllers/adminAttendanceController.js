@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const adminAttendanceService_js_1 = require("../services/adminAttendanceService.js");
+const queryParams_js_1 = require("../utils/queryParams.js");
 class AdminAttendanceController {
     /**
      * Get today's attendance statistics
@@ -74,10 +75,11 @@ class AdminAttendanceController {
      */
     async getAllAttendance(req, res) {
         try {
-            const page = parseInt(req.query.page) || 1;
-            const limit = parseInt(req.query.limit) || 10;
-            const classId = req.query.classId;
-            const status = req.query.status;
+            const page = (0, queryParams_js_1.getQueryNumber)(req.query.page, 1);
+            const limit = (0, queryParams_js_1.getQueryNumber)(req.query.limit, 10);
+            const classId = (0, queryParams_js_1.getQueryString)(req.query.classId);
+            const statusParam = (0, queryParams_js_1.getQueryString)(req.query.status);
+            const status = statusParam || undefined;
             const result = await adminAttendanceService_js_1.AdminAttendanceService.getAllAttendance(page, limit, classId, status);
             res.status(200).json({
                 success: true,
@@ -97,7 +99,7 @@ class AdminAttendanceController {
      */
     async getAttendanceById(req, res) {
         try {
-            const { attendanceId } = req.params;
+            const attendanceId = req.params.attendanceId;
             const attendance = await adminAttendanceService_js_1.AdminAttendanceService.getAttendanceById(attendanceId);
             res.status(200).json({
                 success: true,
@@ -149,7 +151,7 @@ class AdminAttendanceController {
      */
     async updateAttendance(req, res) {
         try {
-            const { attendanceId } = req.params;
+            const attendanceId = req.params.attendanceId;
             const { status } = req.body;
             const userId = req.user?.id;
             if (!status) {
@@ -184,7 +186,7 @@ class AdminAttendanceController {
      */
     async deleteAttendance(req, res) {
         try {
-            const { attendanceId } = req.params;
+            const attendanceId = req.params.attendanceId;
             await adminAttendanceService_js_1.AdminAttendanceService.deleteAttendance(attendanceId);
             res.status(200).json({
                 success: true,
@@ -204,7 +206,9 @@ class AdminAttendanceController {
      */
     async getAttendanceByDateRange(req, res) {
         try {
-            const { startDate, endDate, classId } = req.query;
+            const startDate = (0, queryParams_js_1.getQueryString)(req.query.startDate);
+            const endDate = (0, queryParams_js_1.getQueryString)(req.query.endDate);
+            const classId = (0, queryParams_js_1.getQueryString)(req.query.classId);
             if (!startDate || !endDate) {
                 return res.status(400).json({
                     success: false,
@@ -235,7 +239,7 @@ class AdminAttendanceController {
      */
     async getStudentAttendanceHistory(req, res) {
         try {
-            const { studentId } = req.params;
+            const studentId = req.params.studentId;
             const limit = parseInt(req.query.limit) || 30;
             const result = await adminAttendanceService_js_1.AdminAttendanceService.getStudentAttendanceHistory(studentId, limit);
             res.status(200).json({

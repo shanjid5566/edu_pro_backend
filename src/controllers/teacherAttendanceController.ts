@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import teacherAttendanceService from "../services/teacherAttendanceService.js";
-import { AttendanceStatus } from "@prisma/client";
+import { AttendanceStatus } from "../../prisma/generated/prisma/client";
 
 class TeacherAttendanceController {
   // Get students in a class for attendance marking

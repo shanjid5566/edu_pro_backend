@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma.js";
-import { AttendanceStatus } from "@prisma/client";
+import { AttendanceStatus } from "../../prisma/generated/prisma/client";
 
 class TeacherAttendanceService {
   // Get students in a class for attendance marking
