@@ -120,6 +120,16 @@ export type Parent = Prisma.ParentModel
  */
 export type ParentStudent = Prisma.ParentStudentModel
 /**
+ * Model UserPreference
+ * 
+ */
+export type UserPreference = Prisma.UserPreferenceModel
+/**
+ * Model NotificationPreference
+ * 
+ */
+export type NotificationPreference = Prisma.NotificationPreferenceModel
+/**
  * Model Profile
  * 
  */

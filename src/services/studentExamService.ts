@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma.js";
+import { calculateGrade } from "../utils/gradeUtils.js";
 
 class StudentExamService {
   // Get all exams for student
@@ -215,7 +216,7 @@ class StudentExamService {
                             100
                         )
                       : null,
-                  grade: this.calculateGrade(
+                  grade: calculateGrade(
                     exam.results[0].marksObtained !== null
                       ? Math.round(
                           (exam.results[0].marksObtained /
@@ -345,7 +346,7 @@ class StudentExamService {
             result.marksObtained !== null
               ? Math.round((result.marksObtained / result.totalMarks) * 100)
               : 0,
-          grade: this.calculateGrade(
+          grade: calculateGrade(
             result.marksObtained !== null
               ? Math.round((result.marksObtained / result.totalMarks) * 100)
               : 0
@@ -423,16 +424,6 @@ class StudentExamService {
     }
   }
 
-  // Helper function to calculate grade
-  private calculateGrade(percentage: number): string {
-    if (percentage >= 90) return "A+";
-    if (percentage >= 80) return "A";
-    if (percentage >= 70) return "B+";
-    if (percentage >= 60) return "B";
-    if (percentage >= 50) return "C";
-    if (percentage >= 40) return "D";
-    return "F";
-  }
 }
 
 export default new StudentExamService();

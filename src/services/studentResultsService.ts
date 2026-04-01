@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma.js";
+import { calculateGrade } from "../utils/gradeUtils.js";
 
 class StudentResultsService {
   // Get all results
@@ -43,7 +44,7 @@ class StudentResultsService {
             result.marksObtained !== null
               ? Math.round((result.marksObtained / result.totalMarks) * 100)
               : 0,
-          grade: this.calculateGrade(
+          grade: calculateGrade(
             result.marksObtained !== null
               ? Math.round((result.marksObtained / result.totalMarks) * 100)
               : 0
@@ -106,7 +107,7 @@ class StudentResultsService {
           subject: results[0].exam.subject.name,
           averagePercentage,
           totalExams: results.filter((r) => r.marksObtained !== null).length,
-          averageGrade: this.calculateGrade(averagePercentage),
+          averageGrade: calculateGrade(averagePercentage),
           results: results.map((result) => ({
             id: result.id,
             examId: result.exam.id,
@@ -119,7 +120,7 @@ class StudentResultsService {
               result.marksObtained !== null
                 ? Math.round((result.marksObtained / result.totalMarks) * 100)
                 : 0,
-            grade: this.calculateGrade(
+            grade: calculateGrade(
               result.marksObtained !== null
                 ? Math.round((result.marksObtained / result.totalMarks) * 100)
                 : 0
@@ -203,7 +204,7 @@ class StudentResultsService {
             subjectId: id,
             subject: data.name,
             averagePercentage: percentage,
-            grade: this.calculateGrade(percentage),
+            grade: calculateGrade(percentage),
             totalExams: data.exams,
             marksObtained: totalMarksObtained,
             totalMarks: totalMarksCount,
@@ -363,7 +364,7 @@ class StudentResultsService {
             result.marksObtained !== null
               ? Math.round((result.marksObtained / result.totalMarks) * 100)
               : 0,
-          grade: this.calculateGrade(
+          grade: calculateGrade(
             result.marksObtained !== null
               ? Math.round((result.marksObtained / result.totalMarks) * 100)
               : 0
@@ -439,7 +440,7 @@ class StudentResultsService {
           totalMarksObtained,
           totalMarksCount,
           averagePercentage,
-          averageGrade: this.calculateGrade(averagePercentage),
+          averageGrade: calculateGrade(averagePercentage),
           highestPercentage: highestPercentage === 0 ? 0 : highestPercentage,
           lowestPercentage: lowestPercentage === 100 ? 0 : lowestPercentage,
         },
@@ -450,16 +451,6 @@ class StudentResultsService {
     }
   }
 
-  // Helper function to calculate grade
-  private calculateGrade(percentage: number): string {
-    if (percentage >= 90) return "A+";
-    if (percentage >= 80) return "A";
-    if (percentage >= 70) return "B+";
-    if (percentage >= 60) return "B";
-    if (percentage >= 50) return "C";
-    if (percentage >= 40) return "D";
-    return "F";
-  }
 }
 
 export default new StudentResultsService();

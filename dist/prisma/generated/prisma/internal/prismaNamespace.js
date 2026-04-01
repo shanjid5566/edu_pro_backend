@@ -48,7 +48,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.defineExtension = exports.NullsOrder = exports.QueryMode = exports.SortOrder = exports.UserScalarFieldEnum = exports.TeacherScalarFieldEnum = exports.SettingScalarFieldEnum = exports.ActivityLogScalarFieldEnum = exports.NotificationScalarFieldEnum = exports.StudentScalarFieldEnum = exports.ProfileScalarFieldEnum = exports.ParentStudentScalarFieldEnum = exports.ParentScalarFieldEnum = exports.FeePaymentScalarFieldEnum = exports.FeeStructureScalarFieldEnum = exports.QuestionPaperScalarFieldEnum = exports.ExamResultScalarFieldEnum = exports.ExamScalarFieldEnum = exports.NoticeScalarFieldEnum = exports.ChatMessageScalarFieldEnum = exports.ClassScheduleScalarFieldEnum = exports.TeacherClassScalarFieldEnum = exports.TeacherSubjectScalarFieldEnum = exports.ClassSubjectScalarFieldEnum = exports.SubjectScalarFieldEnum = exports.ClassScalarFieldEnum = exports.AttendanceScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
+exports.defineExtension = exports.NullsOrder = exports.QueryMode = exports.SortOrder = exports.UserScalarFieldEnum = exports.TeacherScalarFieldEnum = exports.SettingScalarFieldEnum = exports.ActivityLogScalarFieldEnum = exports.NotificationScalarFieldEnum = exports.StudentScalarFieldEnum = exports.ProfileScalarFieldEnum = exports.NotificationPreferenceScalarFieldEnum = exports.UserPreferenceScalarFieldEnum = exports.ParentStudentScalarFieldEnum = exports.ParentScalarFieldEnum = exports.FeePaymentScalarFieldEnum = exports.FeeStructureScalarFieldEnum = exports.QuestionPaperScalarFieldEnum = exports.ExamResultScalarFieldEnum = exports.ExamScalarFieldEnum = exports.NoticeScalarFieldEnum = exports.ChatMessageScalarFieldEnum = exports.ClassScheduleScalarFieldEnum = exports.TeacherClassScalarFieldEnum = exports.TeacherSubjectScalarFieldEnum = exports.ClassSubjectScalarFieldEnum = exports.SubjectScalarFieldEnum = exports.ClassScalarFieldEnum = exports.AttendanceScalarFieldEnum = exports.TransactionIsolationLevel = exports.ModelName = exports.AnyNull = exports.JsonNull = exports.DbNull = exports.NullTypes = exports.prismaVersion = exports.getExtensionContext = exports.Decimal = exports.Sql = exports.raw = exports.join = exports.empty = exports.sql = exports.PrismaClientValidationError = exports.PrismaClientInitializationError = exports.PrismaClientRustPanicError = exports.PrismaClientUnknownRequestError = exports.PrismaClientKnownRequestError = void 0;
 const runtime = __importStar(require("@prisma/client/runtime/client"));
 /**
  * Prisma Errors
@@ -119,6 +119,8 @@ exports.ModelName = {
     FeePayment: 'FeePayment',
     Parent: 'Parent',
     ParentStudent: 'ParentStudent',
+    UserPreference: 'UserPreference',
+    NotificationPreference: 'NotificationPreference',
     Profile: 'Profile',
     Student: 'Student',
     Notification: 'Notification',
@@ -252,6 +254,25 @@ exports.ParentStudentScalarFieldEnum = {
     id: 'id',
     parentId: 'parentId',
     studentId: 'studentId'
+};
+exports.UserPreferenceScalarFieldEnum = {
+    id: 'id',
+    userId: 'userId',
+    theme: 'theme',
+    sidebarStyle: 'sidebarStyle',
+    language: 'language',
+    updatedAt: 'updatedAt'
+};
+exports.NotificationPreferenceScalarFieldEnum = {
+    id: 'id',
+    userId: 'userId',
+    emailNotifications: 'emailNotifications',
+    pushNotifications: 'pushNotifications',
+    smsAlerts: 'smsAlerts',
+    attendanceAlerts: 'attendanceAlerts',
+    examReminders: 'examReminders',
+    enrollmentAlerts: 'enrollmentAlerts',
+    updatedAt: 'updatedAt'
 };
 exports.ProfileScalarFieldEnum = {
     id: 'id',

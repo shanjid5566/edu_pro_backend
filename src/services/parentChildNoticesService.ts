@@ -1,24 +1,17 @@
 import { prisma } from "../lib/prisma.js";
+import { getTimeAgo } from "../utils/dateUtils.js";
+import { assertParentStudentAccess, getStudentClassId } from "../utils/parentAccess.js";
 
 class ParentChildNoticesService {
   // Get all notices for child
   async getAllNotices(parentId: string, studentId: string, limit: number = 20, offset: number = 0) {
     try {
-      // Verify parent-child relationship
-      const parentStudent = await (prisma as any).parentStudent.findFirst({
-        where: {
-          parentId: parentId,
-          studentId: studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
+      await assertParentStudentAccess(parentId, studentId);
+      const classId = await getStudentClassId(studentId);
 
       const notices = await (prisma as any).notice.findMany({
         where: {
-          classId: (await (prisma as any).student.findUnique({ where: { id: studentId } })).classId,
+          classId,
         },
         select: {
           id: true,
@@ -36,7 +29,7 @@ class ParentChildNoticesService {
 
       const total = await (prisma as any).notice.count({
         where: {
-          classId: (await (prisma as any).student.findUnique({ where: { id: studentId } })).classId,
+          classId,
         },
       });
 
@@ -50,7 +43,7 @@ class ParentChildNoticesService {
           isPinned: notice.isPinned,
           date: notice.createdAt.toISOString().split("T")[0],
           by: notice.createdBy,
-          timeAgo: this.getTimeAgo(notice.createdAt),
+          timeAgo: getTimeAgo(notice.createdAt),
         })),
         pagination: {
           total,
@@ -68,26 +61,12 @@ class ParentChildNoticesService {
   // Get pinned notices
   async getPinnedNotices(parentId: string, studentId: string) {
     try {
-      // Verify parent-child relationship
-      const parentStudent = await (prisma as any).parentStudent.findFirst({
-        where: {
-          parentId: parentId,
-          studentId: studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
-
-      const student = await (prisma as any).student.findUnique({
-        where: { id: studentId },
-        select: { classId: true },
-      });
+      await assertParentStudentAccess(parentId, studentId);
+      const classId = await getStudentClassId(studentId);
 
       const pinnedNotices = await (prisma as any).notice.findMany({
         where: {
-          classId: student.classId,
+          classId,
           isPinned: true,
         },
         select: {
@@ -123,22 +102,8 @@ class ParentChildNoticesService {
   // Get notices by category
   async getNoticesByCategory(parentId: string, studentId: string, category: string) {
     try {
-      // Verify parent-child relationship
-      const parentStudent = await (prisma as any).parentStudent.findFirst({
-        where: {
-          parentId: parentId,
-          studentId: studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
-
-      const student = await (prisma as any).student.findUnique({
-        where: { id: studentId },
-        select: { classId: true },
-      });
+      await assertParentStudentAccess(parentId, studentId);
+      const classId = await getStudentClassId(studentId);
 
       const validCategories = ["GENERAL", "EXAM", "EVENT", "HOLIDAY", "IMPORTANT"];
       if (!validCategories.includes(category.toUpperCase())) {
@@ -149,7 +114,7 @@ class ParentChildNoticesService {
 
       const notices = await (prisma as any).notice.findMany({
         where: {
-          classId: student.classId,
+          classId,
           category: category.toUpperCase(),
         },
         select: {
@@ -189,29 +154,15 @@ class ParentChildNoticesService {
   // Get recent notices
   async getRecentNotices(parentId: string, studentId: string, days: number = 7) {
     try {
-      // Verify parent-child relationship
-      const parentStudent = await (prisma as any).parentStudent.findFirst({
-        where: {
-          parentId: parentId,
-          studentId: studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
-
-      const student = await (prisma as any).student.findUnique({
-        where: { id: studentId },
-        select: { classId: true },
-      });
+      await assertParentStudentAccess(parentId, studentId);
+      const classId = await getStudentClassId(studentId);
 
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - days);
 
       const recentNotices = await (prisma as any).notice.findMany({
         where: {
-          classId: student.classId,
+          classId,
           createdAt: { gte: startDate },
         },
         select: {
@@ -239,7 +190,7 @@ class ParentChildNoticesService {
             isPinned: notice.isPinned,
             date: notice.createdAt.toISOString().split("T")[0],
             by: notice.createdBy,
-            timeAgo: this.getTimeAgo(notice.createdAt),
+            timeAgo: getTimeAgo(notice.createdAt),
           })),
         },
       };
@@ -252,22 +203,8 @@ class ParentChildNoticesService {
   // Get notice details
   async getNoticeDetails(parentId: string, studentId: string, noticeId: string) {
     try {
-      // Verify parent-child relationship
-      const parentStudent = await (prisma as any).parentStudent.findFirst({
-        where: {
-          parentId: parentId,
-          studentId: studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
-
-      const student = await (prisma as any).student.findUnique({
-        where: { id: studentId },
-        select: { classId: true },
-      });
+      await assertParentStudentAccess(parentId, studentId);
+      const classId = await getStudentClassId(studentId);
 
       const notice = await (prisma as any).notice.findUnique({
         where: { id: noticeId },
@@ -283,7 +220,7 @@ class ParentChildNoticesService {
         },
       });
 
-      if (!notice || notice.classId !== student.classId) {
+      if (!notice || notice.classId !== classId) {
         throw new Error("Notice not found or not accessible");
       }
 
@@ -309,25 +246,11 @@ class ParentChildNoticesService {
   // Get notice statistics
   async getNoticeStatistics(parentId: string, studentId: string) {
     try {
-      // Verify parent-child relationship
-      const parentStudent = await (prisma as any).parentStudent.findFirst({
-        where: {
-          parentId: parentId,
-          studentId: studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
-
-      const student = await (prisma as any).student.findUnique({
-        where: { id: studentId },
-        select: { classId: true },
-      });
+      await assertParentStudentAccess(parentId, studentId);
+      const classId = await getStudentClassId(studentId);
 
       const notices = await (prisma as any).notice.findMany({
-        where: { classId: student.classId },
+        where: { classId },
         select: { category: true, isPinned: true },
       });
 
@@ -373,26 +296,12 @@ class ParentChildNoticesService {
   // Search notices
   async searchNotices(parentId: string, studentId: string, query: string) {
     try {
-      // Verify parent-child relationship
-      const parentStudent = await (prisma as any).parentStudent.findFirst({
-        where: {
-          parentId: parentId,
-          studentId: studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
-
-      const student = await (prisma as any).student.findUnique({
-        where: { id: studentId },
-        select: { classId: true },
-      });
+      await assertParentStudentAccess(parentId, studentId);
+      const classId = await getStudentClassId(studentId);
 
       const notices = await (prisma as any).notice.findMany({
         where: {
-          classId: student.classId,
+          classId,
           OR: [
             { title: { contains: query, mode: "insensitive" } },
             { description: { contains: query, mode: "insensitive" } },
@@ -432,18 +341,6 @@ class ParentChildNoticesService {
     }
   }
 
-  // Helper function to calculate time ago
-  private getTimeAgo(date: Date): string {
-    const now = new Date();
-    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-    if (seconds < 60) return "Just now";
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-    if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
-
-    return date.toISOString().split("T")[0];
-  }
 }
 
 export default new ParentChildNoticesService();

@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma.js";
+import { calculateGrade } from "../utils/gradeUtils.js";
 
 class ParentChildProgressService {
   // Get overall progress metrics
@@ -88,7 +89,7 @@ class ParentChildProgressService {
         success: true,
         data: {
           studentName: `${student?.firstName} ${student?.lastName}`,
-          currentGrade: this.calculateGrade(currentPercentage),
+          currentGrade: calculateGrade(currentPercentage),
           classRank: {
             rank,
             totalStudents: student?.class?.totalStudents || 0,
@@ -169,7 +170,7 @@ class ParentChildProgressService {
             return {
               month,
               percentage,
-              grade: this.calculateGrade(percentage),
+              grade: calculateGrade(percentage),
             };
           }),
       };
@@ -248,7 +249,7 @@ class ParentChildProgressService {
             subjectId: id,
             subject: data.name,
             percentage,
-            grade: this.calculateGrade(percentage),
+            grade: calculateGrade(percentage),
             exams: data.marks.length,
           };
         }
@@ -335,7 +336,7 @@ class ParentChildProgressService {
           marksObtained: result.marksObtained,
           totalMarks: result.totalMarks,
           percentage,
-          grade: this.calculateGrade(percentage),
+          grade: calculateGrade(percentage),
           trend,
         };
       });
@@ -409,7 +410,7 @@ class ParentChildProgressService {
           if (percentage > highest) highest = percentage;
           if (percentage < lowest) lowest = percentage;
 
-          const grade = this.calculateGrade(percentage);
+          const grade = calculateGrade(percentage);
           gradeCount[grade]++;
         }
       });
@@ -433,16 +434,6 @@ class ParentChildProgressService {
     }
   }
 
-  // Helper function to calculate grade
-  private calculateGrade(percentage: number): string {
-    if (percentage >= 90) return "A+";
-    if (percentage >= 80) return "A";
-    if (percentage >= 70) return "B+";
-    if (percentage >= 60) return "B";
-    if (percentage >= 50) return "C";
-    if (percentage >= 40) return "D";
-    return "F";
-  }
 }
 
 export default new ParentChildProgressService();

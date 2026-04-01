@@ -44,7 +44,11 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
 /**
  * Middleware to check user role
  */
-export const checkRole = (allowedRoles: string[]) => {
+export const checkRole = (...rolesOrArray: string[] | [string[]]) => {
+  const allowedRoles = Array.isArray(rolesOrArray[0])
+    ? (rolesOrArray[0] as string[])
+    : (rolesOrArray as string[]);
+
   return (req: Request, res: Response, next: NextFunction) => {
     const userRole = (req as any).userRole;
 
@@ -54,6 +58,12 @@ export const checkRole = (allowedRoles: string[]) => {
         message: "Permission denied",
       });
     }
+
+    (req as any).user = {
+      id: (req as any).userId,
+      email: (req as any).userEmail,
+      role: (req as any).userRole,
+    };
 
     next();
   };

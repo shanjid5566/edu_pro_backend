@@ -67,6 +67,8 @@ export const ModelName = {
   FeePayment: 'FeePayment',
   Parent: 'Parent',
   ParentStudent: 'ParentStudent',
+  UserPreference: 'UserPreference',
+  NotificationPreference: 'NotificationPreference',
   Profile: 'Profile',
   Student: 'Student',
   Notification: 'Notification',
@@ -271,6 +273,33 @@ export const ParentStudentScalarFieldEnum = {
 } as const
 
 export type ParentStudentScalarFieldEnum = (typeof ParentStudentScalarFieldEnum)[keyof typeof ParentStudentScalarFieldEnum]
+
+
+export const UserPreferenceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  theme: 'theme',
+  sidebarStyle: 'sidebarStyle',
+  language: 'language',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserPreferenceScalarFieldEnum = (typeof UserPreferenceScalarFieldEnum)[keyof typeof UserPreferenceScalarFieldEnum]
+
+
+export const NotificationPreferenceScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  emailNotifications: 'emailNotifications',
+  pushNotifications: 'pushNotifications',
+  smsAlerts: 'smsAlerts',
+  attendanceAlerts: 'attendanceAlerts',
+  examReminders: 'examReminders',
+  enrollmentAlerts: 'enrollmentAlerts',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NotificationPreferenceScalarFieldEnum = (typeof NotificationPreferenceScalarFieldEnum)[keyof typeof NotificationPreferenceScalarFieldEnum]
 
 
 export const ProfileScalarFieldEnum = {

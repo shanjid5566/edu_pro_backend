@@ -1,20 +1,11 @@
 import { prisma } from "../lib/prisma.js";
+import { assertParentStudentAccess } from "../utils/parentAccess.js";
 
 class ParentChildFeesService {
   // Get all fees for child
   async getAllFees(parentId: string, studentId: string, limit: number = 50, offset: number = 0) {
     try {
-      // Verify parent-child relationship
-      const parentStudent = await (prisma as any).parentStudent.findFirst({
-        where: {
-          parentId: parentId,
-          studentId: studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
+      await assertParentStudentAccess(parentId, studentId);
 
       const fees = await (prisma as any).feePayment.findMany({
         where: { studentId },
@@ -58,17 +49,7 @@ class ParentChildFeesService {
   // Get fee summary
   async getFeeSummary(parentId: string, studentId: string) {
     try {
-      // Verify parent-child relationship
-      const parentStudent = await (prisma as any).parentStudent.findFirst({
-        where: {
-          parentId: parentId,
-          studentId: studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
+      await assertParentStudentAccess(parentId, studentId);
 
       const fees = await (prisma as any).feePayment.findMany({
         where: { studentId },
@@ -112,17 +93,7 @@ class ParentChildFeesService {
   // Get fees by status
   async getFeesByStatus(parentId: string, studentId: string, status: string, limit: number = 50, offset: number = 0) {
     try {
-      // Verify parent-child relationship
-      const parentStudent = await (prisma as any).parentStudent.findFirst({
-        where: {
-          parentId: parentId,
-          studentId: studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
+      await assertParentStudentAccess(parentId, studentId);
 
       const validStatus = ["PAID", "UNPAID", "PARTIAL"];
       if (!validStatus.includes(status.toUpperCase())) {
@@ -179,17 +150,7 @@ class ParentChildFeesService {
   // Get fees by type
   async getFeesByType(parentId: string, studentId: string) {
     try {
-      // Verify parent-child relationship
-      const parentStudent = await (prisma as any).parentStudent.findFirst({
-        where: {
-          parentId: parentId,
-          studentId: studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
+      await assertParentStudentAccess(parentId, studentId);
 
       const fees = await (prisma as any).feePayment.findMany({
         where: { studentId },
@@ -254,17 +215,7 @@ class ParentChildFeesService {
   // Get upcoming fees
   async getUpcomingFees(parentId: string, studentId: string) {
     try {
-      // Verify parent-child relationship
-      const parentStudent = await (prisma as any).parentStudent.findFirst({
-        where: {
-          parentId: parentId,
-          studentId: studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
+      await assertParentStudentAccess(parentId, studentId);
 
       const upcomingFees = await (prisma as any).feePayment.findMany({
         where: {
@@ -301,17 +252,7 @@ class ParentChildFeesService {
   // Get overdue fees
   async getOverdueFees(parentId: string, studentId: string) {
     try {
-      // Verify parent-child relationship
-      const parentStudent = await (prisma as any).parentStudent.findFirst({
-        where: {
-          parentId: parentId,
-          studentId: studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
+      await assertParentStudentAccess(parentId, studentId);
 
       const overdueFees = await (prisma as any).feePayment.findMany({
         where: {
@@ -356,17 +297,7 @@ class ParentChildFeesService {
   // Get paid fees timeline (receipt history)
   async getFeesTimeline(parentId: string, studentId: string, limit: number = 10) {
     try {
-      // Verify parent-child relationship
-      const parentStudent = await (prisma as any).parentStudent.findFirst({
-        where: {
-          parentId: parentId,
-          studentId: studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
+      await assertParentStudentAccess(parentId, studentId);
 
       const paidFees = await (prisma as any).feePayment.findMany({
         where: {

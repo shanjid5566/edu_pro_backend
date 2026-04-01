@@ -1,4 +1,6 @@
 import { prisma } from "../lib/prisma.js";
+import { calculateGrade } from "../utils/gradeUtils.js";
+import { getTimeAgo } from "../utils/dateUtils.js";
 
 class ParentDashboardService {
   // Get all children
@@ -156,7 +158,7 @@ class ParentDashboardService {
                 ? "Good"
                 : "Need Improvement",
           },
-          overallGrade: this.calculateGrade(overallPercentage),
+          overallGrade: calculateGrade(overallPercentage),
           subjects: subjects.length,
           classRank: rank,
           totalClassSize: student?.class?.totalStudents || 0,
@@ -276,7 +278,7 @@ class ParentDashboardService {
             result.marksObtained !== null
               ? Math.round((result.marksObtained / result.totalMarks) * 100)
               : 0,
-          grade: this.calculateGrade(
+          grade: calculateGrade(
             result.marksObtained !== null
               ? Math.round((result.marksObtained / result.totalMarks) * 100)
               : 0
@@ -346,7 +348,7 @@ class ParentDashboardService {
           subjectId: id,
           subject: data.name,
           percentage,
-          grade: this.calculateGrade(percentage),
+          grade: calculateGrade(percentage),
           exams: data.marks.length,
         };
       });
@@ -449,7 +451,7 @@ class ParentDashboardService {
           message: notice.content.substring(0, 100) + "...",
           category: notice.category,
           date: notice.date.toISOString().split("T")[0],
-          timeAgo: this.getTimeAgo(notice.date),
+          timeAgo: getTimeAgo(notice.date),
         })),
       };
     } catch (error) {
@@ -458,32 +460,6 @@ class ParentDashboardService {
     }
   }
 
-  // Helper function to calculate grade
-  private calculateGrade(percentage: number): string {
-    if (percentage >= 90) return "A+";
-    if (percentage >= 80) return "A";
-    if (percentage >= 70) return "B+";
-    if (percentage >= 60) return "B";
-    if (percentage >= 50) return "C";
-    if (percentage >= 40) return "D";
-    return "F";
-  }
-
-  // Helper function to get time ago
-  private getTimeAgo(date: Date): string {
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return "just now";
-    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? "s" : ""} ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
-    
-    return date.toISOString().split("T")[0];
-  }
 }
 
 export default new ParentDashboardService();

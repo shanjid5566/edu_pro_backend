@@ -43,7 +43,10 @@ exports.verifyToken = verifyToken;
 /**
  * Middleware to check user role
  */
-const checkRole = (allowedRoles) => {
+const checkRole = (...rolesOrArray) => {
+    const allowedRoles = Array.isArray(rolesOrArray[0])
+        ? rolesOrArray[0]
+        : rolesOrArray;
     return (req, res, next) => {
         const userRole = req.userRole;
         if (!userRole || !allowedRoles.includes(userRole)) {
@@ -52,6 +55,11 @@ const checkRole = (allowedRoles) => {
                 message: "Permission denied",
             });
         }
+        req.user = {
+            id: req.userId,
+            email: req.userEmail,
+            role: req.userRole,
+        };
         next();
     };
 };

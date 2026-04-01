@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma.js";
+import { calculateGrade } from "../utils/gradeUtils.js";
 
 class StudentDashboardService {
   // Get dashboard overview
@@ -71,7 +72,7 @@ class StudentDashboardService {
       }
 
       // Calculate grade based on percentage
-      const grade = this.calculateGrade(overallPercentage);
+      const grade = calculateGrade(overallPercentage);
 
       // Get student rank in class
       const allStudentsInClass = await prisma.student.findMany({
@@ -401,16 +402,6 @@ class StudentDashboardService {
     }
   }
 
-  // Helper function to calculate grade
-  private calculateGrade(percentage: number): string {
-    if (percentage >= 90) return "A+";
-    if (percentage >= 80) return "A";
-    if (percentage >= 70) return "B+";
-    if (percentage >= 60) return "B";
-    if (percentage >= 50) return "C";
-    if (percentage >= 40) return "D";
-    return "F";
-  }
 }
 
 export default new StudentDashboardService();
