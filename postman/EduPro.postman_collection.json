@@ -2674,6 +2674,528 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "My Classes",
+          "item": [
+            {
+              "name": "Get All My Classes",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/classes",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "classes"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Today's Schedule",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/classes/schedule/today",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "classes", "schedule", "today"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Class Details",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/classes/:classId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "classes", ":classId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Class Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/classes/:classId/statistics",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "classes", ":classId", "statistics"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Attendance",
+          "item": [
+            {
+              "name": "Get Class Students for Attendance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/attendance/:classId/students",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "attendance", ":classId", "students"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Mark Attendance",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"attendanceData\": [\n    {\n      \"studentId\": \"student-id-1\",\n      \"status\": \"PRESENT\"\n    },\n    {\n      \"studentId\": \"student-id-2\",\n      \"status\": \"ABSENT\"\n    },\n    {\n      \"studentId\": \"student-id-3\",\n      \"status\": \"LATE\"\n    }\n  ],\n  \"date\": \"2026-04-01\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/attendance/:classId/mark",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "attendance", ":classId", "mark"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Attendance Records",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/attendance/:classId/records?startDate=2026-02-01&endDate=2026-04-01",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "attendance", ":classId", "records"],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2026-02-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2026-04-01"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Student Attendance Summary",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/attendance/:classId/student/:studentId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "attendance", ":classId", "student", ":studentId"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Exams",
+          "item": [
+            {
+              "name": "Get All My Exams",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/exams",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "exams"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Exam Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/exams/statistics",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "exams", "statistics"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Exams by Status",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/exams/status/UPCOMING",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "exams", "status", "UPCOMING"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Class Exams",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/exams/class/:classId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "exams", "class", ":classId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Exam Details",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/exams/:examId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "exams", ":examId"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Submit Exam Marks",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"marks\": [\n    {\n      \"studentId\": \"student-id-1\",\n      \"marksObtained\": 85\n    },\n    {\n      \"studentId\": \"student-id-2\",\n      \"marksObtained\": 92\n    },\n    {\n      \"studentId\": \"student-id-3\",\n      \"marksObtained\": null\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/exams/:examId/marks",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "exams", ":examId", "marks"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Notice Board",
+          "item": [
+            {
+              "name": "Get All Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/notices?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "notices"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Pinned Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/notices/pinned",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "notices", "pinned"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Recent Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/notices/recent?limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "notices", "recent"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Notices by Category",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/notices/category/exam",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "notices", "category", "exam"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Search Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/notices/search?query=exam",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "notices", "search"],
+                  "query": [
+                    {
+                      "key": "query",
+                      "value": "exam"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Notice Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/notices/statistics",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "notices", "statistics"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Notice by ID",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{teacher_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/teacher/notices/:noticeId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "teacher", "notices", ":noticeId"]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
@@ -2746,11 +3268,1713 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "Dashboard Overview",
+          "item": [
+            {
+              "name": "Get Dashboard Overview",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/dashboard/overview",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "dashboard", "overview"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Attendance Trend",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/dashboard/attendance-trend?months=6",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "dashboard", "attendance-trend"],
+                  "query": [
+                    {
+                      "key": "months",
+                      "value": "6"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Subject Performance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/dashboard/subject-performance",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "dashboard", "subject-performance"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Class",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/dashboard/my-class",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "dashboard", "my-class"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Recent Results",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/dashboard/recent-results?limit=5",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "dashboard", "recent-results"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "My Classes",
+          "item": [
+            {
+              "name": "Get My Classes",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/classes",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "classes"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Today's Classes",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/classes/schedule/today",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "classes", "schedule", "today"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Class Schedule by Day",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/classes/schedule?day=Monday",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "classes", "schedule"],
+                  "query": [
+                    {
+                      "key": "day",
+                      "value": "Monday"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Weekly Timetable",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/classes/timetable",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "classes", "timetable"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Subject Details",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/classes/subject/:subjectId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "classes", "subject", ":subjectId"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Exams",
+          "item": [
+            {
+              "name": "Get All Exams",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/exams",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "exams"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Upcoming Exams",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/exams/upcoming",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "exams", "upcoming"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Exam Results",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/exams/results",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "exams", "results"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Exam Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/exams/statistics",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "exams", "statistics"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Exams by Status",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/exams/status/:status",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "exams", "status", ":status"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Exam Details",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/exams/:examId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "exams", ":examId"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Results",
+          "item": [
+            {
+              "name": "Get All Results",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/results",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "results"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Results Summary",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/results/summary",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "results", "summary"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Subject Performance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/results/subject-performance",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "results", "subject-performance"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Class Comparison",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/results/class-comparison",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "results", "class-comparison"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Performance Trend",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/results/trend?months=6",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "results", "trend"],
+                  "query": [
+                    {
+                      "key": "months",
+                      "value": "6"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Results by Subject",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/results/subject/:subjectId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "results", "subject", ":subjectId"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Fees",
+          "item": [
+            {
+              "name": "Get All Fees",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/fees",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "fees"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Fee Summary",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/fees/summary",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "fees", "summary"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Fees by Type",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/fees/by-type",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "fees", "by-type"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Fee Timeline",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/fees/timeline?limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "fees", "timeline"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Upcoming Fees",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/fees/upcoming",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "fees", "upcoming"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Overdue Fees",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/fees/overdue",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "fees", "overdue"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Fees by Status",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/fees/status/:status",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "fees", "status", ":status"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Notices",
+          "item": [
+            {
+              "name": "Get All Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/notices?limit=50&offset=0",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "notices"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "50"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Pinned Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/notices/pinned",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "notices", "pinned"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Recent Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/notices/recent?limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "notices", "recent"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Notices Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/notices/statistics",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "notices", "statistics"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Search Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/notices/search?keyword=exam&limit=50&offset=0",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "notices", "search"],
+                  "query": [
+                    {
+                      "key": "keyword",
+                      "value": "exam"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "50"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Notices by Category",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/notices/category/:category?limit=50&offset=0",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "notices", "category", ":category"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "50"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Notice Details",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{student_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/student/notices/:noticeId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "student", "notices", ":noticeId"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Parent Dashboard",
+          "item": [
+            {
+              "name": "Get My Children",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/dashboard",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "dashboard"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Child Overview",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/dashboard/:studentId/overview",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "dashboard", ":studentId", "overview"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Attendance Trend",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/dashboard/:studentId/attendance-trend?months=6",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "dashboard", ":studentId", "attendance-trend"],
+                  "query": [
+                    {
+                      "key": "months",
+                      "value": "6"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Recent Results",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/dashboard/:studentId/recent-results?limit=5",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "dashboard", ":studentId", "recent-results"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Subject Performance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/dashboard/:studentId/subject-performance",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "dashboard", ":studentId", "subject-performance"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Upcoming Events",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/dashboard/:studentId/upcoming-events?limit=5",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "dashboard", ":studentId", "upcoming-events"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Notifications",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/dashboard/:studentId/notifications?limit=5",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "dashboard", ":studentId", "notifications"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Child's Progress",
+          "item": [
+            {
+              "name": "Get Progress Metrics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-progress/:studentId/metrics",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-progress", ":studentId", "metrics"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Progress Timeline",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-progress/:studentId/timeline?months=6",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-progress", ":studentId", "timeline"],
+                  "query": [
+                    {
+                      "key": "months",
+                      "value": "6"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Subject Performance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-progress/:studentId/subjects",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-progress", ":studentId", "subjects"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Exam Results with Trends",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-progress/:studentId/exam-results?limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-progress", ":studentId", "exam-results"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Performance Summary",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-progress/:studentId/summary",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-progress", ":studentId", "summary"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Child's Attendance",
+          "item": [
+            {
+              "name": "Get Attendance Summary",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-attendance/:studentId/summary",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-attendance", ":studentId", "summary"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Attendance Trend",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-attendance/:studentId/trend?months=6",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-attendance", ":studentId", "trend"],
+                  "query": [
+                    {
+                      "key": "months",
+                      "value": "6"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Recent Attendance",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-attendance/:studentId/recent?limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-attendance", ":studentId", "recent"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Attendance Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-attendance/:studentId/statistics",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-attendance", ":studentId", "statistics"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Attendance by Date Range",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-attendance/:studentId/range?startDate=2026-01-01&endDate=2026-12-31",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-attendance", ":studentId", "range"],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2026-01-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2026-12-31"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Child's Fees",
+          "item": [
+            {
+              "name": "Get All Fees",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-fees/:studentId?limit=50&offset=0",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-fees", ":studentId"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "50"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Fee Summary",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-fees/:studentId/summary",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-fees", ":studentId", "summary"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Fees by Type",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-fees/:studentId/by-type",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-fees", ":studentId", "by-type"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Fees Timeline",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-fees/:studentId/timeline?limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-fees", ":studentId", "timeline"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Upcoming Fees",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-fees/:studentId/upcoming",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-fees", ":studentId", "upcoming"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Overdue Fees",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-fees/:studentId/overdue",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-fees", ":studentId", "overdue"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Fees by Status",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-fees/:studentId/PENDING?limit=50&offset=0",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-fees", ":studentId", "PENDING"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "50"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Child's Notices",
+          "item": [
+            {
+              "name": "Get All Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-notices/:studentId?limit=20&offset=0",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-notices", ":studentId"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Pinned Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-notices/:studentId/pinned",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-notices", ":studentId", "pinned"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Recent Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-notices/:studentId/recent?days=7",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-notices", ":studentId", "recent"],
+                  "query": [
+                    {
+                      "key": "days",
+                      "value": "7"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Notice Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-notices/:studentId/statistics",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-notices", ":studentId", "statistics"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Search Notices",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-notices/:studentId/search?query=exam",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-notices", ":studentId", "search"],
+                  "query": [
+                    {
+                      "key": "query",
+                      "value": "exam"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Notices by Category",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-notices/:studentId/category/EXAM",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-notices", ":studentId", "category", "EXAM"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Notice Details",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{parent_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/parent/child-notices/:studentId/:noticeId",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "parent", "child-notices", ":studentId", ":noticeId"]
+                }
+              },
+              "response": []
+            }
+          ]
         }
-      ]
-    },
-    {
-      "name": "Parent Dashboard",
+      ],
       "item": [
         {
           "name": "Login",
