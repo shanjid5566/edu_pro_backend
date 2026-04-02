@@ -3,45 +3,83 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const prisma_js_1 = require("../lib/prisma.js");
 const gradeUtils_js_1 = require("../utils/gradeUtils.js");
 class ParentChildProgressService {
+    async resolveParentId(userId) {
+        const parent = await prisma_js_1.prisma.parent.findUnique({
+            where: { userId },
+            select: { id: true },
+        });
+        if (!parent) {
+            throw new Error("Parent not found");
+        }
+        return parent.id;
+    }
+    async resolveAuthorizedStudentId(parentId, studentOrEnrollmentId) {
+        const relation = await prisma_js_1.prisma.parentStudent.findFirst({
+            where: {
+                parentId,
+                OR: [
+                    { studentId: studentOrEnrollmentId },
+                    { id: studentOrEnrollmentId },
+                ],
+            },
+            select: { studentId: true },
+        });
+        if (!relation) {
+            throw new Error("Unauthorized: Child not found for this parent");
+        }
+        return relation.studentId;
+    }
     // Get overall progress metrics
-    async getProgressMetrics(parentId, studentId) {
+    async getProgressMetrics(userId, studentId) {
         try {
-            // Verify parent-child relationship through ParentStudent
-            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
-                where: {
-                    parentId,
-                    studentId,
-                },
-            });
-            if (!parentStudent) {
-                throw new Error("Unauthorized: Child not found for this parent");
-            }
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const student = await prisma_js_1.prisma.student.findUnique({
-                where: { id: studentId },
+                where: { id: resolvedStudentId },
                 select: {
                     id: true,
                     user: { select: { name: true } },
-                    class: { select: { id: true, totalStudents: true } },
+                    class: {
+                        select: {
+                            id: true,
+                            students: { select: { id: true } },
+                        },
+                    },
                 },
             });
             // Get current grade
             const results = await prisma_js_1.prisma.examResult.findMany({
-                where: { studentId },
-                select: { marksObtained: true, totalMarks: true },
+                where: { studentId: resolvedStudentId },
+                select: {
+                    marksObtained: true,
+                    exam: {
+                        select: {
+                            totalMarks: true,
+                        },
+                    },
+                },
             });
             let totalMarks = 0;
             let totalMarksCount = 0;
             results.forEach((result) => {
                 if (result.marksObtained !== null) {
                     totalMarks += result.marksObtained;
-                    totalMarksCount += result.totalMarks;
+                    totalMarksCount += result.exam.totalMarks;
                 }
             });
             const currentPercentage = totalMarksCount > 0 ? Math.round((totalMarks / totalMarksCount) * 100) : 0;
             // Get class rank
             const allResults = await prisma_js_1.prisma.examResult.findMany({
                 where: { exam: { classId: student?.class?.id } },
-                select: { studentId: true, marksObtained: true, totalMarks: true },
+                select: {
+                    studentId: true,
+                    marksObtained: true,
+                    exam: {
+                        select: {
+                            totalMarks: true,
+                        },
+                    },
+                },
             });
             const studentAverages = {};
             allResults.forEach((result) => {
@@ -50,7 +88,7 @@ class ParentChildProgressService {
                         studentAverages[result.studentId] = 0;
                     }
                     studentAverages[result.studentId] +=
-                        (result.marksObtained / result.totalMarks) * 100;
+                        (result.marksObtained / result.exam.totalMarks) * 100;
                 }
             });
             let rank = 1;
@@ -61,7 +99,7 @@ class ParentChildProgressService {
             });
             // Get attendance
             const attendance = await prisma_js_1.prisma.attendance.findMany({
-                where: { studentId },
+                where: { studentId: resolvedStudentId },
                 select: { status: true },
             });
             const presentDays = attendance.filter((a) => a.status === "PRESENT").length;
@@ -77,7 +115,7 @@ class ParentChildProgressService {
                     currentGrade: (0, gradeUtils_js_1.calculateGrade)(currentPercentage),
                     classRank: {
                         rank,
-                        totalStudents: student?.class?.totalStudents || 0,
+                        totalStudents: student?.class?.students?.length || 0,
                     },
                     attendance: attendancePercentage,
                     avgScore,
@@ -90,33 +128,25 @@ class ParentChildProgressService {
         }
     }
     // Get progress over time (grades/percentages by month)
-    async getProgressOverTime(parentId, studentId, months = 6) {
+    async getProgressOverTime(userId, studentId, months = 6) {
         try {
-            // Verify parent-child relationship through ParentStudent
-            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
-                where: {
-                    parentId,
-                    studentId,
-                },
-            });
-            if (!parentStudent) {
-                throw new Error("Unauthorized: Child not found for this parent");
-            }
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const startDate = new Date();
             startDate.setMonth(startDate.getMonth() - months);
             const results = await prisma_js_1.prisma.examResult.findMany({
                 where: {
-                    studentId,
+                    studentId: resolvedStudentId,
                     exam: {
                         date: { gte: startDate },
                     },
                 },
                 select: {
                     marksObtained: true,
-                    totalMarks: true,
                     exam: {
                         select: {
                             date: true,
+                            totalMarks: true,
                         },
                     },
                 },
@@ -131,7 +161,7 @@ class ParentChildProgressService {
                 }
                 if (result.marksObtained !== null) {
                     monthlyData[monthKey].marks.push(result.marksObtained);
-                    monthlyData[monthKey].totals.push(result.totalMarks);
+                    monthlyData[monthKey].totals.push(result.exam.totalMarks);
                 }
             });
             return {
@@ -156,25 +186,17 @@ class ParentChildProgressService {
         }
     }
     // Get subject-wise performance with comparison
-    async getSubjectWisePerformance(parentId, studentId) {
+    async getSubjectWisePerformance(userId, studentId) {
         try {
-            // Verify parent-child relationship through ParentStudent
-            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
-                where: {
-                    parentId,
-                    studentId,
-                },
-            });
-            if (!parentStudent) {
-                throw new Error("Unauthorized: Child not found for this parent");
-            }
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const results = await prisma_js_1.prisma.examResult.findMany({
-                where: { studentId },
+                where: { studentId: resolvedStudentId },
                 select: {
                     marksObtained: true,
-                    totalMarks: true,
                     exam: {
                         select: {
+                            totalMarks: true,
                             subject: { select: { id: true, name: true } },
                             classId: true,
                         },
@@ -195,7 +217,7 @@ class ParentChildProgressService {
                 }
                 if (result.marksObtained !== null) {
                     subjectMap[subjectId].marks.push(result.marksObtained);
-                    subjectMap[subjectId].totals.push(result.totalMarks);
+                    subjectMap[subjectId].totals.push(result.exam.totalMarks);
                 }
             });
             const subjectPerformance = Object.entries(subjectMap).map(([id, data]) => {
@@ -221,29 +243,21 @@ class ParentChildProgressService {
         }
     }
     // Get exam results with trends
-    async getExamResultsWithTrends(parentId, studentId, limit = 10) {
+    async getExamResultsWithTrends(userId, studentId, limit = 10) {
         try {
-            // Verify parent-child relationship through ParentStudent
-            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
-                where: {
-                    parentId,
-                    studentId,
-                },
-            });
-            if (!parentStudent) {
-                throw new Error("Unauthorized: Child not found for this parent");
-            }
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const results = await prisma_js_1.prisma.examResult.findMany({
-                where: { studentId },
+                where: { studentId: resolvedStudentId },
                 select: {
                     id: true,
                     marksObtained: true,
-                    totalMarks: true,
                     exam: {
                         select: {
                             id: true,
                             name: true,
                             date: true,
+                            totalMarks: true,
                             subject: { select: { name: true } },
                         },
                     },
@@ -254,13 +268,13 @@ class ParentChildProgressService {
             // Calculate trends (improvement/decline)
             const examResults = results.map((result, index) => {
                 const percentage = result.marksObtained !== null
-                    ? Math.round((result.marksObtained / result.totalMarks) * 100)
+                    ? Math.round((result.marksObtained / result.exam.totalMarks) * 100)
                     : 0;
                 let trend = null;
                 if (index < results.length - 1) {
                     const previousPercentage = results[index + 1].marksObtained !== null
                         ? Math.round((results[index + 1].marksObtained /
-                            results[index + 1].totalMarks) *
+                            results[index + 1].exam.totalMarks) *
                             100)
                         : 0;
                     if (percentage > previousPercentage) {
@@ -279,7 +293,7 @@ class ParentChildProgressService {
                     examName: result.exam.name,
                     date: result.exam.date.toISOString().split("T")[0],
                     marksObtained: result.marksObtained,
-                    totalMarks: result.totalMarks,
+                    totalMarks: result.exam.totalMarks,
                     percentage,
                     grade: (0, gradeUtils_js_1.calculateGrade)(percentage),
                     trend,
@@ -296,21 +310,20 @@ class ParentChildProgressService {
         }
     }
     // Get performance summary
-    async getPerformanceSummary(parentId, studentId) {
+    async getPerformanceSummary(userId, studentId) {
         try {
-            // Verify parent-child relationship through ParentStudent
-            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
-                where: {
-                    parentId,
-                    studentId,
-                },
-            });
-            if (!parentStudent) {
-                throw new Error("Unauthorized: Child not found for this parent");
-            }
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const results = await prisma_js_1.prisma.examResult.findMany({
-                where: { studentId },
-                select: { marksObtained: true, totalMarks: true },
+                where: { studentId: resolvedStudentId },
+                select: {
+                    marksObtained: true,
+                    exam: {
+                        select: {
+                            totalMarks: true,
+                        },
+                    },
+                },
             });
             if (results.length === 0) {
                 return {
@@ -339,9 +352,9 @@ class ParentChildProgressService {
             };
             results.forEach((result) => {
                 if (result.marksObtained !== null) {
-                    const percentage = Math.round((result.marksObtained / result.totalMarks) * 100);
+                    const percentage = Math.round((result.marksObtained / result.exam.totalMarks) * 100);
                     totalMarks += result.marksObtained;
-                    totalCount += result.totalMarks;
+                    totalCount += result.exam.totalMarks;
                     if (percentage > highest)
                         highest = percentage;
                     if (percentage < lowest)

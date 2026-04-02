@@ -1,14 +1,52 @@
 import { prisma } from "../lib/prisma.js";
-import { assertParentStudentAccess } from "../utils/parentAccess.js";
 
 class ParentChildFeesService {
+  private async resolveParentId(userId: string): Promise<string> {
+    const parent = await prisma.parent.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+
+    if (!parent) {
+      throw new Error("Parent not found");
+    }
+
+    return parent.id;
+  }
+
+  private async resolveAuthorizedStudentId(
+    parentId: string,
+    studentOrEnrollmentId: string
+  ): Promise<string> {
+    const relation = await prisma.parentStudent.findFirst({
+      where: {
+        parentId,
+        OR: [
+          { studentId: studentOrEnrollmentId },
+          { id: studentOrEnrollmentId },
+        ],
+      },
+      select: { studentId: true },
+    });
+
+    if (!relation) {
+      throw new Error("Unauthorized: Child not found for this parent");
+    }
+
+    return relation.studentId;
+  }
+
   // Get all fees for child
-  async getAllFees(parentId: string, studentId: string, limit: number = 50, offset: number = 0) {
+  async getAllFees(userId: string, studentId: string, limit: number = 50, offset: number = 0) {
     try {
-      await assertParentStudentAccess(parentId, studentId);
+      const parentId = await this.resolveParentId(userId);
+      const resolvedStudentId = await this.resolveAuthorizedStudentId(
+        parentId,
+        studentId
+      );
 
       const fees = await (prisma as any).feePayment.findMany({
-        where: { studentId },
+        where: { studentId: resolvedStudentId },
         include: {
           feeStructure: {
             select: {
@@ -17,12 +55,12 @@ class ParentChildFeesService {
             },
           },
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: [{ paymentDate: "desc" }, { id: "desc" }],
         take: limit,
         skip: offset,
       });
 
-      const total = await (prisma as any).feePayment.count({ where: { studentId } });
+      const total = await (prisma as any).feePayment.count({ where: { studentId: resolvedStudentId } });
 
       return {
         success: true,
@@ -47,12 +85,16 @@ class ParentChildFeesService {
   }
 
   // Get fee summary
-  async getFeeSummary(parentId: string, studentId: string) {
+  async getFeeSummary(userId: string, studentId: string) {
     try {
-      await assertParentStudentAccess(parentId, studentId);
+      const parentId = await this.resolveParentId(userId);
+      const resolvedStudentId = await this.resolveAuthorizedStudentId(
+        parentId,
+        studentId
+      );
 
       const fees = await (prisma as any).feePayment.findMany({
-        where: { studentId },
+        where: { studentId: resolvedStudentId },
         select: {
           amountPaid: true,
           status: true,
@@ -91,9 +133,13 @@ class ParentChildFeesService {
   }
 
   // Get fees by status
-  async getFeesByStatus(parentId: string, studentId: string, status: string, limit: number = 50, offset: number = 0) {
+  async getFeesByStatus(userId: string, studentId: string, status: string, limit: number = 50, offset: number = 0) {
     try {
-      await assertParentStudentAccess(parentId, studentId);
+      const parentId = await this.resolveParentId(userId);
+      const resolvedStudentId = await this.resolveAuthorizedStudentId(
+        parentId,
+        studentId
+      );
 
       const validStatus = ["PAID", "UNPAID", "PARTIAL"];
       if (!validStatus.includes(status.toUpperCase())) {
@@ -102,7 +148,7 @@ class ParentChildFeesService {
 
       const fees = await (prisma as any).feePayment.findMany({
         where: {
-          studentId,
+          studentId: resolvedStudentId,
           status: status.toUpperCase() as "PAID" | "UNPAID" | "PARTIAL",
         },
         include: {
@@ -113,14 +159,14 @@ class ParentChildFeesService {
             },
           },
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: [{ paymentDate: "desc" }, { id: "desc" }],
         take: limit,
         skip: offset,
       });
 
       const total = await (prisma as any).feePayment.count({
         where: {
-          studentId,
+          studentId: resolvedStudentId,
           status: status.toUpperCase() as "PAID" | "UNPAID" | "PARTIAL",
         },
       });
@@ -148,12 +194,16 @@ class ParentChildFeesService {
   }
 
   // Get fees by type
-  async getFeesByType(parentId: string, studentId: string) {
+  async getFeesByType(userId: string, studentId: string) {
     try {
-      await assertParentStudentAccess(parentId, studentId);
+      const parentId = await this.resolveParentId(userId);
+      const resolvedStudentId = await this.resolveAuthorizedStudentId(
+        parentId,
+        studentId
+      );
 
       const fees = await (prisma as any).feePayment.findMany({
-        where: { studentId },
+        where: { studentId: resolvedStudentId },
         include: {
           feeStructure: {
             select: {
@@ -213,13 +263,17 @@ class ParentChildFeesService {
   }
 
   // Get upcoming fees
-  async getUpcomingFees(parentId: string, studentId: string) {
+  async getUpcomingFees(userId: string, studentId: string) {
     try {
-      await assertParentStudentAccess(parentId, studentId);
+      const parentId = await this.resolveParentId(userId);
+      const resolvedStudentId = await this.resolveAuthorizedStudentId(
+        parentId,
+        studentId
+      );
 
       const upcomingFees = await (prisma as any).feePayment.findMany({
         where: {
-          studentId,
+          studentId: resolvedStudentId,
           status: "UNPAID",
         },
         include: {
@@ -230,7 +284,7 @@ class ParentChildFeesService {
             },
           },
         },
-        orderBy: { createdAt: "asc" },
+        orderBy: { id: "asc" },
         take: 10,
       });
 
@@ -250,13 +304,17 @@ class ParentChildFeesService {
   }
 
   // Get overdue fees
-  async getOverdueFees(parentId: string, studentId: string) {
+  async getOverdueFees(userId: string, studentId: string) {
     try {
-      await assertParentStudentAccess(parentId, studentId);
+      const parentId = await this.resolveParentId(userId);
+      const resolvedStudentId = await this.resolveAuthorizedStudentId(
+        parentId,
+        studentId
+      );
 
       const overdueFees = await (prisma as any).feePayment.findMany({
         where: {
-          studentId,
+          studentId: resolvedStudentId,
           status: "UNPAID",
         },
         include: {
@@ -267,7 +325,7 @@ class ParentChildFeesService {
             },
           },
         },
-        orderBy: { createdAt: "asc" },
+        orderBy: { id: "asc" },
       });
 
       let totalOverdue = 0;
@@ -295,13 +353,17 @@ class ParentChildFeesService {
   }
 
   // Get paid fees timeline (receipt history)
-  async getFeesTimeline(parentId: string, studentId: string, limit: number = 10) {
+  async getFeesTimeline(userId: string, studentId: string, limit: number = 10) {
     try {
-      await assertParentStudentAccess(parentId, studentId);
+      const parentId = await this.resolveParentId(userId);
+      const resolvedStudentId = await this.resolveAuthorizedStudentId(
+        parentId,
+        studentId
+      );
 
       const paidFees = await (prisma as any).feePayment.findMany({
         where: {
-          studentId,
+          studentId: resolvedStudentId,
           status: "PAID",
           paymentDate: { not: null },
         },

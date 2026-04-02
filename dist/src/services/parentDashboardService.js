@@ -4,9 +4,33 @@ const prisma_js_1 = require("../lib/prisma.js");
 const gradeUtils_js_1 = require("../utils/gradeUtils.js");
 const dateUtils_js_1 = require("../utils/dateUtils.js");
 class ParentDashboardService {
+    async resolveParentId(userId) {
+        const parent = await prisma_js_1.prisma.parent.findUnique({
+            where: { userId },
+            select: { id: true },
+        });
+        if (!parent) {
+            throw new Error("Parent not found");
+        }
+        return parent.id;
+    }
+    async resolveAuthorizedStudentId(parentId, studentOrEnrollmentId) {
+        const relation = await prisma_js_1.prisma.parentStudent.findFirst({
+            where: {
+                parentId,
+                OR: [{ studentId: studentOrEnrollmentId }, { id: studentOrEnrollmentId }],
+            },
+            select: { studentId: true },
+        });
+        if (!relation) {
+            throw new Error("Unauthorized: Child not found for this parent");
+        }
+        return relation.studentId;
+    }
     // Get all children
-    async getMyChildren(parentId) {
+    async getMyChildren(userId) {
         try {
+            const parentId = await this.resolveParentId(userId);
             const parent = await prisma_js_1.prisma.parent.findUnique({
                 where: { id: parentId },
                 select: {
@@ -50,20 +74,12 @@ class ParentDashboardService {
         }
     }
     // Get child overview
-    async getChildOverview(parentId, studentId) {
+    async getChildOverview(userId, studentId) {
         try {
-            // Verify parent-child relationship through ParentStudent
-            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
-                where: {
-                    parentId,
-                    studentId,
-                },
-            });
-            if (!parentStudent) {
-                throw new Error("Unauthorized: Child not found for this parent");
-            }
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const student = await prisma_js_1.prisma.student.findUnique({
-                where: { id: studentId },
+                where: { id: resolvedStudentId },
                 select: {
                     id: true,
                     user: { select: { name: true } },
@@ -72,14 +88,16 @@ class ParentDashboardService {
                             id: true,
                             name: true,
                             section: true,
-                            totalStudents: true,
+                            students: {
+                                select: { id: true },
+                            },
                         },
                     },
                 },
             });
             // Get attendance
             const attendance = await prisma_js_1.prisma.attendance.findMany({
-                where: { studentId },
+                where: { studentId: resolvedStudentId },
                 select: { status: true },
             });
             const presentDays = attendance.filter((a) => a.status === "PRESENT").length;
@@ -88,15 +106,22 @@ class ParentDashboardService {
                 : 0;
             // Get overall grade
             const results = await prisma_js_1.prisma.examResult.findMany({
-                where: { studentId },
-                select: { marksObtained: true, totalMarks: true },
+                where: { studentId: resolvedStudentId },
+                select: {
+                    marksObtained: true,
+                    exam: {
+                        select: {
+                            totalMarks: true,
+                        },
+                    },
+                },
             });
             let totalMarks = 0;
             let totalMarksCount = 0;
             results.forEach((result) => {
                 if (result.marksObtained !== null) {
                     totalMarks += result.marksObtained;
-                    totalMarksCount += result.totalMarks;
+                    totalMarksCount += result.exam.totalMarks;
                 }
             });
             const overallPercentage = totalMarksCount > 0 ? Math.round((totalMarks / totalMarksCount) * 100) : 0;
@@ -141,7 +166,7 @@ class ParentDashboardService {
                     overallGrade: (0, gradeUtils_js_1.calculateGrade)(overallPercentage),
                     subjects: subjectsCount,
                     classRank: rank,
-                    totalClassSize: student?.class?.totalStudents || 0,
+                    totalClassSize: student?.class?.students?.length || 0,
                 },
             };
         }
@@ -151,23 +176,15 @@ class ParentDashboardService {
         }
     }
     // Get child attendance trend
-    async getAttendanceTrend(parentId, studentId, months = 6) {
+    async getAttendanceTrend(userId, studentId, months = 6) {
         try {
-            // Verify parent-child relationship through ParentStudent
-            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
-                where: {
-                    parentId,
-                    studentId,
-                },
-            });
-            if (!parentStudent) {
-                throw new Error("Unauthorized: Child not found for this parent");
-            }
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const startDate = new Date();
             startDate.setMonth(startDate.getMonth() - months);
             const attendance = await prisma_js_1.prisma.attendance.findMany({
                 where: {
-                    studentId,
+                    studentId: resolvedStudentId,
                     date: { gte: startDate },
                 },
                 select: {
@@ -206,27 +223,19 @@ class ParentDashboardService {
         }
     }
     // Get child recent results
-    async getRecentResults(parentId, studentId, limit = 5) {
+    async getRecentResults(userId, studentId, limit = 5) {
         try {
-            // Verify parent-child relationship through ParentStudent
-            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
-                where: {
-                    parentId,
-                    studentId,
-                },
-            });
-            if (!parentStudent) {
-                throw new Error("Unauthorized: Child not found for this parent");
-            }
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const results = await prisma_js_1.prisma.examResult.findMany({
-                where: { studentId },
+                where: { studentId: resolvedStudentId },
                 select: {
                     marksObtained: true,
-                    totalMarks: true,
                     exam: {
                         select: {
                             name: true,
                             date: true,
+                            totalMarks: true,
                             subject: { select: { name: true } },
                         },
                     },
@@ -241,12 +250,12 @@ class ParentDashboardService {
                     subject: result.exam.subject.name,
                     date: result.exam.date.toISOString().split("T")[0],
                     marksObtained: result.marksObtained,
-                    totalMarks: result.totalMarks,
+                    totalMarks: result.exam.totalMarks,
                     percentage: result.marksObtained !== null
-                        ? Math.round((result.marksObtained / result.totalMarks) * 100)
+                        ? Math.round((result.marksObtained / result.exam.totalMarks) * 100)
                         : 0,
                     grade: (0, gradeUtils_js_1.calculateGrade)(result.marksObtained !== null
-                        ? Math.round((result.marksObtained / result.totalMarks) * 100)
+                        ? Math.round((result.marksObtained / result.exam.totalMarks) * 100)
                         : 0),
                 })),
             };
@@ -257,25 +266,17 @@ class ParentDashboardService {
         }
     }
     // Get child subject performance
-    async getSubjectPerformance(parentId, studentId) {
+    async getSubjectPerformance(userId, studentId) {
         try {
-            // Verify parent-child relationship through ParentStudent
-            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
-                where: {
-                    parentId,
-                    studentId,
-                },
-            });
-            if (!parentStudent) {
-                throw new Error("Unauthorized: Child not found for this parent");
-            }
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const results = await prisma_js_1.prisma.examResult.findMany({
-                where: { studentId },
+                where: { studentId: resolvedStudentId },
                 select: {
                     marksObtained: true,
-                    totalMarks: true,
                     exam: {
                         select: {
+                            totalMarks: true,
                             subject: { select: { id: true, name: true } },
                         },
                     },
@@ -290,7 +291,7 @@ class ParentDashboardService {
                 }
                 if (result.marksObtained !== null) {
                     subjectMap[subjectId].marks.push(result.marksObtained);
-                    subjectMap[subjectId].totals.push(result.totalMarks);
+                    subjectMap[subjectId].totals.push(result.exam.totalMarks);
                 }
             });
             const subjectPerformance = Object.entries(subjectMap).map(([id, data]) => {
@@ -316,23 +317,15 @@ class ParentDashboardService {
         }
     }
     // Get child upcoming events
-    async getUpcomingEvents(parentId, studentId, limit = 5) {
+    async getUpcomingEvents(userId, studentId, limit = 5) {
         try {
-            // Verify parent-child relationship through ParentStudent
-            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
-                where: {
-                    parentId,
-                    studentId,
-                },
-            });
-            if (!parentStudent) {
-                throw new Error("Unauthorized: Child not found for this parent");
-            }
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const today = new Date();
             // Get upcoming exams
             const exams = await prisma_js_1.prisma.exam.findMany({
                 where: {
-                    class: { students: { some: { id: studentId } } },
+                    class: { students: { some: { id: resolvedStudentId } } },
                     date: { gte: today },
                 },
                 select: {
@@ -361,18 +354,10 @@ class ParentDashboardService {
         }
     }
     // Get notifications for child
-    async getNotifications(parentId, studentId, limit = 5) {
+    async getNotifications(userId, studentId, limit = 5) {
         try {
-            // Verify parent-child relationship through ParentStudent
-            const parentStudent = await prisma_js_1.prisma.parentStudent.findFirst({
-                where: {
-                    parentId,
-                    studentId,
-                },
-            });
-            if (!parentStudent) {
-                throw new Error("Unauthorized: Child not found for this parent");
-            }
+            const parentId = await this.resolveParentId(userId);
+            await this.resolveAuthorizedStudentId(parentId, studentId);
             const notices = await prisma_js_1.prisma.notice.findMany({
                 select: {
                     id: true,

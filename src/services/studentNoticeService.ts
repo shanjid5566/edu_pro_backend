@@ -203,7 +203,7 @@ class StudentNoticeService {
         where: {
           OR: [
             { title: { contains: keyword, mode: "insensitive" } },
-            { content: { contains: keyword, mode: "insensitive" } },
+            { message: { contains: keyword, mode: "insensitive" } },
           ],
         },
       });

@@ -42,7 +42,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"email\": \"admin@edupro.com\",\n  \"password\": \"admin@123\"\n}"
+                  "raw": "{\n  \"email\": \"admin@edupro.com\",\n  \"password\": \"password123\"\n}"
                 },
                 "url": {
                   "raw": "{{base_url}}/api/v1/auth/login",
@@ -2520,7 +2520,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"email\": \"teacher@edupro.com\",\n  \"password\": \"teacher@123\"\n}"
+                  "raw": "{\n  \"email\": \"sarah@edupro.com\",\n  \"password\": \"password123\"\n}"
                 },
                 "url": {
                   "raw": "{{base_url}}/api/v1/auth/login",
@@ -3235,7 +3235,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"email\": \"student@edupro.com\",\n  \"password\": \"student@123\"\n}"
+                  "raw": "{\n  \"email\": \"alice.johnson@edupro.com\",\n  \"password\": \"password123\"\n}"
                 },
                 "url": {
                   "raw": "{{base_url}}/api/v1/auth/login",
@@ -4160,9 +4160,11 @@
               "response": []
             }
           ]
-        },
-        {
-          "name": "Parent Dashboard",
+        }
+      ]
+    },
+    {
+      "name": "Parent Dashboard",
           "item": [
             {
               "name": "Get My Children",
@@ -4341,11 +4343,9 @@
                 }
               },
               "response": []
-            }
-          ]
-        },
-        {
-          "name": "Child's Progress",
+            },
+            {
+              "name": "Child's Progress",
           "item": [
             {
               "name": "Get Progress Metrics",
@@ -4973,9 +4973,7 @@
               "response": []
             }
           ]
-        }
-      ],
-      "item": [
+        },
         {
           "name": "Login",
           "item": [
@@ -5009,7 +5007,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"email\": \"parent@edupro.com\",\n  \"password\": \"parent@123\"\n}"
+                  "raw": "{\n  \"email\": \"parent@edupro.com\",\n  \"password\": \"password123\"\n}"
                 },
                 "url": {
                   "raw": "{{base_url}}/api/v1/auth/login",

@@ -1,9 +1,23 @@
 import { prisma } from "../lib/prisma.js";
 
 class StudentClassService {
+  private async resolveStudentId(userId: string): Promise<string> {
+    const student = await prisma.student.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+
+    if (!student) {
+      throw new Error("Student not found");
+    }
+
+    return student.id;
+  }
+
   // Get all classes for the student
-  async getMyClasses(studentId: string) {
+  async getMyClasses(userId: string) {
     try {
+      const studentId = await this.resolveStudentId(userId);
       const student = await prisma.student.findUnique({
         where: { id: studentId },
         select: {
@@ -14,8 +28,12 @@ class StudentClassService {
               section: true,
               subjects: {
                 select: {
-                  id: true,
-                  name: true,
+                  subject: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
                 },
               },
               teachers: {
@@ -46,8 +64,8 @@ class StudentClassService {
             section: student.class.section,
           },
           subjects: student.class.subjects.map((s) => ({
-            id: s.id,
-            name: s.name,
+            id: s.subject.id,
+            name: s.subject.name,
           })),
           totalSubjects: student.class.subjects.length,
           teachers: student.class.teachers.map((tc) => ({
@@ -63,8 +81,9 @@ class StudentClassService {
   }
 
   // Get class schedule by day
-  async getClassScheduleByDay(studentId: string, day?: string) {
+  async getClassScheduleByDay(userId: string, day?: string) {
     try {
+      const studentId = await this.resolveStudentId(userId);
       const student = await prisma.student.findUnique({
         where: { id: studentId },
         select: { classId: true },
@@ -147,8 +166,9 @@ class StudentClassService {
   }
 
   // Get today's classes
-  async getTodayClasses(studentId: string) {
+  async getTodayClasses(userId: string) {
     try {
+      const studentId = await this.resolveStudentId(userId);
       const today = new Date();
       const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
 
@@ -202,8 +222,9 @@ class StudentClassService {
   }
 
   // Get subject details with teacher
-  async getSubjectDetails(studentId: string, subjectId: string) {
+  async getSubjectDetails(userId: string, subjectId: string) {
     try {
+      const studentId = await this.resolveStudentId(userId);
       const student = await prisma.student.findUnique({
         where: { id: studentId },
         select: { classId: true },
@@ -271,8 +292,9 @@ class StudentClassService {
   }
 
   // Get weekly timetable
-  async getWeeklyTimetable(studentId: string) {
+  async getWeeklyTimetable(userId: string) {
     try {
+      const studentId = await this.resolveStudentId(userId);
       const student = await prisma.student.findUnique({
         where: { id: studentId },
         select: { classId: true },

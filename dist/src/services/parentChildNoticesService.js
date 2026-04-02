@@ -2,43 +2,61 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const prisma_js_1 = require("../lib/prisma.js");
 const dateUtils_js_1 = require("../utils/dateUtils.js");
-const parentAccess_js_1 = require("../utils/parentAccess.js");
 class ParentChildNoticesService {
+    async resolveParentId(userId) {
+        const parent = await prisma_js_1.prisma.parent.findUnique({
+            where: { userId },
+            select: { id: true },
+        });
+        if (!parent) {
+            throw new Error("Parent not found");
+        }
+        return parent.id;
+    }
+    async resolveAuthorizedStudentId(parentId, studentOrEnrollmentId) {
+        const relation = await prisma_js_1.prisma.parentStudent.findFirst({
+            where: {
+                parentId,
+                OR: [
+                    { studentId: studentOrEnrollmentId },
+                    { id: studentOrEnrollmentId },
+                ],
+            },
+            select: { studentId: true },
+        });
+        if (!relation) {
+            throw new Error("Unauthorized: Child not found for this parent");
+        }
+        return relation.studentId;
+    }
     // Get all notices for child
-    async getAllNotices(parentId, studentId, limit = 20, offset = 0) {
+    async getAllNotices(userId, studentId, limit = 20, offset = 0) {
         try {
-            await (0, parentAccess_js_1.assertParentStudentAccess)(parentId, studentId);
-            const classId = await (0, parentAccess_js_1.getStudentClassId)(studentId);
+            const parentId = await this.resolveParentId(userId);
+            await this.resolveAuthorizedStudentId(parentId, studentId);
             const notices = await prisma_js_1.prisma.notice.findMany({
-                where: {
-                    classId,
-                },
                 select: {
                     id: true,
                     title: true,
-                    description: true,
+                    message: true,
                     category: true,
-                    isPinned: true,
+                    pinned: true,
                     createdAt: true,
                     createdBy: true,
                 },
-                orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
+                orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
                 take: limit,
                 skip: offset,
             });
-            const total = await prisma_js_1.prisma.notice.count({
-                where: {
-                    classId,
-                },
-            });
+            const total = await prisma_js_1.prisma.notice.count();
             return {
                 success: true,
                 data: notices.map((notice) => ({
                     id: notice.id,
                     title: notice.title,
-                    description: notice.description,
+                    description: notice.message,
                     category: notice.category,
-                    isPinned: notice.isPinned,
+                    isPinned: notice.pinned,
                     date: notice.createdAt.toISOString().split("T")[0],
                     by: notice.createdBy,
                     timeAgo: (0, dateUtils_js_1.getTimeAgo)(notice.createdAt),
@@ -57,19 +75,18 @@ class ParentChildNoticesService {
         }
     }
     // Get pinned notices
-    async getPinnedNotices(parentId, studentId) {
+    async getPinnedNotices(userId, studentId) {
         try {
-            await (0, parentAccess_js_1.assertParentStudentAccess)(parentId, studentId);
-            const classId = await (0, parentAccess_js_1.getStudentClassId)(studentId);
+            const parentId = await this.resolveParentId(userId);
+            await this.resolveAuthorizedStudentId(parentId, studentId);
             const pinnedNotices = await prisma_js_1.prisma.notice.findMany({
                 where: {
-                    classId,
-                    isPinned: true,
+                    pinned: true,
                 },
                 select: {
                     id: true,
                     title: true,
-                    description: true,
+                    message: true,
                     category: true,
                     createdAt: true,
                     createdBy: true,
@@ -82,7 +99,7 @@ class ParentChildNoticesService {
                 data: pinnedNotices.map((notice) => ({
                     id: notice.id,
                     title: notice.title,
-                    description: notice.description,
+                    description: notice.message,
                     category: notice.category,
                     date: notice.createdAt.toISOString().split("T")[0],
                     by: notice.createdBy,
@@ -96,29 +113,32 @@ class ParentChildNoticesService {
         }
     }
     // Get notices by category
-    async getNoticesByCategory(parentId, studentId, category) {
+    async getNoticesByCategory(userId, studentId, category) {
         try {
-            await (0, parentAccess_js_1.assertParentStudentAccess)(parentId, studentId);
-            const classId = await (0, parentAccess_js_1.getStudentClassId)(studentId);
-            const validCategories = ["GENERAL", "EXAM", "EVENT", "HOLIDAY", "IMPORTANT"];
-            if (!validCategories.includes(category.toUpperCase())) {
-                throw new Error("Invalid category. Must be GENERAL, EXAM, EVENT, HOLIDAY, or IMPORTANT");
+            const parentId = await this.resolveParentId(userId);
+            await this.resolveAuthorizedStudentId(parentId, studentId);
+            const normalizedCategory = category.toLowerCase();
+            const validCategories = ["general", "exam", "event", "holiday", "important"];
+            if (!validCategories.includes(normalizedCategory)) {
+                throw new Error("Invalid category. Must be general, exam, event, holiday, or important");
             }
             const notices = await prisma_js_1.prisma.notice.findMany({
                 where: {
-                    classId,
-                    category: category.toUpperCase(),
+                    category: {
+                        equals: normalizedCategory,
+                        mode: "insensitive",
+                    },
                 },
                 select: {
                     id: true,
                     title: true,
-                    description: true,
+                    message: true,
                     category: true,
-                    isPinned: true,
+                    pinned: true,
                     createdAt: true,
                     createdBy: true,
                 },
-                orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
+                orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
             });
             return {
                 success: true,
@@ -128,9 +148,9 @@ class ParentChildNoticesService {
                     notices: notices.map((notice) => ({
                         id: notice.id,
                         title: notice.title,
-                        description: notice.description,
+                        description: notice.message,
                         category: notice.category,
-                        isPinned: notice.isPinned,
+                        isPinned: notice.pinned,
                         date: notice.createdAt.toISOString().split("T")[0],
                         by: notice.createdBy,
                     })),
@@ -143,27 +163,26 @@ class ParentChildNoticesService {
         }
     }
     // Get recent notices
-    async getRecentNotices(parentId, studentId, days = 7) {
+    async getRecentNotices(userId, studentId, days = 7) {
         try {
-            await (0, parentAccess_js_1.assertParentStudentAccess)(parentId, studentId);
-            const classId = await (0, parentAccess_js_1.getStudentClassId)(studentId);
+            const parentId = await this.resolveParentId(userId);
+            await this.resolveAuthorizedStudentId(parentId, studentId);
             const startDate = new Date();
             startDate.setDate(startDate.getDate() - days);
             const recentNotices = await prisma_js_1.prisma.notice.findMany({
                 where: {
-                    classId,
                     createdAt: { gte: startDate },
                 },
                 select: {
                     id: true,
                     title: true,
-                    description: true,
+                    message: true,
                     category: true,
-                    isPinned: true,
+                    pinned: true,
                     createdAt: true,
                     createdBy: true,
                 },
-                orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
+                orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
             });
             return {
                 success: true,
@@ -173,9 +192,9 @@ class ParentChildNoticesService {
                     notices: recentNotices.map((notice) => ({
                         id: notice.id,
                         title: notice.title,
-                        description: notice.description,
+                        description: notice.message,
                         category: notice.category,
-                        isPinned: notice.isPinned,
+                        isPinned: notice.pinned,
                         date: notice.createdAt.toISOString().split("T")[0],
                         by: notice.createdBy,
                         timeAgo: (0, dateUtils_js_1.getTimeAgo)(notice.createdAt),
@@ -189,34 +208,33 @@ class ParentChildNoticesService {
         }
     }
     // Get notice details
-    async getNoticeDetails(parentId, studentId, noticeId) {
+    async getNoticeDetails(userId, studentId, noticeId) {
         try {
-            await (0, parentAccess_js_1.assertParentStudentAccess)(parentId, studentId);
-            const classId = await (0, parentAccess_js_1.getStudentClassId)(studentId);
+            const parentId = await this.resolveParentId(userId);
+            await this.resolveAuthorizedStudentId(parentId, studentId);
             const notice = await prisma_js_1.prisma.notice.findUnique({
                 where: { id: noticeId },
                 select: {
                     id: true,
                     title: true,
-                    description: true,
+                    message: true,
                     category: true,
-                    isPinned: true,
+                    pinned: true,
                     createdAt: true,
                     createdBy: true,
-                    classId: true,
                 },
             });
-            if (!notice || notice.classId !== classId) {
-                throw new Error("Notice not found or not accessible");
+            if (!notice) {
+                throw new Error("Notice not found");
             }
             return {
                 success: true,
                 data: {
                     id: notice.id,
                     title: notice.title,
-                    description: notice.description,
+                    description: notice.message,
                     category: notice.category,
-                    isPinned: notice.isPinned,
+                    isPinned: notice.pinned,
                     date: notice.createdAt.toISOString().split("T")[0],
                     by: notice.createdBy,
                     fullDate: notice.createdAt.toISOString(),
@@ -229,28 +247,28 @@ class ParentChildNoticesService {
         }
     }
     // Get notice statistics
-    async getNoticeStatistics(parentId, studentId) {
+    async getNoticeStatistics(userId, studentId) {
         try {
-            await (0, parentAccess_js_1.assertParentStudentAccess)(parentId, studentId);
-            const classId = await (0, parentAccess_js_1.getStudentClassId)(studentId);
+            const parentId = await this.resolveParentId(userId);
+            await this.resolveAuthorizedStudentId(parentId, studentId);
             const notices = await prisma_js_1.prisma.notice.findMany({
-                where: { classId },
-                select: { category: true, isPinned: true },
+                select: { category: true, pinned: true },
             });
             const stats = {
-                GENERAL: 0,
-                EXAM: 0,
-                EVENT: 0,
-                HOLIDAY: 0,
-                IMPORTANT: 0,
+                general: 0,
+                exam: 0,
+                event: 0,
+                holiday: 0,
+                important: 0,
                 pinned: 0,
                 total: notices.length,
             };
             notices.forEach((notice) => {
-                if (notice.category in stats) {
-                    stats[notice.category]++;
+                const key = String(notice.category || "").toLowerCase();
+                if (key in stats) {
+                    stats[key]++;
                 }
-                if (notice.isPinned) {
+                if (notice.pinned) {
                     stats.pinned++;
                 }
             });
@@ -259,11 +277,11 @@ class ParentChildNoticesService {
                 data: {
                     totalNotices: stats.total,
                     byCategory: {
-                        general: stats.GENERAL,
-                        exam: stats.EXAM,
-                        event: stats.EVENT,
-                        holiday: stats.HOLIDAY,
-                        important: stats.IMPORTANT,
+                        general: stats.general,
+                        exam: stats.exam,
+                        event: stats.event,
+                        holiday: stats.holiday,
+                        important: stats.important,
                     },
                     pinnedCount: stats.pinned,
                 },
@@ -275,28 +293,27 @@ class ParentChildNoticesService {
         }
     }
     // Search notices
-    async searchNotices(parentId, studentId, query) {
+    async searchNotices(userId, studentId, query) {
         try {
-            await (0, parentAccess_js_1.assertParentStudentAccess)(parentId, studentId);
-            const classId = await (0, parentAccess_js_1.getStudentClassId)(studentId);
+            const parentId = await this.resolveParentId(userId);
+            await this.resolveAuthorizedStudentId(parentId, studentId);
             const notices = await prisma_js_1.prisma.notice.findMany({
                 where: {
-                    classId,
                     OR: [
                         { title: { contains: query, mode: "insensitive" } },
-                        { description: { contains: query, mode: "insensitive" } },
+                        { message: { contains: query, mode: "insensitive" } },
                     ],
                 },
                 select: {
                     id: true,
                     title: true,
-                    description: true,
+                    message: true,
                     category: true,
-                    isPinned: true,
+                    pinned: true,
                     createdAt: true,
                     createdBy: true,
                 },
-                orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
+                orderBy: [{ pinned: "desc" }, { createdAt: "desc" }],
             });
             return {
                 success: true,
@@ -306,9 +323,9 @@ class ParentChildNoticesService {
                     results: notices.map((notice) => ({
                         id: notice.id,
                         title: notice.title,
-                        description: notice.description,
+                        description: notice.message,
                         category: notice.category,
-                        isPinned: notice.isPinned,
+                        isPinned: notice.pinned,
                         date: notice.createdAt.toISOString().split("T")[0],
                         by: notice.createdBy,
                     })),

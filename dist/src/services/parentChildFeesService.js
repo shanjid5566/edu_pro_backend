@@ -1,14 +1,40 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const prisma_js_1 = require("../lib/prisma.js");
-const parentAccess_js_1 = require("../utils/parentAccess.js");
 class ParentChildFeesService {
+    async resolveParentId(userId) {
+        const parent = await prisma_js_1.prisma.parent.findUnique({
+            where: { userId },
+            select: { id: true },
+        });
+        if (!parent) {
+            throw new Error("Parent not found");
+        }
+        return parent.id;
+    }
+    async resolveAuthorizedStudentId(parentId, studentOrEnrollmentId) {
+        const relation = await prisma_js_1.prisma.parentStudent.findFirst({
+            where: {
+                parentId,
+                OR: [
+                    { studentId: studentOrEnrollmentId },
+                    { id: studentOrEnrollmentId },
+                ],
+            },
+            select: { studentId: true },
+        });
+        if (!relation) {
+            throw new Error("Unauthorized: Child not found for this parent");
+        }
+        return relation.studentId;
+    }
     // Get all fees for child
-    async getAllFees(parentId, studentId, limit = 50, offset = 0) {
+    async getAllFees(userId, studentId, limit = 50, offset = 0) {
         try {
-            await (0, parentAccess_js_1.assertParentStudentAccess)(parentId, studentId);
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const fees = await prisma_js_1.prisma.feePayment.findMany({
-                where: { studentId },
+                where: { studentId: resolvedStudentId },
                 include: {
                     feeStructure: {
                         select: {
@@ -17,11 +43,11 @@ class ParentChildFeesService {
                         },
                     },
                 },
-                orderBy: { createdAt: "desc" },
+                orderBy: [{ paymentDate: "desc" }, { id: "desc" }],
                 take: limit,
                 skip: offset,
             });
-            const total = await prisma_js_1.prisma.feePayment.count({ where: { studentId } });
+            const total = await prisma_js_1.prisma.feePayment.count({ where: { studentId: resolvedStudentId } });
             return {
                 success: true,
                 data: fees.map((fee) => ({
@@ -45,11 +71,12 @@ class ParentChildFeesService {
         }
     }
     // Get fee summary
-    async getFeeSummary(parentId, studentId) {
+    async getFeeSummary(userId, studentId) {
         try {
-            await (0, parentAccess_js_1.assertParentStudentAccess)(parentId, studentId);
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const fees = await prisma_js_1.prisma.feePayment.findMany({
-                where: { studentId },
+                where: { studentId: resolvedStudentId },
                 select: {
                     amountPaid: true,
                     status: true,
@@ -87,16 +114,17 @@ class ParentChildFeesService {
         }
     }
     // Get fees by status
-    async getFeesByStatus(parentId, studentId, status, limit = 50, offset = 0) {
+    async getFeesByStatus(userId, studentId, status, limit = 50, offset = 0) {
         try {
-            await (0, parentAccess_js_1.assertParentStudentAccess)(parentId, studentId);
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const validStatus = ["PAID", "UNPAID", "PARTIAL"];
             if (!validStatus.includes(status.toUpperCase())) {
                 throw new Error("Invalid status. Must be PAID, UNPAID, or PARTIAL");
             }
             const fees = await prisma_js_1.prisma.feePayment.findMany({
                 where: {
-                    studentId,
+                    studentId: resolvedStudentId,
                     status: status.toUpperCase(),
                 },
                 include: {
@@ -107,13 +135,13 @@ class ParentChildFeesService {
                         },
                     },
                 },
-                orderBy: { createdAt: "desc" },
+                orderBy: [{ paymentDate: "desc" }, { id: "desc" }],
                 take: limit,
                 skip: offset,
             });
             const total = await prisma_js_1.prisma.feePayment.count({
                 where: {
-                    studentId,
+                    studentId: resolvedStudentId,
                     status: status.toUpperCase(),
                 },
             });
@@ -140,11 +168,12 @@ class ParentChildFeesService {
         }
     }
     // Get fees by type
-    async getFeesByType(parentId, studentId) {
+    async getFeesByType(userId, studentId) {
         try {
-            await (0, parentAccess_js_1.assertParentStudentAccess)(parentId, studentId);
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const fees = await prisma_js_1.prisma.feePayment.findMany({
-                where: { studentId },
+                where: { studentId: resolvedStudentId },
                 include: {
                     feeStructure: {
                         select: {
@@ -193,12 +222,13 @@ class ParentChildFeesService {
         }
     }
     // Get upcoming fees
-    async getUpcomingFees(parentId, studentId) {
+    async getUpcomingFees(userId, studentId) {
         try {
-            await (0, parentAccess_js_1.assertParentStudentAccess)(parentId, studentId);
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const upcomingFees = await prisma_js_1.prisma.feePayment.findMany({
                 where: {
-                    studentId,
+                    studentId: resolvedStudentId,
                     status: "UNPAID",
                 },
                 include: {
@@ -209,7 +239,7 @@ class ParentChildFeesService {
                         },
                     },
                 },
-                orderBy: { createdAt: "asc" },
+                orderBy: { id: "asc" },
                 take: 10,
             });
             return {
@@ -228,12 +258,13 @@ class ParentChildFeesService {
         }
     }
     // Get overdue fees
-    async getOverdueFees(parentId, studentId) {
+    async getOverdueFees(userId, studentId) {
         try {
-            await (0, parentAccess_js_1.assertParentStudentAccess)(parentId, studentId);
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const overdueFees = await prisma_js_1.prisma.feePayment.findMany({
                 where: {
-                    studentId,
+                    studentId: resolvedStudentId,
                     status: "UNPAID",
                 },
                 include: {
@@ -244,7 +275,7 @@ class ParentChildFeesService {
                         },
                     },
                 },
-                orderBy: { createdAt: "asc" },
+                orderBy: { id: "asc" },
             });
             let totalOverdue = 0;
             overdueFees.forEach((fee) => {
@@ -270,12 +301,13 @@ class ParentChildFeesService {
         }
     }
     // Get paid fees timeline (receipt history)
-    async getFeesTimeline(parentId, studentId, limit = 10) {
+    async getFeesTimeline(userId, studentId, limit = 10) {
         try {
-            await (0, parentAccess_js_1.assertParentStudentAccess)(parentId, studentId);
+            const parentId = await this.resolveParentId(userId);
+            const resolvedStudentId = await this.resolveAuthorizedStudentId(parentId, studentId);
             const paidFees = await prisma_js_1.prisma.feePayment.findMany({
                 where: {
-                    studentId,
+                    studentId: resolvedStudentId,
                     status: "PAID",
                     paymentDate: { not: null },
                 },

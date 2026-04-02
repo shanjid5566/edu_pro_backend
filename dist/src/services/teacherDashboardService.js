@@ -2,9 +2,20 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const prisma_js_1 = require("../lib/prisma.js");
 class TeacherDashboardService {
+    async resolveTeacherId(userId) {
+        const teacher = await prisma_js_1.prisma.teacher.findUnique({
+            where: { userId },
+            select: { id: true },
+        });
+        if (!teacher) {
+            throw new Error("Teacher not found");
+        }
+        return teacher.id;
+    }
     // Get dashboard overview statistics
-    async getDashboardOverview(teacherId) {
+    async getDashboardOverview(userId) {
         try {
+            const teacherId = await this.resolveTeacherId(userId);
             // Get teacher info
             const teacher = await prisma_js_1.prisma.teacher.findUnique({
                 where: { id: teacherId },
@@ -61,9 +72,9 @@ class TeacherDashboardService {
                                 some: { teacherId },
                             },
                         },
-                    },
-                    createdAt: {
-                        gte: oneMonthAgo,
+                        date: {
+                            gte: oneMonthAgo,
+                        },
                     },
                 },
                 select: {
@@ -86,10 +97,10 @@ class TeacherDashboardService {
                                 some: { teacherId },
                             },
                         },
-                    },
-                    createdAt: {
-                        gte: twoMonthsAgo,
-                        lt: oneMonthAgo,
+                        date: {
+                            gte: twoMonthsAgo,
+                            lt: oneMonthAgo,
+                        },
                     },
                 },
                 select: {
@@ -136,8 +147,9 @@ class TeacherDashboardService {
         }
     }
     // Get class attendance trend
-    async getAttendanceTrend(teacherId, months = 6) {
+    async getAttendanceTrend(userId, months = 6) {
         try {
+            const teacherId = await this.resolveTeacherId(userId);
             const attendanceData = [];
             const monthNames = [
                 "Sep",
@@ -206,8 +218,9 @@ class TeacherDashboardService {
         }
     }
     // Get student performance by subject
-    async getStudentPerformanceBySubject(teacherId) {
+    async getStudentPerformanceBySubject(userId) {
         try {
+            const teacherId = await this.resolveTeacherId(userId);
             const subjects = await prisma_js_1.prisma.subject.findMany({
                 where: {
                     teachers: {
@@ -266,8 +279,9 @@ class TeacherDashboardService {
         }
     }
     // Get my classes (today and all)
-    async getMyClasses(teacherId) {
+    async getMyClasses(userId) {
         try {
+            const teacherId = await this.resolveTeacherId(userId);
             const today = new Date();
             const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
             // Get today's classes
@@ -335,8 +349,9 @@ class TeacherDashboardService {
         }
     }
     // Get teacher profile
-    async getTeacherProfile(teacherId) {
+    async getTeacherProfile(userId) {
         try {
+            const teacherId = await this.resolveTeacherId(userId);
             const teacher = await prisma_js_1.prisma.teacher.findUnique({
                 where: { id: teacherId },
                 select: {

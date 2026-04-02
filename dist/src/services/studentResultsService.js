@@ -3,15 +3,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const prisma_js_1 = require("../lib/prisma.js");
 const gradeUtils_js_1 = require("../utils/gradeUtils.js");
 class StudentResultsService {
+    async resolveStudentId(userId) {
+        const student = await prisma_js_1.prisma.student.findUnique({
+            where: { userId },
+            select: { id: true },
+        });
+        if (!student) {
+            throw new Error("Student not found");
+        }
+        return student.id;
+    }
     // Get all results
-    async getAllResults(studentId) {
+    async getAllResults(userId) {
         try {
+            const studentId = await this.resolveStudentId(userId);
             const results = await prisma_js_1.prisma.examResult.findMany({
                 where: { studentId },
                 select: {
                     id: true,
                     marksObtained: true,
-                    totalMarks: true,
                     exam: {
                         select: {
                             id: true,
@@ -19,6 +29,7 @@ class StudentResultsService {
                             date: true,
                             type: true,
                             status: true,
+                            totalMarks: true,
                             subject: { select: { id: true, name: true } },
                             class: { select: { name: true, section: true } },
                         },
@@ -39,12 +50,12 @@ class StudentResultsService {
                     type: result.exam.type,
                     status: result.exam.status,
                     marksObtained: result.marksObtained,
-                    totalMarks: result.totalMarks,
+                    totalMarks: result.exam.totalMarks,
                     percentage: result.marksObtained !== null
-                        ? Math.round((result.marksObtained / result.totalMarks) * 100)
+                        ? Math.round((result.marksObtained / result.exam.totalMarks) * 100)
                         : 0,
                     grade: (0, gradeUtils_js_1.calculateGrade)(result.marksObtained !== null
-                        ? Math.round((result.marksObtained / result.totalMarks) * 100)
+                        ? Math.round((result.marksObtained / result.exam.totalMarks) * 100)
                         : 0),
                 })),
             };
@@ -55,8 +66,9 @@ class StudentResultsService {
         }
     }
     // Get results by subject
-    async getResultsBySubject(studentId, subjectId) {
+    async getResultsBySubject(userId, subjectId) {
         try {
+            const studentId = await this.resolveStudentId(userId);
             const results = await prisma_js_1.prisma.examResult.findMany({
                 where: {
                     studentId,
@@ -65,13 +77,13 @@ class StudentResultsService {
                 select: {
                     id: true,
                     marksObtained: true,
-                    totalMarks: true,
                     exam: {
                         select: {
                             id: true,
                             name: true,
                             date: true,
                             type: true,
+                            totalMarks: true,
                             subject: { select: { name: true } },
                         },
                     },
@@ -86,7 +98,7 @@ class StudentResultsService {
             results.forEach((result) => {
                 if (result.marksObtained !== null) {
                     totalMarksObtained += result.marksObtained;
-                    totalMarksCount += result.totalMarks;
+                    totalMarksCount += result.exam.totalMarks;
                 }
             });
             const averagePercentage = totalMarksCount > 0
@@ -106,12 +118,12 @@ class StudentResultsService {
                         date: result.exam.date.toISOString().split("T")[0],
                         type: result.exam.type,
                         marksObtained: result.marksObtained,
-                        totalMarks: result.totalMarks,
+                        totalMarks: result.exam.totalMarks,
                         percentage: result.marksObtained !== null
-                            ? Math.round((result.marksObtained / result.totalMarks) * 100)
+                            ? Math.round((result.marksObtained / result.exam.totalMarks) * 100)
                             : 0,
                         grade: (0, gradeUtils_js_1.calculateGrade)(result.marksObtained !== null
-                            ? Math.round((result.marksObtained / result.totalMarks) * 100)
+                            ? Math.round((result.marksObtained / result.exam.totalMarks) * 100)
                             : 0),
                     })),
                 },
@@ -123,8 +135,9 @@ class StudentResultsService {
         }
     }
     // Get subject performance overview
-    async getSubjectPerformance(studentId) {
+    async getSubjectPerformance(userId) {
         try {
+            const studentId = await this.resolveStudentId(userId);
             const student = await prisma_js_1.prisma.student.findUnique({
                 where: { id: studentId },
                 select: { classId: true },
@@ -136,10 +149,10 @@ class StudentResultsService {
                 where: { studentId },
                 select: {
                     marksObtained: true,
-                    totalMarks: true,
                     exam: {
                         select: {
                             subjectId: true,
+                            totalMarks: true,
                             subject: { select: { id: true, name: true } },
                         },
                     },
@@ -160,7 +173,7 @@ class StudentResultsService {
                 }
                 if (result.marksObtained !== null) {
                     subjectMap[subjectId].marks.push(result.marksObtained);
-                    subjectMap[subjectId].totals.push(result.totalMarks);
+                    subjectMap[subjectId].totals.push(result.exam.totalMarks);
                     subjectMap[subjectId].exams += 1;
                 }
             });
@@ -191,8 +204,9 @@ class StudentResultsService {
         }
     }
     // Get comparison with class average
-    async getClassComparison(studentId) {
+    async getClassComparison(userId) {
         try {
+            const studentId = await this.resolveStudentId(userId);
             const student = await prisma_js_1.prisma.student.findUnique({
                 where: { id: studentId },
                 select: { classId: true },
@@ -205,7 +219,11 @@ class StudentResultsService {
                 where: { studentId },
                 select: {
                     marksObtained: true,
-                    totalMarks: true,
+                    exam: {
+                        select: {
+                            totalMarks: true,
+                        },
+                    },
                 },
             });
             let studentTotalMarks = 0;
@@ -213,7 +231,7 @@ class StudentResultsService {
             studentResults.forEach((result) => {
                 if (result.marksObtained !== null) {
                     studentTotalMarks += result.marksObtained;
-                    studentTotalMarksCount += result.totalMarks;
+                    studentTotalMarksCount += result.exam.totalMarks;
                 }
             });
             const studentPercentage = studentTotalMarksCount > 0
@@ -226,7 +244,11 @@ class StudentResultsService {
                 },
                 select: {
                     marksObtained: true,
-                    totalMarks: true,
+                    exam: {
+                        select: {
+                            totalMarks: true,
+                        },
+                    },
                     studentId: true,
                 },
             });
@@ -237,7 +259,7 @@ class StudentResultsService {
                         studentAveragesMap[result.studentId] = { total: 0, count: 0 };
                     }
                     studentAveragesMap[result.studentId].total += result.marksObtained;
-                    studentAveragesMap[result.studentId].count += result.totalMarks;
+                    studentAveragesMap[result.studentId].count += result.exam.totalMarks;
                 }
             });
             let classTotal = 0;
@@ -274,8 +296,9 @@ class StudentResultsService {
         }
     }
     // Get performance trend over time
-    async getPerformanceTrend(studentId, months = 6) {
+    async getPerformanceTrend(userId, months = 6) {
         try {
+            const studentId = await this.resolveStudentId(userId);
             const startDate = new Date();
             startDate.setMonth(startDate.getMonth() - months);
             const results = await prisma_js_1.prisma.examResult.findMany({
@@ -289,11 +312,11 @@ class StudentResultsService {
                 },
                 select: {
                     marksObtained: true,
-                    totalMarks: true,
                     exam: {
                         select: {
                             name: true,
                             date: true,
+                            totalMarks: true,
                         },
                     },
                 },
@@ -305,12 +328,12 @@ class StudentResultsService {
                     examName: result.exam.name,
                     date: result.exam.date.toISOString().split("T")[0],
                     marksObtained: result.marksObtained,
-                    totalMarks: result.totalMarks,
+                    totalMarks: result.exam.totalMarks,
                     percentage: result.marksObtained !== null
-                        ? Math.round((result.marksObtained / result.totalMarks) * 100)
+                        ? Math.round((result.marksObtained / result.exam.totalMarks) * 100)
                         : 0,
                     grade: (0, gradeUtils_js_1.calculateGrade)(result.marksObtained !== null
-                        ? Math.round((result.marksObtained / result.totalMarks) * 100)
+                        ? Math.round((result.marksObtained / result.exam.totalMarks) * 100)
                         : 0),
                 })),
             };
@@ -321,13 +344,18 @@ class StudentResultsService {
         }
     }
     // Get results summary
-    async getResultsSummary(studentId) {
+    async getResultsSummary(userId) {
         try {
+            const studentId = await this.resolveStudentId(userId);
             const results = await prisma_js_1.prisma.examResult.findMany({
                 where: { studentId },
                 select: {
                     marksObtained: true,
-                    totalMarks: true,
+                    exam: {
+                        select: {
+                            totalMarks: true,
+                        },
+                    },
                 },
             });
             if (results.length === 0) {
@@ -352,9 +380,9 @@ class StudentResultsService {
             results.forEach((result) => {
                 if (result.marksObtained !== null) {
                     totalMarksObtained += result.marksObtained;
-                    totalMarksCount += result.totalMarks;
+                    totalMarksCount += result.exam.totalMarks;
                     totalExams += 1;
-                    const percentage = Math.round((result.marksObtained / result.totalMarks) * 100);
+                    const percentage = Math.round((result.marksObtained / result.exam.totalMarks) * 100);
                     if (percentage > highestPercentage) {
                         highestPercentage = percentage;
                     }

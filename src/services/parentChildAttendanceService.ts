@@ -1,23 +1,52 @@
 import { prisma } from "../lib/prisma.js";
 
 class ParentChildAttendanceService {
-  // Get attendance summary
-  async getAttendanceSummary(parentId: string, studentId: string) {
-    try {
-      // Verify parent-child relationship through ParentStudent
-      const parentStudent = await prisma.parentStudent.findFirst({
-        where: {
-          parentId,
-          studentId,
-        },
-      });
+  private async resolveParentId(userId: string): Promise<string> {
+    const parent = await prisma.parent.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
 
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
+    if (!parent) {
+      throw new Error("Parent not found");
+    }
+
+    return parent.id;
+  }
+
+  private async resolveAuthorizedStudentId(
+    parentId: string,
+    studentOrEnrollmentId: string
+  ): Promise<string> {
+    const relation = await prisma.parentStudent.findFirst({
+      where: {
+        parentId,
+        OR: [
+          { studentId: studentOrEnrollmentId },
+          { id: studentOrEnrollmentId },
+        ],
+      },
+      select: { studentId: true },
+    });
+
+    if (!relation) {
+      throw new Error("Unauthorized: Child not found for this parent");
+    }
+
+    return relation.studentId;
+  }
+
+  // Get attendance summary
+  async getAttendanceSummary(userId: string, studentId: string) {
+    try {
+      const parentId = await this.resolveParentId(userId);
+      const resolvedStudentId = await this.resolveAuthorizedStudentId(
+        parentId,
+        studentId
+      );
 
       const attendance = await prisma.attendance.findMany({
-        where: { studentId },
+        where: { studentId: resolvedStudentId },
         select: { status: true },
       });
 
@@ -58,26 +87,20 @@ class ParentChildAttendanceService {
   }
 
   // Get attendance trend
-  async getAttendanceTrend(parentId: string, studentId: string, months: number = 6) {
+  async getAttendanceTrend(userId: string, studentId: string, months: number = 6) {
     try {
-      // Verify parent-child relationship through ParentStudent
-      const parentStudent = await prisma.parentStudent.findFirst({
-        where: {
-          parentId,
-          studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
+      const parentId = await this.resolveParentId(userId);
+      const resolvedStudentId = await this.resolveAuthorizedStudentId(
+        parentId,
+        studentId
+      );
 
       const startDate = new Date();
       startDate.setMonth(startDate.getMonth() - months);
 
       const attendance = await prisma.attendance.findMany({
         where: {
-          studentId,
+          studentId: resolvedStudentId,
           date: { gte: startDate },
         },
         select: {
@@ -122,22 +145,16 @@ class ParentChildAttendanceService {
   }
 
   // Get recent attendance records
-  async getRecentAttendance(parentId: string, studentId: string, limit: number = 10) {
+  async getRecentAttendance(userId: string, studentId: string, limit: number = 10) {
     try {
-      // Verify parent-child relationship through ParentStudent
-      const parentStudent = await prisma.parentStudent.findFirst({
-        where: {
-          parentId,
-          studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
+      const parentId = await this.resolveParentId(userId);
+      const resolvedStudentId = await this.resolveAuthorizedStudentId(
+        parentId,
+        studentId
+      );
 
       const recentRecords = await prisma.attendance.findMany({
-        where: { studentId },
+        where: { studentId: resolvedStudentId },
         select: {
           id: true,
           date: true,
@@ -170,30 +187,24 @@ class ParentChildAttendanceService {
 
   // Get attendance by date range
   async getAttendanceByDateRange(
-    parentId: string,
+    userId: string,
     studentId: string,
     startDate: string,
     endDate: string
   ) {
     try {
-      // Verify parent-child relationship through ParentStudent
-      const parentStudent = await prisma.parentStudent.findFirst({
-        where: {
-          parentId,
-          studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
+      const parentId = await this.resolveParentId(userId);
+      const resolvedStudentId = await this.resolveAuthorizedStudentId(
+        parentId,
+        studentId
+      );
 
       const start = new Date(startDate);
       const end = new Date(endDate);
 
       const records = await prisma.attendance.findMany({
         where: {
-          studentId,
+          studentId: resolvedStudentId,
           date: {
             gte: start,
             lte: end,
@@ -249,22 +260,16 @@ class ParentChildAttendanceService {
   }
 
   // Get attendance statistics
-  async getAttendanceStatistics(parentId: string, studentId: string) {
+  async getAttendanceStatistics(userId: string, studentId: string) {
     try {
-      // Verify parent-child relationship through ParentStudent
-      const parentStudent = await prisma.parentStudent.findFirst({
-        where: {
-          parentId,
-          studentId,
-        },
-      });
-
-      if (!parentStudent) {
-        throw new Error("Unauthorized: Child not found for this parent");
-      }
+      const parentId = await this.resolveParentId(userId);
+      const resolvedStudentId = await this.resolveAuthorizedStudentId(
+        parentId,
+        studentId
+      );
 
       const attendance = await prisma.attendance.findMany({
-        where: { studentId },
+        where: { studentId: resolvedStudentId },
         select: { status: true },
       });
 

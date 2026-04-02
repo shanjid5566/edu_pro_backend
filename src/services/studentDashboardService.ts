@@ -2,9 +2,24 @@ import { prisma } from "../lib/prisma.js";
 import { calculateGrade } from "../utils/gradeUtils.js";
 
 class StudentDashboardService {
+  private async resolveStudentId(userId: string): Promise<string> {
+    const student = await prisma.student.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+
+    if (!student) {
+      throw new Error("Student not found");
+    }
+
+    return student.id;
+  }
+
   // Get dashboard overview
-  async getDashboardOverview(studentId: string) {
+  async getDashboardOverview(userId: string) {
     try {
+      const studentId = await this.resolveStudentId(userId);
+
       const student = await prisma.student.findUnique({
         where: { id: studentId },
         select: {
@@ -51,7 +66,11 @@ class StudentDashboardService {
         where: { studentId },
         select: {
           marksObtained: true,
-          totalMarks: true,
+          exam: {
+            select: {
+              totalMarks: true,
+            },
+          },
         },
       });
 
@@ -62,7 +81,7 @@ class StudentDashboardService {
           0
         );
         const totalMarksCount = examResults.reduce(
-          (sum, result) => sum + result.totalMarks,
+          (sum, result) => sum + result.exam.totalMarks,
           0
         );
         overallPercentage =
@@ -85,7 +104,14 @@ class StudentDashboardService {
         allStudentsInClass.map(async (s) => {
           const results = await prisma.examResult.findMany({
             where: { studentId: s.id },
-            select: { marksObtained: true, totalMarks: true },
+            select: {
+              marksObtained: true,
+              exam: {
+                select: {
+                  totalMarks: true,
+                },
+              },
+            },
           });
 
           if (results.length === 0) return { studentId: s.id, percentage: 0 };
@@ -94,7 +120,10 @@ class StudentDashboardService {
             (sum, r) => sum + (r.marksObtained || 0),
             0
           );
-          const totalMarks = results.reduce((sum, r) => sum + r.totalMarks, 0);
+          const totalMarks = results.reduce(
+            (sum, r) => sum + r.exam.totalMarks,
+            0
+          );
           const percentage =
             totalMarks > 0 ? Math.round((totalObtained / totalMarks) * 100) : 0;
 
@@ -153,8 +182,9 @@ class StudentDashboardService {
   }
 
   // Get attendance trend
-  async getAttendanceTrend(studentId: string, months: number = 6) {
+  async getAttendanceTrend(userId: string, months: number = 6) {
     try {
+      const studentId = await this.resolveStudentId(userId);
       const attendanceData = [];
       const monthNames = [
         "Sep",
@@ -223,8 +253,9 @@ class StudentDashboardService {
   }
 
   // Get subject performance
-  async getSubjectPerformance(studentId: string) {
+  async getSubjectPerformance(userId: string) {
     try {
+      const studentId = await this.resolveStudentId(userId);
       const student = await prisma.student.findUnique({
         where: { id: studentId },
         select: { classId: true },
@@ -239,19 +270,23 @@ class StudentDashboardService {
         select: {
           subjects: {
             select: {
-              id: true,
-              name: true,
-              exams: {
-                where: {
-                  classId: student.classId,
-                },
+              subject: {
                 select: {
                   id: true,
-                  totalMarks: true,
-                  results: {
-                    where: { studentId },
+                  name: true,
+                  exams: {
+                    where: {
+                      classId: student.classId,
+                    },
                     select: {
-                      marksObtained: true,
+                      id: true,
+                      totalMarks: true,
+                      results: {
+                        where: { studentId },
+                        select: {
+                          marksObtained: true,
+                        },
+                      },
                     },
                   },
                 },
@@ -268,11 +303,11 @@ class StudentDashboardService {
         };
       }
 
-      const performanceData = (classDetails.subjects || []).map((subject) => {
+      const performanceData = (classDetails.subjects || []).map((classSubject) => {
         let totalMarksObtained = 0;
         let totalMarksCount = 0;
 
-        ((subject.exams || []) as any[]).forEach((exam) => {
+        ((classSubject.subject.exams || []) as any[]).forEach((exam) => {
           (exam.results || []).forEach((result) => {
             if (result.marksObtained !== null) {
               totalMarksObtained += result.marksObtained;
@@ -287,7 +322,7 @@ class StudentDashboardService {
             : 0;
 
         return {
-          subject: subject.name,
+          subject: classSubject.subject.name,
           percentage,
         };
       });
@@ -303,8 +338,9 @@ class StudentDashboardService {
   }
 
   // Get my classes
-  async getMyClasses(studentId: string) {
+  async getMyClasses(userId: string) {
     try {
+      const studentId = await this.resolveStudentId(userId);
       const student = await prisma.student.findUnique({
         where: { id: studentId },
         select: {
@@ -323,8 +359,12 @@ class StudentDashboardService {
               },
               subjects: {
                 select: {
-                  id: true,
-                  name: true,
+                  subject: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
                 },
               },
             },
@@ -349,8 +389,8 @@ class StudentDashboardService {
             name: tc.teacher.user.name,
           })),
           subjects: student.class.subjects.map((s) => ({
-            id: s.id,
-            name: s.name,
+            id: s.subject.id,
+            name: s.subject.name,
           })),
         },
       };
@@ -361,19 +401,20 @@ class StudentDashboardService {
   }
 
   // Get recent exam results
-  async getRecentResults(studentId: string, limit: number = 5) {
+  async getRecentResults(userId: string, limit: number = 5) {
     try {
+      const studentId = await this.resolveStudentId(userId);
       const results = await prisma.examResult.findMany({
         where: { studentId },
         select: {
           id: true,
           marksObtained: true,
-          totalMarks: true,
           exam: {
             select: {
               id: true,
               name: true,
               date: true,
+              totalMarks: true,
               subject: { select: { name: true } },
               class: { select: { name: true, section: true } },
             },
@@ -391,11 +432,11 @@ class StudentDashboardService {
           subject: result.exam.subject.name,
           class: `${result.exam.class.name}-${result.exam.class.section}`,
           marksObtained: result.marksObtained,
-          totalMarks: result.totalMarks,
+          totalMarks: result.exam.totalMarks,
           percentage:
-            result.marksObtained && result.totalMarks
+            result.marksObtained && result.exam.totalMarks
               ? Math.round(
-                  (result.marksObtained / result.totalMarks) * 100
+                  (result.marksObtained / result.exam.totalMarks) * 100
                 )
               : 0,
           date: result.exam.date.toISOString().split("T")[0],

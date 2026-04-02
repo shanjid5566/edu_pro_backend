@@ -3,9 +3,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const prisma_js_1 = require("../lib/prisma.js");
 const gradeUtils_js_1 = require("../utils/gradeUtils.js");
 class StudentExamService {
+    async resolveStudentId(userId) {
+        const student = await prisma_js_1.prisma.student.findUnique({
+            where: { userId },
+            select: { id: true },
+        });
+        if (!student) {
+            throw new Error("Student not found");
+        }
+        return student.id;
+    }
     // Get all exams for student
-    async getMyExams(studentId) {
+    async getMyExams(userId) {
         try {
+            const studentId = await this.resolveStudentId(userId);
             const student = await prisma_js_1.prisma.student.findUnique({
                 where: { id: studentId },
                 select: { classId: true },
@@ -37,7 +48,6 @@ class StudentExamService {
                         where: { studentId },
                         select: {
                             marksObtained: true,
-                            totalMarks: true,
                         },
                     },
                 },
@@ -84,8 +94,9 @@ class StudentExamService {
         }
     }
     // Get upcoming exams
-    async getUpcomingExams(studentId) {
+    async getUpcomingExams(userId) {
         try {
+            const studentId = await this.resolveStudentId(userId);
             const student = await prisma_js_1.prisma.student.findUnique({
                 where: { id: studentId },
                 select: { classId: true },
@@ -130,8 +141,9 @@ class StudentExamService {
         }
     }
     // Get exam details
-    async getExamDetails(studentId, examId) {
+    async getExamDetails(userId, examId) {
         try {
+            const studentId = await this.resolveStudentId(userId);
             const student = await prisma_js_1.prisma.student.findUnique({
                 where: { id: studentId },
                 select: { classId: true },
@@ -167,7 +179,6 @@ class StudentExamService {
                         select: {
                             id: true,
                             marksObtained: true,
-                            totalMarks: true,
                         },
                     },
                 },
@@ -191,15 +202,15 @@ class StudentExamService {
                     result: exam.results.length > 0
                         ? {
                             marksObtained: exam.results[0].marksObtained,
-                            totalMarks: exam.results[0].totalMarks,
+                            totalMarks: exam.totalMarks,
                             percentage: exam.results[0].marksObtained !== null
                                 ? Math.round((exam.results[0].marksObtained /
-                                    exam.results[0].totalMarks) *
+                                    exam.totalMarks) *
                                     100)
                                 : null,
                             grade: (0, gradeUtils_js_1.calculateGrade)(exam.results[0].marksObtained !== null
                                 ? Math.round((exam.results[0].marksObtained /
-                                    exam.results[0].totalMarks) *
+                                    exam.totalMarks) *
                                     100)
                                 : 0),
                         }
@@ -213,8 +224,9 @@ class StudentExamService {
         }
     }
     // Get exams by status
-    async getExamsByStatus(studentId, status) {
+    async getExamsByStatus(userId, status) {
         try {
+            const studentId = await this.resolveStudentId(userId);
             const student = await prisma_js_1.prisma.student.findUnique({
                 where: { id: studentId },
                 select: { classId: true },
@@ -245,7 +257,6 @@ class StudentExamService {
                         where: { studentId },
                         select: {
                             marksObtained: true,
-                            totalMarks: true,
                         },
                     },
                 },
@@ -275,20 +286,21 @@ class StudentExamService {
         }
     }
     // Get exam results
-    async getExamResults(studentId) {
+    async getExamResults(userId) {
         try {
+            const studentId = await this.resolveStudentId(userId);
             const results = await prisma_js_1.prisma.examResult.findMany({
                 where: { studentId },
                 select: {
                     id: true,
                     marksObtained: true,
-                    totalMarks: true,
                     exam: {
                         select: {
                             id: true,
                             name: true,
                             date: true,
                             type: true,
+                            totalMarks: true,
                             subject: { select: { name: true } },
                             class: { select: { name: true, section: true } },
                         },
@@ -307,12 +319,12 @@ class StudentExamService {
                     date: result.exam.date.toISOString().split("T")[0],
                     type: result.exam.type,
                     marksObtained: result.marksObtained,
-                    totalMarks: result.totalMarks,
+                    totalMarks: result.exam.totalMarks,
                     percentage: result.marksObtained !== null
-                        ? Math.round((result.marksObtained / result.totalMarks) * 100)
+                        ? Math.round((result.marksObtained / result.exam.totalMarks) * 100)
                         : 0,
                     grade: (0, gradeUtils_js_1.calculateGrade)(result.marksObtained !== null
-                        ? Math.round((result.marksObtained / result.totalMarks) * 100)
+                        ? Math.round((result.marksObtained / result.exam.totalMarks) * 100)
                         : 0),
                 })),
             };
@@ -323,13 +335,18 @@ class StudentExamService {
         }
     }
     // Get exam statistics
-    async getExamStatistics(studentId) {
+    async getExamStatistics(userId) {
         try {
+            const studentId = await this.resolveStudentId(userId);
             const results = await prisma_js_1.prisma.examResult.findMany({
                 where: { studentId },
                 select: {
                     marksObtained: true,
-                    totalMarks: true,
+                    exam: {
+                        select: {
+                            totalMarks: true,
+                        },
+                    },
                 },
             });
             if (results.length === 0) {
@@ -350,8 +367,8 @@ class StudentExamService {
             results.forEach((result) => {
                 if (result.marksObtained !== null) {
                     totalMarksObtained += result.marksObtained;
-                    totalMarksCount += result.totalMarks;
-                    const percentage = Math.round((result.marksObtained / result.totalMarks) * 100);
+                    totalMarksCount += result.exam.totalMarks;
+                    const percentage = Math.round((result.marksObtained / result.exam.totalMarks) * 100);
                     if (percentage > highestPercentage) {
                         highestPercentage = percentage;
                     }

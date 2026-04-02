@@ -1,9 +1,24 @@
 import { prisma } from "../lib/prisma.js";
 
 class TeacherDashboardService {
+  private async resolveTeacherId(userId: string): Promise<string> {
+    const teacher = await prisma.teacher.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+
+    if (!teacher) {
+      throw new Error("Teacher not found");
+    }
+
+    return teacher.id;
+  }
+
   // Get dashboard overview statistics
-  async getDashboardOverview(teacherId: string) {
+  async getDashboardOverview(userId: string) {
     try {
+      const teacherId = await this.resolveTeacherId(userId);
+
       // Get teacher info
       const teacher = await prisma.teacher.findUnique({
         where: { id: teacherId },
@@ -68,9 +83,9 @@ class TeacherDashboardService {
                 some: { teacherId },
               },
             },
-          },
-          createdAt: {
-            gte: oneMonthAgo,
+            date: {
+              gte: oneMonthAgo,
+            },
           },
         },
         select: {
@@ -99,10 +114,10 @@ class TeacherDashboardService {
                 some: { teacherId },
               },
             },
-          },
-          createdAt: {
-            gte: twoMonthsAgo,
-            lt: oneMonthAgo,
+            date: {
+              gte: twoMonthsAgo,
+              lt: oneMonthAgo,
+            },
           },
         },
         select: {
@@ -155,8 +170,9 @@ class TeacherDashboardService {
   }
 
   // Get class attendance trend
-  async getAttendanceTrend(teacherId: string, months: number = 6) {
+  async getAttendanceTrend(userId: string, months: number = 6) {
     try {
+      const teacherId = await this.resolveTeacherId(userId);
       const attendanceData = [];
       const monthNames = [
         "Sep",
@@ -233,8 +249,9 @@ class TeacherDashboardService {
   }
 
   // Get student performance by subject
-  async getStudentPerformanceBySubject(teacherId: string) {
+  async getStudentPerformanceBySubject(userId: string) {
     try {
+      const teacherId = await this.resolveTeacherId(userId);
       const subjects = await prisma.subject.findMany({
         where: {
           teachers: {
@@ -299,8 +316,9 @@ class TeacherDashboardService {
   }
 
   // Get my classes (today and all)
-  async getMyClasses(teacherId: string) {
+  async getMyClasses(userId: string) {
     try {
+      const teacherId = await this.resolveTeacherId(userId);
       const today = new Date();
       const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
 
@@ -371,8 +389,9 @@ class TeacherDashboardService {
   }
 
   // Get teacher profile
-  async getTeacherProfile(teacherId: string) {
+  async getTeacherProfile(userId: string) {
     try {
+      const teacherId = await this.resolveTeacherId(userId);
       const teacher = await prisma.teacher.findUnique({
         where: { id: teacherId },
         select: {
