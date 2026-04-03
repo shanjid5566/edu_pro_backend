@@ -21,6 +21,8 @@ router.get("/dropdown/classes", adminClassScheduleController.getAllClasses);
 
 router.get("/dropdown/teachers", adminClassScheduleController.getAllTeachers);
 
+router.get("/dropdown/subjects", adminClassScheduleController.getAllSubjects);
+
 // Get schedules by class
 router.get("/by-class/:classId", adminClassScheduleController.getSchedulesByClass);
 

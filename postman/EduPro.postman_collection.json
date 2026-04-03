@@ -1319,6 +1319,34 @@
               "response": []
             },
             {
+              "name": "Get All Subjects (Dropdown)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/admin/class-schedules/dropdown/subjects?classId=",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "admin", "class-schedules", "dropdown", "subjects"],
+                  "query": [
+                    {
+                      "key": "classId",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
               "name": "Create Schedule",
               "request": {
                 "method": "POST",
@@ -1601,7 +1629,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"name\": \"Mid-Term Examination\",\n  \"classId\": \"class_id_here\",\n  \"subjectId\": \"subject_id_here\",\n  \"date\": \"2026-03-15\",\n  \"duration\": \"3 hours\",\n  \"totalMarks\": 100,\n  \"description\": \"Mid-term examination for Mathematics\",\n  \"status\": \"UPCOMING\"\n}"
+                  "raw": "{\n  \"name\": \"Mid-Term Examination\",\n  \"classId\": \"class_id_here\",\n  \"subjectId\": \"subject_id_here\",\n  \"date\": \"2026-03-15\",\n  \"duration\": \"3 hours\",\n  \"totalMarks\": 100,\n  \"type\": \"QUARTERLY\",\n  \"description\": \"Mid-term examination for Mathematics\"\n}"
                 },
                 "url": {
                   "raw": "{{base_url}}/api/v1/admin/exams",
@@ -1627,7 +1655,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"name\": \"Mid-Term Examination Updated\",\n  \"date\": \"2026-03-20\",\n  \"duration\": \"3 hours\",\n  \"totalMarks\": 100,\n  \"status\": \"ONGOING\"\n}"
+                  "raw": "{\n  \"name\": \"Mid-Term Examination Updated\",\n  \"date\": \"2026-03-20\",\n  \"duration\": \"3 hours\",\n  \"totalMarks\": 100,\n  \"type\": \"QUARTERLY\",\n  \"status\": \"ONGOING\"\n}"
                 },
                 "url": {
                   "raw": "{{base_url}}/api/v1/admin/exams/:examId",

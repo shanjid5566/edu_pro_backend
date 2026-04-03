@@ -194,6 +194,29 @@ class AdminClassScheduleService {
         };
       }
 
+      // Enforce unique class/day/startTime with a clear API error message.
+      const existingSlot = await prisma.classSchedule.findFirst({
+        where: {
+          classId: payload.classId,
+          day: payload.day,
+          startTime: payload.startTime,
+        },
+        include: {
+          subject: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      });
+
+      if (existingSlot) {
+        return {
+          success: false,
+          message: `Schedule already exists for ${payload.day} at ${payload.startTime} in this class (subject: ${existingSlot.subject.name})`,
+        };
+      }
+
       // Create schedule
       const newSchedule = await prisma.classSchedule.create({
         data: {
@@ -233,7 +256,14 @@ class AdminClassScheduleService {
         },
       };
     } catch (error: any) {
-      throw new Error("Failed to create schedule");
+      if (error?.code === "P2002") {
+        return {
+          success: false,
+          message: "Schedule already exists for this class, day and start time",
+        };
+      }
+
+      throw new Error(error?.message || "Failed to create schedule");
     }
   }
 
@@ -609,6 +639,61 @@ class AdminClassScheduleService {
       };
     } catch (error) {
       throw new Error("Failed to fetch teachers");
+    }
+  }
+
+  /**
+   * Get all subjects for dropdown
+   * If classId is provided, return only subjects assigned to that class.
+   */
+  async getAllSubjects(classId?: string) {
+    try {
+      if (classId) {
+        const classSubjects = await prisma.classSubject.findMany({
+          where: { classId },
+          include: {
+            subject: {
+              select: {
+                id: true,
+                name: true,
+                code: true,
+              },
+            },
+          },
+          orderBy: {
+            subject: {
+              name: "asc",
+            },
+          },
+        });
+
+        return {
+          success: true,
+          data: classSubjects.map((cs) => ({
+            id: cs.subject.id,
+            name: cs.subject.name,
+            code: cs.subject.code,
+          })),
+        };
+      }
+
+      const subjects = await prisma.subject.findMany({
+        select: {
+          id: true,
+          name: true,
+          code: true,
+        },
+        orderBy: {
+          name: "asc",
+        },
+      });
+
+      return {
+        success: true,
+        data: subjects,
+      };
+    } catch (error) {
+      throw new Error("Failed to fetch subjects");
     }
   }
 }

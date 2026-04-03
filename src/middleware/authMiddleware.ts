@@ -30,6 +30,11 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
     (req as any).userId = decoded.userId;
     (req as any).userEmail = decoded.email;
     (req as any).userRole = decoded.role;
+    (req as any).user = {
+      id: decoded.userId,
+      email: decoded.email,
+      role: decoded.role,
+    };
 
     next();
   } catch (error) {
@@ -51,8 +56,13 @@ export const checkRole = (...rolesOrArray: string[] | [string[]]) => {
 
   return (req: Request, res: Response, next: NextFunction) => {
     const userRole = (req as any).userRole;
+    const normalizedUserRole =
+      typeof userRole === "string" ? userRole.trim().toUpperCase() : "";
+    const normalizedAllowedRoles = allowedRoles.map((role) =>
+      role.trim().toUpperCase()
+    );
 
-    if (!userRole || !allowedRoles.includes(userRole)) {
+    if (!normalizedUserRole || !normalizedAllowedRoles.includes(normalizedUserRole)) {
       return res.status(403).json({
         success: false,
         message: "Permission denied",
