@@ -2708,6 +2708,34 @@
           "item": [
             {
               "name": "Get All My Classes",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData.success && jsonData.data) {",
+                      "    var classId = null;",
+                      "    if (Array.isArray(jsonData.data.allClasses) && jsonData.data.allClasses.length > 0) {",
+                      "        classId = jsonData.data.allClasses[0].classId;",
+                      "    } else if (Array.isArray(jsonData.data.today) && jsonData.data.today.length > 0) {",
+                      "        classId = jsonData.data.today[0].classId;",
+                      "    }",
+                      "",
+                      "    if (classId) {",
+                      "        pm.environment.set('teacher_class_id', classId);",
+                      "        console.log('✅ teacher_class_id saved:', classId);",
+                      "    } else {",
+                      "        console.log('⚠️ No class found to save as teacher_class_id');",
+                      "    }",
+                      "} else {",
+                      "    console.log('❌ Failed to parse class response');",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
               "request": {
                 "method": "GET",
                 "header": [
@@ -2814,9 +2842,9 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{base_url}}/api/v1/teacher/attendance/:classId/students",
+                  "raw": "{{base_url}}/api/v1/teacher/attendance/{{teacher_class_id}}/students",
                   "host": ["{{base_url}}"],
-                  "path": ["api", "v1", "teacher", "attendance", ":classId", "students"]
+                  "path": ["api", "v1", "teacher", "attendance", "{{teacher_class_id}}", "students"]
                 }
               },
               "response": []
@@ -2840,9 +2868,9 @@
                   "raw": "{\n  \"attendanceData\": [\n    {\n      \"studentId\": \"student-id-1\",\n      \"status\": \"PRESENT\"\n    },\n    {\n      \"studentId\": \"student-id-2\",\n      \"status\": \"ABSENT\"\n    },\n    {\n      \"studentId\": \"student-id-3\",\n      \"status\": \"LATE\"\n    }\n  ],\n  \"date\": \"2026-04-01\"\n}"
                 },
                 "url": {
-                  "raw": "{{base_url}}/api/v1/teacher/attendance/:classId/mark",
+                  "raw": "{{base_url}}/api/v1/teacher/attendance/{{teacher_class_id}}/mark",
                   "host": ["{{base_url}}"],
-                  "path": ["api", "v1", "teacher", "attendance", ":classId", "mark"]
+                  "path": ["api", "v1", "teacher", "attendance", "{{teacher_class_id}}", "mark"]
                 }
               },
               "response": []
@@ -2862,9 +2890,9 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{base_url}}/api/v1/teacher/attendance/:classId/records?startDate=2026-02-01&endDate=2026-04-01",
+                  "raw": "{{base_url}}/api/v1/teacher/attendance/{{teacher_class_id}}/records?startDate=2026-02-01&endDate=2026-04-01",
                   "host": ["{{base_url}}"],
-                  "path": ["api", "v1", "teacher", "attendance", ":classId", "records"],
+                  "path": ["api", "v1", "teacher", "attendance", "{{teacher_class_id}}", "records"],
                   "query": [
                     {
                       "key": "startDate",
@@ -2894,9 +2922,9 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{base_url}}/api/v1/teacher/attendance/:classId/student/:studentId",
+                  "raw": "{{base_url}}/api/v1/teacher/attendance/{{teacher_class_id}}/student/:studentId",
                   "host": ["{{base_url}}"],
-                  "path": ["api", "v1", "teacher", "attendance", ":classId", "student", ":studentId"]
+                  "path": ["api", "v1", "teacher", "attendance", "{{teacher_class_id}}", "student", ":studentId"]
                 }
               },
               "response": []
