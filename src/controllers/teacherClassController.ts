@@ -5,16 +5,16 @@ class TeacherClassController {
   // Get all assigned classes for teacher
   async getMyClasses(req: Request, res: Response) {
     try {
-      const teacherId = (req as any).userId;
+      const userId = (req as any).user?.id;
 
-      if (!teacherId) {
+      if (!userId) {
         return res.status(401).json({
           success: false,
           message: "Unauthorized",
         });
       }
 
-      const result = await teacherClassService.getMyClasses(teacherId);
+      const result = await teacherClassService.getMyClasses(userId);
       return res.status(200).json(result);
     } catch (error) {
       console.error("Error in getMyClasses:", error);
@@ -29,10 +29,10 @@ class TeacherClassController {
   // Get specific class details
   async getClassDetails(req: Request, res: Response) {
     try {
-      const teacherId = (req as any).userId;
+      const userId = (req as any).user?.id;
       const { classId } = req.params;
 
-      if (!teacherId) {
+      if (!userId) {
         return res.status(401).json({
           success: false,
           message: "Unauthorized",
@@ -46,10 +46,7 @@ class TeacherClassController {
         });
       }
 
-      const result = await teacherClassService.getClassDetails(
-        teacherId,
-        classId
-      );
+      const result = await teacherClassService.getClassDetails(userId, classId);
       return res.status(200).json(result);
     } catch (error) {
       console.error("Error in getClassDetails:", error);
@@ -64,18 +61,16 @@ class TeacherClassController {
   // Get today's class schedule
   async getTodaySchedule(req: Request, res: Response) {
     try {
-      const teacherId = (req as any).userId;
+      const userId = (req as any).user?.id;
 
-      if (!teacherId) {
+      if (!userId) {
         return res.status(401).json({
           success: false,
           message: "Unauthorized",
         });
       }
 
-      const result = await teacherClassService.getTodayClassSchedule(
-        teacherId
-      );
+      const result = await teacherClassService.getTodayClassSchedule(userId);
       return res.status(200).json(result);
     } catch (error) {
       console.error("Error in getTodaySchedule:", error);
@@ -90,10 +85,10 @@ class TeacherClassController {
   // Get class statistics
   async getClassStatistics(req: Request, res: Response) {
     try {
-      const teacherId = (req as any).userId;
+      const userId = (req as any).user?.id;
       const { classId } = req.params;
 
-      if (!teacherId) {
+      if (!userId) {
         return res.status(401).json({
           success: false,
           message: "Unauthorized",
@@ -107,10 +102,7 @@ class TeacherClassController {
         });
       }
 
-      const result = await teacherClassService.getClassStatistics(
-        teacherId,
-        classId
-      );
+      const result = await teacherClassService.getClassStatistics(userId, classId);
       return res.status(200).json(result);
     } catch (error) {
       console.error("Error in getClassStatistics:", error);

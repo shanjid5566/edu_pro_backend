@@ -71,12 +71,21 @@ class AdminExamController {
       const { name, classId, subjectId, date, duration, totalMarks, type } =
         req.body;
 
-      // Validation
-      if (!name || !classId || !subjectId || !date || !duration || !totalMarks || !type) {
+      if (!type) {
         res.status(400).json({
           success: false,
           message:
-            "Exam name, class, subject, date, duration, total marks, and type are required",
+            "Exam type is required. Allowed values: MONTHLY, QUARTERLY, HALF_YEARLY, YEARLY",
+        });
+        return;
+      }
+
+      // Validation
+      if (!name || !classId || !subjectId || !date || !duration || !totalMarks) {
+        res.status(400).json({
+          success: false,
+          message:
+            "Exam name, class, subject, date, duration, and total marks are required",
         });
         return;
       }

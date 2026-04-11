@@ -1,9 +1,23 @@
 import { prisma } from "../lib/prisma.js";
 
 class TeacherClassService {
+  private async resolveTeacherId(userId: string): Promise<string> {
+    const teacher = await prisma.teacher.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+
+    if (!teacher) {
+      throw new Error("Teacher not found");
+    }
+
+    return teacher.id;
+  }
+
   // Get all assigned classes
-  async getMyClasses(teacherId: string) {
+  async getMyClasses(userId: string) {
     try {
+      const teacherId = await this.resolveTeacherId(userId);
       const today = new Date();
       const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
 
@@ -74,8 +88,9 @@ class TeacherClassService {
   }
 
   // Get class details by ID
-  async getClassDetails(teacherId: string, classId: string) {
+  async getClassDetails(userId: string, classId: string) {
     try {
+      const teacherId = await this.resolveTeacherId(userId);
       const classData = await prisma.class.findUnique({
         where: { id: classId },
         select: {
@@ -134,8 +149,9 @@ class TeacherClassService {
   }
 
   // Get today's class schedule
-  async getTodayClassSchedule(teacherId: string) {
+  async getTodayClassSchedule(userId: string) {
     try {
+      const teacherId = await this.resolveTeacherId(userId);
       const today = new Date();
       const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
 
@@ -183,8 +199,9 @@ class TeacherClassService {
   }
 
   // Get class statistics
-  async getClassStatistics(teacherId: string, classId: string) {
+  async getClassStatistics(userId: string, classId: string) {
     try {
+      const teacherId = await this.resolveTeacherId(userId);
       // Verify teacher assignment
       const teacherClass = await prisma.teacherClass.findFirst({
         where: { teacherId, classId },

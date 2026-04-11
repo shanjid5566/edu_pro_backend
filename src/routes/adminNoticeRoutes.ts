@@ -35,25 +35,25 @@ router.get(
 router.post(
   "/",
   verifyToken,
-  checkRole("admin"),
+  checkRole("ADMIN"),
   adminNoticeController.createNotice.bind(adminNoticeController)
 );
 router.put(
   "/:id",
   verifyToken,
-  checkRole("admin"),
+  checkRole("ADMIN"),
   adminNoticeController.updateNotice.bind(adminNoticeController)
 );
 router.delete(
   "/:id",
   verifyToken,
-  checkRole("admin"),
+  checkRole("ADMIN"),
   adminNoticeController.deleteNotice.bind(adminNoticeController)
 );
 router.patch(
   "/:id/pin",
   verifyToken,
-  checkRole("admin"),
+  checkRole("ADMIN"),
   adminNoticeController.togglePinNotice.bind(adminNoticeController)
 );
 
