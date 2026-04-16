@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt, { SignOptions } from "jsonwebtoken";
 import { prisma } from "../lib/prisma";
 import { UserRole } from "../../prisma/generated/prisma/enums";
+import { env } from "../config/env";
 
 interface LoginPayload {
   email: string;
@@ -23,8 +24,8 @@ interface AuthResponse {
 }
 
 class AuthService {
-  private jwtSecret = process.env.JWT_SECRET || "your-secret-key-change-in-production";
-  private jwtExpiry = process.env.JWT_EXPIRY || "7d";
+  private jwtSecret = env.JWT_SECRET;
+  private jwtExpiry = env.JWT_EXPIRY;
 
   /**
    * Login user with email and password

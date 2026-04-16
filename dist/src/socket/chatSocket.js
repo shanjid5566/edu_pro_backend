@@ -9,13 +9,9 @@ const socket_io_1 = require("socket.io");
 const authService_1 = __importDefault(require("../services/authService"));
 const prisma_1 = require("../lib/prisma");
 const messagingService_1 = __importDefault(require("../services/messagingService"));
+const env_1 = require("../config/env");
 let ioInstance = null;
-const socketCorsOrigins = [
-    "https://edu-pro-frontend.vercel.app",
-    "http://localhost:8080",
-    "http://localhost:3000",
-    "http://localhost:5173",
-];
+const socketCorsOrigins = env_1.env.CORS_ORIGINS;
 function getTokenFromSocket(socket) {
     const authToken = socket.handshake.auth?.token;
     if (typeof authToken === "string" && authToken.trim()) {
@@ -40,7 +36,13 @@ function initializeSocket(httpServer) {
     }
     const io = new socket_io_1.Server(httpServer, {
         cors: {
-            origin: socketCorsOrigins,
+            origin: (origin, callback) => {
+                if (!origin || socketCorsOrigins.includes(origin)) {
+                    callback(null, true);
+                    return;
+                }
+                callback(new Error("CORS blocked by Socket.IO"));
+            },
             credentials: true,
             methods: ["GET", "POST"],
         },

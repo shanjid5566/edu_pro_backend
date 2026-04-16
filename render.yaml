@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: edu-pro-backend
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_EXPIRY
+        value: 7d
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ORIGINS
+        value: https://edu-pro-frontend.vercel.app,http://localhost:5173

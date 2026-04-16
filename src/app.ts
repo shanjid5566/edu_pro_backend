@@ -2,8 +2,9 @@ import "dotenv/config";
 import { createServer } from "http";
 import app from "./server";
 import { initializeSocket } from "./socket/chatSocket";
+import { env } from "./config/env";
 
-const PORT = process.env.PORT || 5000;
+const PORT = env.PORT;
 
 const httpServer = createServer(app);
 initializeSocket(httpServer);

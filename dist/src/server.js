@@ -6,15 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const routes_1 = __importDefault(require("./routes"));
+const env_1 = require("./config/env");
 const app = (0, express_1.default)();
 // CORS Configuration
 const corsOptions = {
-    origin: [
-        "https://edu-pro-frontend.vercel.app",
-        "http://localhost:8080",
-        "http://localhost:3000",
-        "http://localhost:5173",
-    ],
+    origin: env_1.env.CORS_ORIGINS,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],

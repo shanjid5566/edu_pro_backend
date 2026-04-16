@@ -4,6 +4,7 @@ import { UserRole } from "../../prisma/generated/prisma/enums";
 import authService from "../services/authService";
 import { prisma } from "../lib/prisma";
 import messagingService from "../services/messagingService";
+import { env } from "../config/env";
 
 type AuthenticatedSocketUser = {
   id: string;
@@ -18,13 +19,7 @@ type AckFn = (payload: {
 }) => void;
 
 let ioInstance: Server | null = null;
-
-const socketCorsOrigins = [
-  "https://edu-pro-frontend.vercel.app",
-  "http://localhost:8080",
-  "http://localhost:3000",
-  "http://localhost:5173",
-];
+const socketCorsOrigins = env.CORS_ORIGINS;
 
 function getTokenFromSocket(socket: Socket): string | null {
   const authToken = socket.handshake.auth?.token;
@@ -56,7 +51,14 @@ export function initializeSocket(httpServer: HttpServer): Server {
 
   const io = new Server(httpServer, {
     cors: {
-      origin: socketCorsOrigins,
+      origin: (origin, callback) => {
+        if (!origin || socketCorsOrigins.includes(origin)) {
+          callback(null, true);
+          return;
+        }
+
+        callback(new Error("CORS blocked by Socket.IO"));
+      },
       credentials: true,
       methods: ["GET", "POST"],
     },

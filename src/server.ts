@@ -1,17 +1,13 @@
 import express, { Express } from "express";
 import cors from "cors";
 import routes from "./routes";
+import { env } from "./config/env";
 
 const app: Express = express();
 
 // CORS Configuration
 const corsOptions = {
-  origin: [
-    "https://edu-pro-frontend.vercel.app",
-    "http://localhost:8080",
-    "http://localhost:3000",
-    "http://localhost:5173",
-  ],
+  origin: env.CORS_ORIGINS,
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],

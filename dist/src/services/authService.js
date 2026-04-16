@@ -6,10 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const prisma_1 = require("../lib/prisma");
+const env_1 = require("../config/env");
 class AuthService {
     constructor() {
-        this.jwtSecret = process.env.JWT_SECRET || "your-secret-key-change-in-production";
-        this.jwtExpiry = process.env.JWT_EXPIRY || "7d";
+        this.jwtSecret = env_1.env.JWT_SECRET;
+        this.jwtExpiry = env_1.env.JWT_EXPIRY;
     }
     /**
      * Login user with email and password
