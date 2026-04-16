@@ -16,8 +16,8 @@ router.get("/recent", adminNoticeController_js_1.adminNoticeController.getRecent
 router.get("/category/:category", adminNoticeController_js_1.adminNoticeController.getNoticesByCategory.bind(adminNoticeController_js_1.adminNoticeController));
 router.get("/:id", adminNoticeController_js_1.adminNoticeController.getNoticeById.bind(adminNoticeController_js_1.adminNoticeController));
 // Admin protected routes - Only admin can create, update, delete
-router.post("/", authMiddleware_js_1.verifyToken, (0, authMiddleware_js_1.checkRole)("admin"), adminNoticeController_js_1.adminNoticeController.createNotice.bind(adminNoticeController_js_1.adminNoticeController));
-router.put("/:id", authMiddleware_js_1.verifyToken, (0, authMiddleware_js_1.checkRole)("admin"), adminNoticeController_js_1.adminNoticeController.updateNotice.bind(adminNoticeController_js_1.adminNoticeController));
-router.delete("/:id", authMiddleware_js_1.verifyToken, (0, authMiddleware_js_1.checkRole)("admin"), adminNoticeController_js_1.adminNoticeController.deleteNotice.bind(adminNoticeController_js_1.adminNoticeController));
-router.patch("/:id/pin", authMiddleware_js_1.verifyToken, (0, authMiddleware_js_1.checkRole)("admin"), adminNoticeController_js_1.adminNoticeController.togglePinNotice.bind(adminNoticeController_js_1.adminNoticeController));
+router.post("/", authMiddleware_js_1.verifyToken, (0, authMiddleware_js_1.checkRole)("ADMIN"), adminNoticeController_js_1.adminNoticeController.createNotice.bind(adminNoticeController_js_1.adminNoticeController));
+router.put("/:id", authMiddleware_js_1.verifyToken, (0, authMiddleware_js_1.checkRole)("ADMIN"), adminNoticeController_js_1.adminNoticeController.updateNotice.bind(adminNoticeController_js_1.adminNoticeController));
+router.delete("/:id", authMiddleware_js_1.verifyToken, (0, authMiddleware_js_1.checkRole)("ADMIN"), adminNoticeController_js_1.adminNoticeController.deleteNotice.bind(adminNoticeController_js_1.adminNoticeController));
+router.patch("/:id/pin", authMiddleware_js_1.verifyToken, (0, authMiddleware_js_1.checkRole)("ADMIN"), adminNoticeController_js_1.adminNoticeController.togglePinNotice.bind(adminNoticeController_js_1.adminNoticeController));
 exports.default = router;

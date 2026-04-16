@@ -6,6 +6,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const prisma_1 = require("../lib/prisma");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 class AdminParentService {
+    async findParentByIdentifier(parentIdentifier) {
+        return prisma_1.prisma.parent.findFirst({
+            where: {
+                OR: [{ id: parentIdentifier }, { userId: parentIdentifier }],
+            },
+            include: {
+                user: true,
+                students: {
+                    include: {
+                        student: {
+                            include: {
+                                user: true,
+                                class: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+    }
     /**
      * Get all parents with pagination and filters
      */
@@ -89,24 +109,9 @@ class AdminParentService {
     /**
      * Get parent profile by ID
      */
-    async getParentById(parentId) {
+    async getParentById(parentIdentifier) {
         try {
-            const parent = await prisma_1.prisma.parent.findUnique({
-                where: { id: parentId },
-                include: {
-                    user: true,
-                    students: {
-                        include: {
-                            student: {
-                                include: {
-                                    user: true,
-                                    class: true,
-                                },
-                            },
-                        },
-                    },
-                },
-            });
+            const parent = await this.findParentByIdentifier(parentIdentifier);
             if (!parent) {
                 return {
                     success: false,
@@ -210,10 +215,12 @@ class AdminParentService {
     /**
      * Update parent
      */
-    async updateParent(parentId, payload) {
+    async updateParent(parentIdentifier, payload) {
         try {
-            const parent = await prisma_1.prisma.parent.findUnique({
-                where: { id: parentId },
+            const parent = await prisma_1.prisma.parent.findFirst({
+                where: {
+                    OR: [{ id: parentIdentifier }, { userId: parentIdentifier }],
+                },
             });
             if (!parent) {
                 return {
@@ -237,7 +244,7 @@ class AdminParentService {
             if (payload.occupation)
                 updateData.occupation = payload.occupation;
             const updated = await prisma_1.prisma.parent.update({
-                where: { id: parentId },
+                where: { id: parent.id },
                 data: updateData,
                 include: { user: true },
             });
@@ -245,14 +252,14 @@ class AdminParentService {
             if (payload.studentIds) {
                 // Delete existing links
                 await prisma_1.prisma.parentStudent.deleteMany({
-                    where: { parentId },
+                    where: { parentId: parent.id },
                 });
                 // Add new links
                 if (payload.studentIds.length > 0) {
                     try {
                         await Promise.all(payload.studentIds.map((studentId) => prisma_1.prisma.parentStudent.create({
                             data: {
-                                parentId,
+                                parentId: parent.id,
                                 studentId,
                             },
                         })));
@@ -280,10 +287,12 @@ class AdminParentService {
     /**
      * Delete parent
      */
-    async deleteParent(parentId) {
+    async deleteParent(parentIdentifier) {
         try {
-            const parent = await prisma_1.prisma.parent.findUnique({
-                where: { id: parentId },
+            const parent = await prisma_1.prisma.parent.findFirst({
+                where: {
+                    OR: [{ id: parentIdentifier }, { userId: parentIdentifier }],
+                },
             });
             if (!parent) {
                 return {
@@ -291,14 +300,15 @@ class AdminParentService {
                     message: "Parent not found",
                 };
             }
-            // Delete related records due to cascade
-            await prisma_1.prisma.parent.delete({
-                where: { id: parentId },
-            });
-            // Delete user
-            await prisma_1.prisma.user.delete({
-                where: { id: parent.userId },
-            });
+            await prisma_1.prisma.$transaction([
+                prisma_1.prisma.parent.delete({
+                    where: { id: parent.id },
+                }),
+                prisma_1.prisma.user.update({
+                    where: { id: parent.userId },
+                    data: { status: "inactive" },
+                }),
+            ]);
             return {
                 success: true,
                 message: "Parent deleted successfully",

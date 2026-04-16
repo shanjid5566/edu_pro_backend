@@ -41,6 +41,24 @@ async function main() {
 
   // Hash passwords
   const hashedPassword = await bcrypt.hash("password123", 10);
+  const now = new Date();
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const daysFromNow = (days: number) => new Date(now.getTime() + days * DAY_MS);
+  const yearsAgo = (years: number) =>
+    new Date(now.getFullYear() - years, now.getMonth(), now.getDate());
+  const formatDate = (date: Date) =>
+    date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  const gradeFromPercentage = (percentage: number) => {
+    if (percentage >= 90) return "A+";
+    if (percentage >= 80) return "A";
+    if (percentage >= 70) return "B+";
+    if (percentage >= 60) return "B";
+    return "C";
+  };
 
   // ===== USERS =====
   console.log("👥 Creating users...");
@@ -324,7 +342,7 @@ async function main() {
     data: {
       userId: teacher1User.id,
       department: "Mathematics",
-      joinDate: new Date("2020-08-01"),
+      joinDate: yearsAgo(6),
       classesTaken: 2,
     },
   });
@@ -333,7 +351,7 @@ async function main() {
     data: {
       userId: teacher2User.id,
       department: "Science",
-      joinDate: new Date("2019-08-15"),
+      joinDate: yearsAgo(7),
       classesTaken: 3,
     },
   });
@@ -342,7 +360,7 @@ async function main() {
     data: {
       userId: teacher3User.id,
       department: "English",
-      joinDate: new Date("2021-08-01"),
+      joinDate: yearsAgo(5),
       classesTaken: 2,
     },
   });
@@ -454,7 +472,7 @@ async function main() {
       classId: class10A.id,
       section: "A",
       rollNumber: "10A001",
-      admissionDate: new Date("2020-04-01"),
+      admissionDate: yearsAgo(5),
       grade: "A+",
     },
   });
@@ -465,7 +483,7 @@ async function main() {
       classId: class10A.id,
       section: "A",
       rollNumber: "10A002",
-      admissionDate: new Date("2020-04-01"),
+      admissionDate: yearsAgo(5),
       grade: "A",
     },
   });
@@ -476,7 +494,7 @@ async function main() {
       classId: class10B.id,
       section: "B",
       rollNumber: "10B001",
-      admissionDate: new Date("2020-04-01"),
+      admissionDate: yearsAgo(5),
       grade: "A",
     },
   });
@@ -487,7 +505,7 @@ async function main() {
       classId: class10A.id,
       section: "A",
       rollNumber: "10A003",
-      admissionDate: new Date("2020-04-01"),
+      admissionDate: yearsAgo(5),
       grade: "B+",
     },
   });
@@ -498,7 +516,7 @@ async function main() {
       classId: class10B.id,
       section: "B",
       rollNumber: "10B002",
-      admissionDate: new Date("2020-04-01"),
+      admissionDate: yearsAgo(5),
       grade: "A+",
     },
   });
@@ -509,7 +527,7 @@ async function main() {
       classId: class10A.id,
       section: "A",
       rollNumber: "10A004",
-      admissionDate: new Date("2020-04-01"),
+      admissionDate: yearsAgo(5),
       grade: "B",
     },
   });
@@ -607,298 +625,394 @@ async function main() {
   console.log("💳 Creating fee payments...");
 
   const feePayments = [];
+  const studentsWithFeeStructure = [
+    { studentId: student1.id, feeStructureId: monthlyFee10A.id, amount: 2500 },
+    { studentId: student2.id, feeStructureId: monthlyFee10A.id, amount: 2500 },
+    { studentId: student3.id, feeStructureId: monthlyFee10B.id, amount: 2500 },
+    { studentId: student4.id, feeStructureId: monthlyFee10A.id, amount: 2500 },
+    { studentId: student5.id, feeStructureId: monthlyFee10B.id, amount: 2500 },
+    { studentId: student6.id, feeStructureId: monthlyFee10A.id, amount: 2500 },
+  ];
 
-  // Student 1 - fees
-  feePayments.push(
-    { studentId: student1.id, feeStructureId: monthlyFee10A.id, amountPaid: 2500, paymentDate: new Date("2026-03-05"), status: "PAID" as const, receiptUrl: "receipt_001.pdf" },
-    { studentId: student1.id, feeStructureId: monthlyFee10A.id, amountPaid: 2500, paymentDate: new Date("2026-02-05"), status: "PAID" as const, receiptUrl: "receipt_002.pdf" },
-    { studentId: student1.id, feeStructureId: quarterlyFee10A.id, amountPaid: 7500, paymentDate: new Date("2026-01-10"), status: "PAID" as const, receiptUrl: "receipt_003.pdf" }
-  );
+  for (let monthOffset = 0; monthOffset < 8; monthOffset++) {
+    const dueDate = new Date(now.getFullYear(), now.getMonth() - monthOffset, 5);
 
-  // Student 2 - fees
-  feePayments.push(
-    { studentId: student2.id, feeStructureId: monthlyFee10A.id, amountPaid: 2500, paymentDate: new Date("2026-03-05"), status: "PAID" as const, receiptUrl: "receipt_004.pdf" },
-    { studentId: student2.id, feeStructureId: monthlyFee10A.id, amountPaid: 1250, paymentDate: new Date("2026-02-10"), status: "PARTIAL" as const, receiptUrl: "receipt_005.pdf" }
-  );
+    studentsWithFeeStructure.forEach((studentFee, index) => {
+      const paymentPattern = (index + monthOffset) % 6;
+      const isUnpaid = paymentPattern === 0;
+      const isPartial = paymentPattern === 1;
 
-  // Student 3 - fees
-  feePayments.push(
-    { studentId: student3.id, feeStructureId: monthlyFee10B.id, amountPaid: 0, paymentDate: null, status: "UNPAID" as const, receiptUrl: null },
-    { studentId: student3.id, feeStructureId: quarterlyFee10B.id, amountPaid: 7500, paymentDate: new Date("2026-01-15"), status: "PAID" as const, receiptUrl: "receipt_006.pdf" }
-  );
+      feePayments.push({
+        studentId: studentFee.studentId,
+        feeStructureId: studentFee.feeStructureId,
+        amountPaid: isUnpaid ? 0 : isPartial ? studentFee.amount / 2 : studentFee.amount,
+        paymentDate: isUnpaid ? null : new Date(dueDate.getFullYear(), dueDate.getMonth(), 5 + ((index % 4) + 1)),
+        status: isUnpaid ? ("UNPAID" as const) : isPartial ? ("PARTIAL" as const) : ("PAID" as const),
+        receiptUrl: isUnpaid
+          ? null
+          : `receipt_${studentFee.studentId.slice(0, 4)}_${dueDate.getFullYear()}_${String(dueDate.getMonth() + 1).padStart(2, "0")}.pdf`,
+      });
+    });
+  }
 
-  // Student 4 - fees
+  // Add a few quarterly and half-yearly payments to make data more realistic.
   feePayments.push(
-    { studentId: student4.id, feeStructureId: monthlyFee10A.id, amountPaid: 2500, paymentDate: new Date("2026-03-01"), status: "PAID" as const, receiptUrl: "receipt_007.pdf" },
-    { studentId: student4.id, feeStructureId: monthlyFee10A.id, amountPaid: 2500, paymentDate: new Date("2026-02-01"), status: "PAID" as const, receiptUrl: "receipt_008.pdf" }
-  );
-
-  // Student 5 - fees
-  feePayments.push(
-    { studentId: student5.id, feeStructureId: monthlyFee10B.id, amountPaid: 0, paymentDate: null, status: "UNPAID" as const, receiptUrl: null }
-  );
-
-  // Student 6 - fees
-  feePayments.push(
-    { studentId: student6.id, feeStructureId: monthlyFee10A.id, amountPaid: 2500, paymentDate: new Date("2026-03-10"), status: "PAID" as const, receiptUrl: "receipt_009.pdf" }
+    {
+      studentId: student1.id,
+      feeStructureId: quarterlyFee10A.id,
+      amountPaid: 7500,
+      paymentDate: daysFromNow(-70),
+      status: "PAID" as const,
+      receiptUrl: "receipt_quarterly_10A_s1.pdf",
+    },
+    {
+      studentId: student2.id,
+      feeStructureId: quarterlyFee10A.id,
+      amountPaid: 3750,
+      paymentDate: daysFromNow(-35),
+      status: "PARTIAL" as const,
+      receiptUrl: "receipt_quarterly_10A_s2.pdf",
+    },
+    {
+      studentId: student4.id,
+      feeStructureId: halfYearlyFee10A.id,
+      amountPaid: 15000,
+      paymentDate: daysFromNow(-120),
+      status: "PAID" as const,
+      receiptUrl: "receipt_halfyearly_10A_s4.pdf",
+    },
+    {
+      studentId: student3.id,
+      feeStructureId: quarterlyFee10B.id,
+      amountPaid: 7500,
+      paymentDate: daysFromNow(-95),
+      status: "PAID" as const,
+      receiptUrl: "receipt_quarterly_10B_s3.pdf",
+    }
   );
 
   await prisma.feePayment.createMany({ data: feePayments });
 
-  console.log("✓ 12 fee payments created\n");
+  console.log(`✓ ${feePayments.length} fee payments created\n`);
 
   // ===== EXAMS =====
   console.log("📝 Creating exams...");
 
-  const exam1 = await prisma.exam.create({
-    data: {
-      name: "Mid-term Math Exam",
-      classId: class10A.id,
-      subjectId: math.id,
-      date: new Date("2026-03-15"),
-      duration: "2 hours",
-      totalMarks: 100,
-      type: "MONTHLY",
-      status: "COMPLETED",
-    },
-  });
+  const examBlueprints = [
+    { name: "Mathematics Unit Test - 10A", classId: class10A.id, subjectId: math.id, dateOffset: -95, duration: "90 minutes", totalMarks: 50, type: "MONTHLY", status: "COMPLETED" },
+    { name: "Science Unit Test - 10A", classId: class10A.id, subjectId: science.id, dateOffset: -82, duration: "90 minutes", totalMarks: 50, type: "MONTHLY", status: "COMPLETED" },
+    { name: "English Assessment - 10A", classId: class10A.id, subjectId: english.id, dateOffset: -68, duration: "2 hours", totalMarks: 100, type: "MONTHLY", status: "COMPLETED" },
+    { name: "Mathematics Unit Test - 10B", classId: class10B.id, subjectId: math.id, dateOffset: -91, duration: "90 minutes", totalMarks: 50, type: "MONTHLY", status: "COMPLETED" },
+    { name: "Science Assessment - 10B", classId: class10B.id, subjectId: science.id, dateOffset: -74, duration: "2 hours", totalMarks: 100, type: "MONTHLY", status: "COMPLETED" },
+    { name: "Quarterly Mathematics Exam - 10A", classId: class10A.id, subjectId: math.id, dateOffset: -40, duration: "2.5 hours", totalMarks: 100, type: "QUARTERLY", status: "COMPLETED" },
+    { name: "Quarterly Science Exam - 10B", classId: class10B.id, subjectId: science.id, dateOffset: -33, duration: "2.5 hours", totalMarks: 100, type: "QUARTERLY", status: "COMPLETED" },
+    { name: "Half-Yearly English Exam - 10A", classId: class10A.id, subjectId: english.id, dateOffset: 12, duration: "3 hours", totalMarks: 100, type: "HALF_YEARLY", status: "UPCOMING" },
+    { name: "Half-Yearly Mathematics Exam - 10B", classId: class10B.id, subjectId: math.id, dateOffset: 16, duration: "3 hours", totalMarks: 100, type: "HALF_YEARLY", status: "UPCOMING" },
+    { name: "Geography Enrichment Test - 10A", classId: class10A.id, subjectId: geography.id, dateOffset: 24, duration: "2 hours", totalMarks: 80, type: "MONTHLY", status: "UPCOMING" },
+  ] as const;
 
-  const exam2 = await prisma.exam.create({
-    data: {
-      name: "Science Quarterly Exam",
-      classId: class10A.id,
-      subjectId: science.id,
-      date: new Date("2026-03-20"),
-      duration: "2.5 hours",
-      totalMarks: 100,
-      type: "QUARTERLY",
-      status: "COMPLETED",
-    },
-  });
+  const createdExams = [];
+  for (const blueprint of examBlueprints) {
+    const exam = await prisma.exam.create({
+      data: {
+        name: blueprint.name,
+        classId: blueprint.classId,
+        subjectId: blueprint.subjectId,
+        date: daysFromNow(blueprint.dateOffset),
+        duration: blueprint.duration,
+        totalMarks: blueprint.totalMarks,
+        type: blueprint.type,
+        status: blueprint.status,
+      },
+    });
 
-  const exam3 = await prisma.exam.create({
-    data: {
-      name: "English Final Exam",
-      classId: class10A.id,
-      subjectId: english.id,
-      date: new Date("2026-04-10"),
-      duration: "3 hours",
-      totalMarks: 100,
-      type: "HALF_YEARLY",
-      status: "UPCOMING",
-    },
-  });
+    createdExams.push(exam);
+  }
 
-  const exam4 = await prisma.exam.create({
-    data: {
-      name: "Math Exam - Class 10B",
-      classId: class10B.id,
-      subjectId: math.id,
-      date: new Date("2026-03-16"),
-      duration: "2 hours",
-      totalMarks: 100,
-      type: "MONTHLY",
-      status: "COMPLETED",
-    },
-  });
-
-  const exam5 = await prisma.exam.create({
-    data: {
-      name: "Science Exam - Class 10B",
-      classId: class10B.id,
-      subjectId: science.id,
-      date: new Date("2026-03-21"),
-      duration: "2.5 hours",
-      totalMarks: 100,
-      type: "MONTHLY",
-      status: "COMPLETED",
-    },
-  });
-
-  console.log("✓ 5 exams created\n");
+  console.log(`✓ ${createdExams.length} exams created\n`);
 
   // ===== EXAM RESULTS =====
   console.log("📊 Creating exam results...");
 
-  const examResults = [
-    { examId: exam1.id, studentId: student1.id, marksObtained: 92, grade: "A+" },
-    { examId: exam1.id, studentId: student2.id, marksObtained: 85, grade: "A" },
-    { examId: exam1.id, studentId: student4.id, marksObtained: 78, grade: "B+" },
-    { examId: exam1.id, studentId: student6.id, marksObtained: 72, grade: "B" },
+  const examResults = [];
+  const studentsByClass: Record<string, string[]> = {
+    [class10A.id]: [student1.id, student2.id, student4.id, student6.id],
+    [class10B.id]: [student3.id, student5.id],
+  };
 
-    { examId: exam2.id, studentId: student1.id, marksObtained: 88, grade: "A" },
-    { examId: exam2.id, studentId: student2.id, marksObtained: 82, grade: "A" },
-    { examId: exam2.id, studentId: student4.id, marksObtained: 76, grade: "B+" },
-    { examId: exam2.id, studentId: student6.id, marksObtained: 70, grade: "B" },
+  createdExams.forEach((exam, examIndex) => {
+    if (exam.status !== "COMPLETED") return;
 
-    { examId: exam4.id, studentId: student3.id, marksObtained: 90, grade: "A+" },
-    { examId: exam4.id, studentId: student5.id, marksObtained: 88, grade: "A" },
+    const classStudents = studentsByClass[exam.classId] || [];
+    classStudents.forEach((studentId, studentIndex) => {
+      const percentage = 58 + ((examIndex + 2) * 11 + (studentIndex + 3) * 7) % 40;
+      const marksObtained = Math.round((percentage / 100) * exam.totalMarks);
 
-    { examId: exam5.id, studentId: student3.id, marksObtained: 85, grade: "A" },
-    { examId: exam5.id, studentId: student5.id, marksObtained: 92, grade: "A+" },
-  ];
+      examResults.push({
+        examId: exam.id,
+        studentId,
+        marksObtained,
+        grade: gradeFromPercentage(percentage),
+      });
+    });
+  });
 
   await prisma.examResult.createMany({ data: examResults });
 
-  console.log("✓ 12 exam results created\n");
+  console.log(`✓ ${examResults.length} exam results created\n`);
 
   // ===== ATTENDANCE =====
   console.log("📋 Creating attendance records...");
 
   const attendanceData = [];
-  const baseDate = new Date("2026-03-01");
+  const attendanceWindowDays = 90;
 
-  for (let i = 0; i < 20; i++) {
-    const date = new Date(baseDate);
-    date.setDate(date.getDate() + i);
+  for (let i = attendanceWindowDays; i >= 1; i--) {
+    const date = daysFromNow(-i);
 
-    // Skip weekends
+    // Skip weekends for realistic school attendance.
     if (date.getDay() === 0 || date.getDay() === 6) continue;
 
-    attendanceData.push(
-      { studentId: student1.id, classId: class10A.id, date, status: "PRESENT", markedBy: teacher1.id },
-      { studentId: student2.id, classId: class10A.id, date, status: "PRESENT", markedBy: teacher1.id },
-      { studentId: student4.id, classId: class10A.id, date, status: i % 5 === 0 ? "ABSENT" : "PRESENT", markedBy: teacher1.id },
-      { studentId: student6.id, classId: class10A.id, date, status: i % 7 === 0 ? "LATE" : "PRESENT", markedBy: teacher1.id },
-      { studentId: student3.id, classId: class10B.id, date, status: "PRESENT", markedBy: teacher2.id },
-      { studentId: student5.id, classId: class10B.id, date, status: "PRESENT", markedBy: teacher2.id }
-    );
+    const class10AStudents = [student1.id, student2.id, student4.id, student6.id];
+    const class10BStudents = [student3.id, student5.id];
+
+    class10AStudents.forEach((studentId, studentIndex) => {
+      const signal = (i + 3) * (studentIndex + 5);
+      const status = signal % 19 === 0 ? "ABSENT" : signal % 11 === 0 ? "LATE" : "PRESENT";
+      attendanceData.push({ studentId, classId: class10A.id, date, status, markedBy: teacher1.id });
+    });
+
+    class10BStudents.forEach((studentId, studentIndex) => {
+      const signal = (i + 7) * (studentIndex + 4);
+      const status = signal % 17 === 0 ? "ABSENT" : signal % 13 === 0 ? "LATE" : "PRESENT";
+      attendanceData.push({ studentId, classId: class10B.id, date, status, markedBy: teacher2.id });
+    });
   }
 
   await prisma.attendance.createMany({ data: attendanceData });
 
-  console.log("✓ 60+ attendance records created\n");
+  console.log(`✓ ${attendanceData.length} attendance records created\n`);
 
   // ===== NOTICES =====
   console.log("📢 Creating notices...");
 
-  const notice1 = await prisma.notice.create({
-    data: {
+  const notices = [
+    {
       title: "Annual Sports Day",
-      message: "The Annual Sports Day will be held on March 20, 2026. All students are expected to participate in at least one event.",
+      message: `Annual Sports Day is scheduled on ${formatDate(daysFromNow(14))}. Students should register for at least one event by ${formatDate(daysFromNow(7))}.`,
       category: "EVENT",
       priority: "high",
       pinned: true,
       createdBy: adminUser.id,
     },
-  });
-
-  const notice2 = await prisma.notice.create({
-    data: {
-      title: "Mid-Term Exam Schedule",
-      message: "Mid-term examinations will begin from March 15, 2026. The complete schedule has been uploaded to the Exams section.",
+    {
+      title: "Quarterly Exam Timetable",
+      message: `Quarterly exams begin on ${formatDate(daysFromNow(10))}. Detailed timetable is available in the Exams section.`,
       category: "EXAM",
       priority: "high",
       pinned: true,
       createdBy: adminUser.id,
     },
-  });
-
-  const notice3 = await prisma.notice.create({
-    data: {
-      title: "School Holiday - Republic Day",
-      message: "The school will remain closed on January 26, 2026 (Republic Day). Classes will resume on January 27, 2026.",
-      category: "HOLIDAY",
-      priority: "normal",
-      pinned: false,
-      createdBy: adminUser.id,
-    },
-  });
-
-  const notice4 = await prisma.notice.create({
-    data: {
+    {
       title: "Parent-Teacher Meeting",
-      message: "PTA meeting is scheduled for March 10, 2026 at 10:00 AM in the school auditorium. Parents from all classes are requested to attend.",
+      message: `PTA meeting will be held on ${formatDate(daysFromNow(5))} at 10:30 AM in the auditorium.`,
       category: "GENERAL",
       priority: "normal",
       pinned: true,
       createdBy: adminUser.id,
     },
-  });
-
-  const notice5 = await prisma.notice.create({
-    data: {
+    {
       title: "Science Fair Registration",
-      message: "Students interested in participating in the Science Fair should register by March 5, 2026. Submit your project proposal to the Science Department.",
+      message: `Science Fair registration closes on ${formatDate(daysFromNow(9))}. Submit abstracts to the Science Department.`,
       category: "EVENT",
       priority: "normal",
       pinned: false,
       createdBy: teacher2User.id,
     },
-  });
+    {
+      title: "Library Week",
+      message: `Library Week starts ${formatDate(daysFromNow(3))}. Students can issue up to 3 books during this week.`,
+      category: "GENERAL",
+      priority: "normal",
+      pinned: false,
+      createdBy: teacher3User.id,
+    },
+    {
+      title: "Health Checkup Camp",
+      message: `Annual health checkup camp will run from ${formatDate(daysFromNow(18))} to ${formatDate(daysFromNow(20))}.`,
+      category: "EVENT",
+      priority: "normal",
+      pinned: false,
+      createdBy: adminUser.id,
+    },
+    {
+      title: "Holiday Announcement",
+      message: `School will remain closed on ${formatDate(daysFromNow(26))} for a public holiday.`,
+      category: "HOLIDAY",
+      priority: "normal",
+      pinned: false,
+      createdBy: adminUser.id,
+    },
+    {
+      title: "Math Remedial Classes",
+      message: `Remedial classes for Mathematics begin on ${formatDate(daysFromNow(6))} at 4:00 PM.`,
+      category: "GENERAL",
+      priority: "normal",
+      pinned: false,
+      createdBy: teacher1User.id,
+    },
+    {
+      title: "Fee Reminder",
+      message: `Monthly fee due date is ${formatDate(daysFromNow(4))}. Please avoid late charges by paying on time.`,
+      category: "GENERAL",
+      priority: "high",
+      pinned: true,
+      createdBy: adminUser.id,
+    },
+    {
+      title: "English Debate Trials",
+      message: `Debate team trials are scheduled for ${formatDate(daysFromNow(11))}. Interested students can register with the English Department.`,
+      category: "EVENT",
+      priority: "normal",
+      pinned: false,
+      createdBy: teacher3User.id,
+    },
+  ];
 
-  console.log("✓ 5 notices created\n");
+  await prisma.notice.createMany({ data: notices });
+
+  console.log(`✓ ${notices.length} notices created\n`);
 
   // ===== QUESTION PAPERS =====
   console.log("📄 Creating question papers...");
 
-  await prisma.questionPaper.createMany({
-    data: [
-      { examId: exam1.id, teacherId: teacher1.id, fileUrl: "question_paper_001.pdf", status: "APPROVED" },
-      { examId: exam2.id, teacherId: teacher2.id, fileUrl: "question_paper_002.pdf", status: "APPROVED" },
-      { examId: exam3.id, teacherId: teacher3.id, fileUrl: "question_paper_003.pdf", status: "PENDING" },
-      { examId: exam4.id, teacherId: teacher1.id, fileUrl: "question_paper_004.pdf", status: "APPROVED" },
-      { examId: exam5.id, teacherId: teacher2.id, fileUrl: "question_paper_005.pdf", status: "APPROVED" },
-    ],
-  });
+  const teacherBySubject: Record<string, string> = {
+    [math.id]: teacher1.id,
+    [science.id]: teacher2.id,
+    [english.id]: teacher3.id,
+    [history.id]: teacher3.id,
+    [geography.id]: teacher2.id,
+  };
 
-  console.log("✓ 5 question papers created\n");
+  const questionPapers = createdExams.map((exam, index) => ({
+    examId: exam.id,
+    teacherId: teacherBySubject[exam.subjectId] || teacher1.id,
+    fileUrl: `question_paper_${String(index + 1).padStart(3, "0")}.pdf`,
+    status: exam.status === "COMPLETED" ? "APPROVED" : "PENDING",
+  }));
+
+  await prisma.questionPaper.createMany({ data: questionPapers });
+
+  console.log(`✓ ${questionPapers.length} question papers created\n`);
 
   // ===== NOTIFICATIONS =====
   console.log("🔔 Creating notifications...");
 
   const notifications = [];
+  const users = [
+    adminUser,
+    teacher1User,
+    teacher2User,
+    teacher3User,
+    parent1User,
+    parent2User,
+    parent3User,
+    student1User,
+    student2User,
+    student3User,
+    student4User,
+    student5User,
+    student6User,
+  ];
 
-  for (let i = 0; i < 3; i++) {
-    notifications.push(
-      { userId: adminUser.id, title: "System Update", message: `System maintenance scheduled for ${new Date().toDateString()}`, type: "info", read: i > 1 },
-      { userId: teacher1User.id, title: "New Exam Created", message: "Mid-term Math Exam has been created. Please review the details.", type: "info", read: i > 0 },
-      { userId: parent1User.id, title: "Fee Payment Reminder", message: "Monthly tuition fee for March is due. Please make the payment by March 10.", type: "warning", read: false },
-      { userId: student1User.id, title: "Exam Result Published", message: "Your Mid-term Math Exam results have been published. You scored 92/100.", type: "success", read: false }
-    );
-  }
+  const notificationTemplates = [
+    { title: "System Update", message: `Portal update scheduled on ${formatDate(daysFromNow(2))}.`, type: "info" },
+    { title: "Attendance Summary", message: "Weekly attendance summary is now available.", type: "info" },
+    { title: "Fee Reminder", message: `Fee due date is ${formatDate(daysFromNow(4))}.`, type: "warning" },
+    { title: "Exam Alert", message: `Upcoming exam begins from ${formatDate(daysFromNow(10))}.`, type: "warning" },
+    { title: "Result Published", message: "Recent assessment results have been published.", type: "success" },
+    { title: "Notice Board", message: "A new notice has been posted on the dashboard.", type: "info" },
+  ];
+
+  users.forEach((user, userIndex) => {
+    notificationTemplates.forEach((template, templateIndex) => {
+      notifications.push({
+        userId: user.id,
+        title: template.title,
+        message: template.message,
+        type: template.type,
+        read: (userIndex + templateIndex) % 4 === 0,
+      });
+    });
+  });
 
   await prisma.notification.createMany({ data: notifications });
 
-  console.log("✓ 12 notifications created\n");
+  console.log(`✓ ${notifications.length} notifications created\n`);
 
   // ===== ACTIVITY LOGS =====
   console.log("📝 Creating activity logs...");
 
-  const activityLogs = [
-    { userId: adminUser.id, action: "USER_LOGIN", description: "Admin logged in from IP 192.168.1.1" },
-    { userId: teacher1User.id, action: "EXAM_CREATED", description: "Created new exam: Mid-term Math Exam" },
-    { userId: student1User.id, action: "EXAM_SUBMITTED", description: "Submitted Mid-term Math Exam" },
-    { userId: parent1User.id, action: "PAYMENT_MADE", description: "Paid fee of 2500 for March" },
-    { userId: adminUser.id, action: "NOTICE_PUBLISHED", description: "Published notice: Annual Sports Day" },
-    { userId: teacher1User.id, action: "ATTENDANCE_MARKED", description: "Marked attendance for class 10A" },
-    { userId: student2User.id, action: "RESULT_VIEWED", description: "Viewed exam results" },
-    { userId: parent2User.id, action: "CHILD_PROGRESS_VIEWED", description: "Viewed child's progress report" },
-    { userId: teacher2User.id, action: "GRADE_SUBMITTED", description: "Submitted grades for Science exam" },
-    { userId: parent3User.id, action: "DOCUMENT_DOWNLOADED", description: "Downloaded attendance report" },
+  const activityLogs = [];
+  const activityActions = [
+    { action: "USER_LOGIN", description: "Logged in to dashboard" },
+    { action: "NOTICE_VIEWED", description: "Viewed latest school notices" },
+    { action: "ATTENDANCE_CHECKED", description: "Checked attendance analytics" },
+    { action: "EXAM_INTERACTION", description: "Accessed exam module" },
+    { action: "PAYMENT_ACTIVITY", description: "Visited fee and payment section" },
+    { action: "PROFILE_UPDATED", description: "Updated profile preferences" },
   ];
+
+  users.forEach((user, userIndex) => {
+    for (let i = 0; i < 6; i++) {
+      const actionMeta = activityActions[(userIndex + i) % activityActions.length];
+      activityLogs.push({
+        userId: user.id,
+        action: actionMeta.action,
+        description: `${actionMeta.description} (${formatDate(daysFromNow(-(userIndex + i + 1)))})`,
+      });
+    }
+  });
 
   await prisma.activityLog.createMany({ data: activityLogs });
 
-  console.log("✓ 10 activity logs created\n");
+  console.log(`✓ ${activityLogs.length} activity logs created\n`);
 
   // ===== CHAT MESSAGES =====
   console.log("💬 Creating chat messages...");
 
-  await prisma.chatMessage.createMany({
-    data: [
-      { senderId: teacher1User.id, receiverId: parent1User.id, message: "Hello, how can I help you regarding your child's progress?", read: true },
-      { senderId: parent1User.id, receiverId: teacher1User.id, message: "Hi, I wanted to discuss Alice's performance in math.", read: true },
-      { senderId: teacher1User.id, receiverId: parent1User.id, message: "Alice is doing great! She scored 92 in the recent exam.", read: true },
-      { senderId: parent1User.id, receiverId: teacher1User.id, message: "Thank you for the update! That's wonderful to hear.", read: true },
-      { senderId: adminUser.id, receiverId: teacher1User.id, message: "Please submit the question papers for the upcoming exams.", read: false },
-      { senderId: teacher1User.id, receiverId: adminUser.id, message: "Sure, I'll submit them by tomorrow.", read: true },
-      { senderId: teacher2User.id, receiverId: parent2User.id, message: "Your child Carol has excellent participation in class.", read: true },
-      { senderId: parent2User.id, receiverId: teacher2User.id, message: "Thank you for the feedback. We encourage her to do her best.", read: true },
-    ],
+  const chatMessages = [];
+  const conversationPairs = [
+    { a: teacher1User.id, b: parent1User.id, topics: ["Alice's recent progress", "Math practice plan", "Next PTM schedule"] },
+    { a: teacher2User.id, b: parent2User.id, topics: ["Science project update", "Lab participation", "Homework completion"] },
+    { a: teacher3User.id, b: parent3User.id, topics: ["Essay writing improvement", "Debate club tryouts", "Reading recommendations"] },
+    { a: adminUser.id, b: teacher1User.id, topics: ["Question paper submission", "Exam invigilation roster", "Monthly report review"] },
+    { a: student1User.id, b: student2User.id, topics: ["Study timetable", "Group assignment", "Sports day prep"] },
+    { a: student3User.id, b: student5User.id, topics: ["Science fair idea", "Class notes exchange", "Exam revision"] },
+  ];
+
+  conversationPairs.forEach((pair, pairIndex) => {
+    pair.topics.forEach((topic, topicIndex) => {
+      chatMessages.push(
+        {
+          senderId: pair.a,
+          receiverId: pair.b,
+          message: `Hi, can we discuss ${topic.toLowerCase()}?`,
+          read: true,
+        },
+        {
+          senderId: pair.b,
+          receiverId: pair.a,
+          message: `Sure, let's connect on ${topic.toLowerCase()} this afternoon.`,
+          read: (pairIndex + topicIndex) % 3 !== 0,
+        }
+      );
+    });
   });
 
-  console.log("✓ 8 chat messages created\n");
+  await prisma.chatMessage.createMany({ data: chatMessages });
+
+  console.log(`✓ ${chatMessages.length} chat messages created\n`);
 
   console.log("\n" + "=".repeat(60));
   console.log("✅ DATABASE SEEDING COMPLETED SUCCESSFULLY!");
@@ -911,15 +1025,15 @@ async function main() {
   console.log("   • 6 Students");
   console.log("   • 2 Classes (10A, 10B)");
   console.log("   • 5 Subjects");
-  console.log("   • 5 Exams");
-  console.log("   • 12 Exam Results");
-  console.log("   • 60+ Attendance Records");
-  console.log("   • 12 Fee Payments");
-  console.log("   • 5 Notices");
-  console.log("   • 5 Question Papers");
-  console.log("   • 12 Notifications");
-  console.log("   • 10 Activity Logs");
-  console.log("   • 8 Chat Messages");
+  console.log(`   • ${createdExams.length} Exams`);
+  console.log(`   • ${examResults.length} Exam Results`);
+  console.log(`   • ${attendanceData.length} Attendance Records`);
+  console.log(`   • ${feePayments.length} Fee Payments`);
+  console.log(`   • ${notices.length} Notices`);
+  console.log(`   • ${questionPapers.length} Question Papers`);
+  console.log(`   • ${notifications.length} Notifications`);
+  console.log(`   • ${activityLogs.length} Activity Logs`);
+  console.log(`   • ${chatMessages.length} Chat Messages`);
 
   console.log("\n📋 TEST CREDENTIALS:");
   console.log("=".repeat(60));

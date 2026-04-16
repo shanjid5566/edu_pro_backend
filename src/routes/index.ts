@@ -26,6 +26,7 @@ import parentChildProgressRoutes from "./parentChildProgressRoutes";
 import parentChildAttendanceRoutes from "./parentChildAttendanceRoutes";
 import parentChildFeesRoutes from "./parentChildFeesRoutes";
 import parentChildNoticesRoutes from "./parentChildNoticesRoutes";
+import messagingRoutes from "./messagingRoutes";
 
 const router = Router();
 
@@ -109,5 +110,8 @@ router.use("/parent/child-fees", parentChildFeesRoutes);
 
 // Parent Child Notices routes
 router.use("/parent/child-notices", parentChildNoticesRoutes);
+
+// Messaging routes
+router.use("/messages", messagingRoutes);
 
 export default router;

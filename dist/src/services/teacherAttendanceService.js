@@ -2,16 +2,42 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const prisma_js_1 = require("../lib/prisma.js");
 class TeacherAttendanceService {
-    // Get students in a class for attendance marking
-    async getClassStudentsForAttendance(teacherId, classId) {
-        try {
-            // Verify teacher is assigned to this class
-            const teacherAssigned = await prisma_js_1.prisma.teacherClass.findFirst({
+    async resolveTeacherId(userId) {
+        const teacher = await prisma_js_1.prisma.teacher.findUnique({
+            where: { userId },
+            select: { id: true },
+        });
+        if (!teacher) {
+            throw new Error("Teacher not found");
+        }
+        return teacher.id;
+    }
+    async assertTeacherAssignedToClass(teacherId, classId) {
+        const [teacherClassAssignment, classTeacherAssignment, classScheduleAssignment,] = await Promise.all([
+            prisma_js_1.prisma.teacherClass.findFirst({
                 where: { teacherId, classId },
-            });
-            if (!teacherAssigned) {
-                throw new Error("Unauthorized - Teacher not assigned to this class");
-            }
+                select: { id: true },
+            }),
+            prisma_js_1.prisma.class.findFirst({
+                where: { id: classId, classTeacherId: teacherId },
+                select: { id: true },
+            }),
+            prisma_js_1.prisma.classSchedule.findFirst({
+                where: { classId, teacherId },
+                select: { id: true },
+            }),
+        ]);
+        if (!teacherClassAssignment &&
+            !classTeacherAssignment &&
+            !classScheduleAssignment) {
+            throw new Error("Unauthorized - Teacher not assigned to this class");
+        }
+    }
+    // Get students in a class for attendance marking
+    async getClassStudentsForAttendance(userId, classId) {
+        try {
+            const teacherId = await this.resolveTeacherId(userId);
+            await this.assertTeacherAssignedToClass(teacherId, classId);
             // Get class and students
             const classData = await prisma_js_1.prisma.class.findUnique({
                 where: { id: classId },
@@ -62,15 +88,10 @@ class TeacherAttendanceService {
         }
     }
     // Mark attendance for a class
-    async markAttendance(teacherId, classId, attendanceData, date) {
+    async markAttendance(userId, classId, attendanceData, date) {
         try {
-            // Verify teacher is assigned to this class
-            const teacherAssigned = await prisma_js_1.prisma.teacherClass.findFirst({
-                where: { teacherId, classId },
-            });
-            if (!teacherAssigned) {
-                throw new Error("Unauthorized - Teacher not assigned to this class");
-            }
+            const teacherId = await this.resolveTeacherId(userId);
+            await this.assertTeacherAssignedToClass(teacherId, classId);
             // Verify all students belong to the class
             const studentCount = await prisma_js_1.prisma.student.count({
                 where: {
@@ -119,15 +140,10 @@ class TeacherAttendanceService {
         }
     }
     // Get attendance records for a class
-    async getClassAttendanceRecords(teacherId, classId, startDate, endDate) {
+    async getClassAttendanceRecords(userId, classId, startDate, endDate) {
         try {
-            // Verify teacher is assigned to this class
-            const teacherAssigned = await prisma_js_1.prisma.teacherClass.findFirst({
-                where: { teacherId, classId },
-            });
-            if (!teacherAssigned) {
-                throw new Error("Unauthorized - Teacher not assigned to this class");
-            }
+            const teacherId = await this.resolveTeacherId(userId);
+            await this.assertTeacherAssignedToClass(teacherId, classId);
             const whereCondition = { classId };
             if (startDate || endDate) {
                 whereCondition.date = {};
@@ -193,15 +209,10 @@ class TeacherAttendanceService {
         }
     }
     // Get attendance summary for a student
-    async getStudentAttendanceSummary(teacherId, classId, studentId) {
+    async getStudentAttendanceSummary(userId, classId, studentId) {
         try {
-            // Verify teacher is assigned to this class
-            const teacherAssigned = await prisma_js_1.prisma.teacherClass.findFirst({
-                where: { teacherId, classId },
-            });
-            if (!teacherAssigned) {
-                throw new Error("Unauthorized - Teacher not assigned to this class");
-            }
+            const teacherId = await this.resolveTeacherId(userId);
+            await this.assertTeacherAssignedToClass(teacherId, classId);
             // Verify student is in the class
             const student = await prisma_js_1.prisma.student.findFirst({
                 where: { id: studentId, classId },

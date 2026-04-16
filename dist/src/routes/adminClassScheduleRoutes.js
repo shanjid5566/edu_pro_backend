@@ -18,6 +18,7 @@ router.get("/export/csv", adminClassScheduleController_1.default.exportSchedules
 // Get dropdowns
 router.get("/dropdown/classes", adminClassScheduleController_1.default.getAllClasses);
 router.get("/dropdown/teachers", adminClassScheduleController_1.default.getAllTeachers);
+router.get("/dropdown/subjects", adminClassScheduleController_1.default.getAllSubjects);
 // Get schedules by class
 router.get("/by-class/:classId", adminClassScheduleController_1.default.getSchedulesByClass);
 // Get schedules by day

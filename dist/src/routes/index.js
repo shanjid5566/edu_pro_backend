@@ -31,6 +31,7 @@ const parentChildProgressRoutes_1 = __importDefault(require("./parentChildProgre
 const parentChildAttendanceRoutes_1 = __importDefault(require("./parentChildAttendanceRoutes"));
 const parentChildFeesRoutes_1 = __importDefault(require("./parentChildFeesRoutes"));
 const parentChildNoticesRoutes_1 = __importDefault(require("./parentChildNoticesRoutes"));
+const messagingRoutes_1 = __importDefault(require("./messagingRoutes"));
 const router = (0, express_1.Router)();
 // Auth routes
 router.use("/auth", authRoutes_1.default);
@@ -86,4 +87,6 @@ router.use("/parent/child-attendance", parentChildAttendanceRoutes_1.default);
 router.use("/parent/child-fees", parentChildFeesRoutes_1.default);
 // Parent Child Notices routes
 router.use("/parent/child-notices", parentChildNoticesRoutes_1.default);
+// Messaging routes
+router.use("/messages", messagingRoutes_1.default);
 exports.default = router;

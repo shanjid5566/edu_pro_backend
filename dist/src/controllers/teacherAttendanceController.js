@@ -4,22 +4,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const teacherAttendanceService_js_1 = __importDefault(require("../services/teacherAttendanceService.js"));
+function getValidatedClassId(classIdParam) {
+    const classId = classIdParam?.trim();
+    if (!classId) {
+        throw new Error("Class ID is required");
+    }
+    if (classId.startsWith(":")) {
+        throw new Error("Invalid Class ID. Replace :classId with a real class UUID");
+    }
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(classId)) {
+        throw new Error("Invalid Class ID format");
+    }
+    return classId;
+}
 class TeacherAttendanceController {
     // Get students in a class for attendance marking
     async getClassStudents(req, res) {
         try {
             const teacherId = req.userId;
-            const { classId } = req.params;
+            const classId = getValidatedClassId(req.params.classId);
             if (!teacherId) {
                 return res.status(401).json({
                     success: false,
                     message: "Unauthorized",
-                });
-            }
-            if (!classId) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Class ID is required",
                 });
             }
             const result = await teacherAttendanceService_js_1.default.getClassStudentsForAttendance(teacherId, classId);
@@ -27,6 +35,14 @@ class TeacherAttendanceController {
         }
         catch (error) {
             console.error("Error in getClassStudents:", error);
+            if (error instanceof Error &&
+                (error.message.includes("Class ID") ||
+                    error.message.includes("Invalid Class ID"))) {
+                return res.status(400).json({
+                    success: false,
+                    message: error.message,
+                });
+            }
             return res.status(500).json({
                 success: false,
                 message: error instanceof Error ? error.message : "Internal server error",
@@ -37,18 +53,12 @@ class TeacherAttendanceController {
     async markAttendance(req, res) {
         try {
             const teacherId = req.userId;
-            const { classId } = req.params;
+            const classId = getValidatedClassId(req.params.classId);
             const { attendanceData, date } = req.body;
             if (!teacherId) {
                 return res.status(401).json({
                     success: false,
                     message: "Unauthorized",
-                });
-            }
-            if (!classId) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Class ID is required",
                 });
             }
             if (!attendanceData || !Array.isArray(attendanceData)) {
@@ -84,6 +94,14 @@ class TeacherAttendanceController {
         }
         catch (error) {
             console.error("Error in markAttendance:", error);
+            if (error instanceof Error &&
+                (error.message.includes("Class ID") ||
+                    error.message.includes("Invalid Class ID"))) {
+                return res.status(400).json({
+                    success: false,
+                    message: error.message,
+                });
+            }
             return res.status(500).json({
                 success: false,
                 message: error instanceof Error ? error.message : "Internal server error",
@@ -94,18 +112,12 @@ class TeacherAttendanceController {
     async getAttendanceRecords(req, res) {
         try {
             const teacherId = req.userId;
-            const { classId } = req.params;
+            const classId = getValidatedClassId(req.params.classId);
             const { startDate, endDate } = req.query;
             if (!teacherId) {
                 return res.status(401).json({
                     success: false,
                     message: "Unauthorized",
-                });
-            }
-            if (!classId) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Class ID is required",
                 });
             }
             let start;
@@ -121,6 +133,14 @@ class TeacherAttendanceController {
         }
         catch (error) {
             console.error("Error in getAttendanceRecords:", error);
+            if (error instanceof Error &&
+                (error.message.includes("Class ID") ||
+                    error.message.includes("Invalid Class ID"))) {
+                return res.status(400).json({
+                    success: false,
+                    message: error.message,
+                });
+            }
             return res.status(500).json({
                 success: false,
                 message: error instanceof Error ? error.message : "Internal server error",
@@ -131,17 +151,18 @@ class TeacherAttendanceController {
     async getStudentSummary(req, res) {
         try {
             const teacherId = req.userId;
-            const { classId, studentId } = req.params;
+            const classId = getValidatedClassId(req.params.classId);
+            const { studentId } = req.params;
             if (!teacherId) {
                 return res.status(401).json({
                     success: false,
                     message: "Unauthorized",
                 });
             }
-            if (!classId || !studentId) {
+            if (!studentId) {
                 return res.status(400).json({
                     success: false,
-                    message: "Class ID and Student ID are required",
+                    message: "Student ID is required",
                 });
             }
             const result = await teacherAttendanceService_js_1.default.getStudentAttendanceSummary(teacherId, classId, studentId);
@@ -149,6 +170,14 @@ class TeacherAttendanceController {
         }
         catch (error) {
             console.error("Error in getStudentSummary:", error);
+            if (error instanceof Error &&
+                (error.message.includes("Class ID") ||
+                    error.message.includes("Invalid Class ID"))) {
+                return res.status(400).json({
+                    success: false,
+                    message: error.message,
+                });
+            }
             return res.status(500).json({
                 success: false,
                 message: error instanceof Error ? error.message : "Internal server error",

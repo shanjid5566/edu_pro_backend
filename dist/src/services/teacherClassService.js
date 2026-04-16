@@ -2,9 +2,20 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const prisma_js_1 = require("../lib/prisma.js");
 class TeacherClassService {
+    async resolveTeacherId(userId) {
+        const teacher = await prisma_js_1.prisma.teacher.findUnique({
+            where: { userId },
+            select: { id: true },
+        });
+        if (!teacher) {
+            throw new Error("Teacher not found");
+        }
+        return teacher.id;
+    }
     // Get all assigned classes
-    async getMyClasses(teacherId) {
+    async getMyClasses(userId) {
         try {
+            const teacherId = await this.resolveTeacherId(userId);
             const today = new Date();
             const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
             // Get today's classes
@@ -72,8 +83,9 @@ class TeacherClassService {
         }
     }
     // Get class details by ID
-    async getClassDetails(teacherId, classId) {
+    async getClassDetails(userId, classId) {
         try {
+            const teacherId = await this.resolveTeacherId(userId);
             const classData = await prisma_js_1.prisma.class.findUnique({
                 where: { id: classId },
                 select: {
@@ -126,8 +138,9 @@ class TeacherClassService {
         }
     }
     // Get today's class schedule
-    async getTodayClassSchedule(teacherId) {
+    async getTodayClassSchedule(userId) {
         try {
+            const teacherId = await this.resolveTeacherId(userId);
             const today = new Date();
             const dayName = today.toLocaleDateString("en-US", { weekday: "long" });
             const schedule = await prisma_js_1.prisma.classSchedule.findMany({
@@ -173,8 +186,9 @@ class TeacherClassService {
         }
     }
     // Get class statistics
-    async getClassStatistics(teacherId, classId) {
+    async getClassStatistics(userId, classId) {
         try {
+            const teacherId = await this.resolveTeacherId(userId);
             // Verify teacher assignment
             const teacherClass = await prisma_js_1.prisma.teacherClass.findFirst({
                 where: { teacherId, classId },

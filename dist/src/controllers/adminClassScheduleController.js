@@ -286,5 +286,21 @@ class AdminClassScheduleController {
             });
         }
     }
+    /**
+     * Get all subjects for dropdown
+     */
+    async getAllSubjects(req, res) {
+        try {
+            const classId = req.query.classId || undefined;
+            const result = await adminClassScheduleService_1.default.getAllSubjects(classId);
+            res.status(200).json(result);
+        }
+        catch (error) {
+            res.status(500).json({
+                success: false,
+                message: error.message || "Failed to fetch subjects",
+            });
+        }
+    }
 }
 exports.default = new AdminClassScheduleController();
