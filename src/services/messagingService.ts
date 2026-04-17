@@ -3,6 +3,8 @@ import { UserRole } from "@prisma/client";
 
 const MAX_SEARCH_RESULTS = 20;
 const MAX_HISTORY_LIMIT = 200;
+const MAX_CONVERSATION_SCAN = 1000;
+const MAX_CONVERSATION_RESULTS = 100;
 
 const allowedRecipientRolesBySender: Record<UserRole, UserRole[]> = {
   ADMIN: ["ADMIN", "TEACHER", "STUDENT", "PARENT"],
@@ -188,6 +190,107 @@ class MessagingService {
     });
 
     return messages.reverse();
+  }
+
+  async getConversationList(
+    currentUserId: string,
+    currentUserRole: UserRole,
+    limit = 30
+  ) {
+    const allowedRecipientRoles = allowedRecipientRolesBySender[currentUserRole] || [];
+    const safeLimit = Math.min(Math.max(limit, 1), MAX_CONVERSATION_RESULTS);
+
+    const recentMessages = await prisma.chatMessage.findMany({
+      where: {
+        OR: [{ senderId: currentUserId }, { receiverId: currentUserId }],
+      },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+            avatar: true,
+            status: true,
+          },
+        },
+        receiver: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+            avatar: true,
+            status: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: MAX_CONVERSATION_SCAN,
+    });
+
+    const unreadBySender = await prisma.chatMessage.groupBy({
+      by: ["senderId"],
+      where: {
+        receiverId: currentUserId,
+        read: false,
+      },
+      _count: {
+        _all: true,
+      },
+    });
+
+    const unreadMap = new Map<string, number>();
+    unreadBySender.forEach((item) => {
+      unreadMap.set(item.senderId, item._count._all);
+    });
+
+    const conversations = new Map<string, any>();
+
+    for (const message of recentMessages) {
+      const partner =
+        message.senderId === currentUserId ? message.receiver : message.sender;
+
+      if (!partner || partner.status !== "active") {
+        continue;
+      }
+
+      const canCurrentMessagePartner = allowedRecipientRoles.includes(
+        partner.role as UserRole
+      );
+      const canPartnerMessageCurrent = canSendMessage(
+        partner.role as UserRole,
+        currentUserRole
+      );
+
+      if (!canCurrentMessagePartner && !canPartnerMessageCurrent) {
+        continue;
+      }
+
+      if (!conversations.has(partner.id)) {
+        conversations.set(partner.id, {
+          user: {
+            id: partner.id,
+            name: partner.name,
+            role: partner.role,
+            avatar: partner.avatar,
+          },
+          lastMessage: {
+            id: message.id,
+            text: message.message,
+            createdAt: message.createdAt,
+            senderId: message.senderId,
+            receiverId: message.receiverId,
+          },
+          unreadCount: unreadMap.get(partner.id) || 0,
+        });
+      }
+
+      if (conversations.size >= safeLimit) {
+        break;
+      }
+    }
+
+    return Array.from(conversations.values());
   }
 }
 

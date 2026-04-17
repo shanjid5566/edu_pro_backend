@@ -3,6 +3,39 @@ import { UserRole } from "@prisma/client";
 import messagingService from "../services/messagingService.js";
 
 class MessagingController {
+  async getConversations(req: Request, res: Response) {
+    try {
+      const currentUserId = (req as any).userId as string | undefined;
+      const currentUserRole = (req as any).userRole as UserRole | undefined;
+      const limit = parseInt((req.query.limit || "30").toString(), 10);
+
+      if (!currentUserId || !currentUserRole) {
+        return res.status(401).json({
+          success: false,
+          message: "Unauthorized",
+        });
+      }
+
+      const conversations = await messagingService.getConversationList(
+        currentUserId,
+        currentUserRole,
+        Number.isNaN(limit) ? 30 : limit
+      );
+
+      return res.status(200).json({
+        success: true,
+        data: conversations,
+      });
+    } catch (error) {
+      console.error("Error in getConversations:", error);
+      return res.status(500).json({
+        success: false,
+        message:
+          error instanceof Error ? error.message : "Internal server error",
+      });
+    }
+  }
+
   async searchUsers(req: Request, res: Response) {
     try {
       const currentUserId = (req as any).userId as string | undefined;

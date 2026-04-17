@@ -186,6 +186,36 @@ export function initializeSocket(httpServer: HttpServer): Server {
       }
     });
 
+    socket.on("messages:conversations", async (payload: any, ack?: AckFn) => {
+      try {
+        const limit = Number(payload?.limit || 30);
+
+        const conversations = await messagingService.getConversationList(
+          currentUser.id,
+          currentUser.role,
+          Number.isNaN(limit) ? 30 : limit
+        );
+
+        const response = { success: true, data: conversations };
+        if (typeof ack === "function") {
+          ack(response);
+          return;
+        }
+
+        socket.emit("messages:conversations:result", response);
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Failed to load conversations";
+
+        if (typeof ack === "function") {
+          ack({ success: false, message });
+          return;
+        }
+
+        socket.emit("messages:conversations:error", { success: false, message });
+      }
+    });
+
     socket.on("message:send", async (payload: any, ack?: AckFn) => {
       try {
         const receiverId = (payload?.receiverId || "").toString();
@@ -208,6 +238,12 @@ export function initializeSocket(httpServer: HttpServer): Server {
         };
 
         io.to(`user:${currentUser.id}`).to(`user:${receiverId}`).emit("message:new", eventPayload);
+        io
+          .to(`user:${currentUser.id}`)
+          .to(`user:${receiverId}`)
+          .emit("conversations:refresh", {
+            success: true,
+          });
 
         if (typeof ack === "function") {
           ack(eventPayload);

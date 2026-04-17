@@ -8,6 +8,13 @@ const router = Router();
 router.use(verifyToken, checkRole("ADMIN", "TEACHER", "STUDENT"));
 
 /**
+ * @route GET /messages/conversations?limit=30
+ * @description Get conversation list for chat sidebar (user + last message)
+ * @access Private - Admin/Teacher/Student
+ */
+router.get("/conversations", messagingController.getConversations);
+
+/**
  * @route GET /messages/search?query=jo&limit=10
  * @description Search allowed users for live suggestions in chat
  * @access Private - Admin/Teacher/Student

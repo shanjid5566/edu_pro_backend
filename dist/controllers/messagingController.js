@@ -5,6 +5,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const messagingService_js_1 = __importDefault(require("../services/messagingService.js"));
 class MessagingController {
+    async getConversations(req, res) {
+        try {
+            const currentUserId = req.userId;
+            const currentUserRole = req.userRole;
+            const limit = parseInt((req.query.limit || "30").toString(), 10);
+            if (!currentUserId || !currentUserRole) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Unauthorized",
+                });
+            }
+            const conversations = await messagingService_js_1.default.getConversationList(currentUserId, currentUserRole, Number.isNaN(limit) ? 30 : limit);
+            return res.status(200).json({
+                success: true,
+                data: conversations,
+            });
+        }
+        catch (error) {
+            console.error("Error in getConversations:", error);
+            return res.status(500).json({
+                success: false,
+                message: error instanceof Error ? error.message : "Internal server error",
+            });
+        }
+    }
     async searchUsers(req, res) {
         try {
             const currentUserId = req.userId;
