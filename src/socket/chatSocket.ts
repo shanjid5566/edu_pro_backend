@@ -1,6 +1,6 @@
 import { Server as HttpServer } from "http";
 import { Server, Socket } from "socket.io";
-import { UserRole } from "../../prisma/generated/prisma/enums";
+import { UserRole } from "@prisma/client";
 import authService from "../services/authService";
 import { prisma } from "../lib/prisma";
 import messagingService from "../services/messagingService";

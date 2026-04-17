@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { UserRole } from "../../prisma/generated/prisma/enums";
+import { UserRole } from "@prisma/client";
 
 const MAX_SEARCH_RESULTS = 20;
 const MAX_HISTORY_LIMIT = 200;

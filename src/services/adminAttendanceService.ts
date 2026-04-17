@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma.js";
-import { AttendanceStatus } from "../../prisma/generated/prisma/client";
+import { AttendanceStatus } from "@prisma/client";
 
 export class AdminAttendanceService {
   /**

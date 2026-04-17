@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AdminAttendanceService } from "../services/adminAttendanceService.js";
-import { AttendanceStatus } from "../../prisma/generated/prisma/client";
+import { AttendanceStatus } from "@prisma/client";
 import { getQueryString, getQueryNumber } from "../utils/queryParams.js";
 
 

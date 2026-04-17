@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { UserRole } from "../../prisma/generated/prisma/enums";
+import { UserRole } from "@prisma/client";
 import messagingService from "../services/messagingService.js";
 
 class MessagingController {

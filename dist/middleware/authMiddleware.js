@@ -29,6 +29,11 @@ const verifyToken = (req, res, next) => {
         req.userId = decoded.userId;
         req.userEmail = decoded.email;
         req.userRole = decoded.role;
+        req.user = {
+            id: decoded.userId,
+            email: decoded.email,
+            role: decoded.role,
+        };
         next();
     }
     catch (error) {
@@ -43,15 +48,25 @@ exports.verifyToken = verifyToken;
 /**
  * Middleware to check user role
  */
-const checkRole = (allowedRoles) => {
+const checkRole = (...rolesOrArray) => {
+    const allowedRoles = Array.isArray(rolesOrArray[0])
+        ? rolesOrArray[0]
+        : rolesOrArray;
     return (req, res, next) => {
         const userRole = req.userRole;
-        if (!userRole || !allowedRoles.includes(userRole)) {
+        const normalizedUserRole = typeof userRole === "string" ? userRole.trim().toUpperCase() : "";
+        const normalizedAllowedRoles = allowedRoles.map((role) => role.trim().toUpperCase());
+        if (!normalizedUserRole || !normalizedAllowedRoles.includes(normalizedUserRole)) {
             return res.status(403).json({
                 success: false,
                 message: "Permission denied",
             });
         }
+        req.user = {
+            id: req.userId,
+            email: req.userEmail,
+            role: req.userRole,
+        };
         next();
     };
 };

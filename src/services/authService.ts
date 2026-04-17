@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt, { SignOptions } from "jsonwebtoken";
 import { prisma } from "../lib/prisma";
-import { UserRole } from "../../prisma/generated/prisma/enums";
+import { UserRole } from "@prisma/client";
 import { env } from "../config/env";
 
 interface LoginPayload {
